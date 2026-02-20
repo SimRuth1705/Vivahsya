@@ -1,0 +1,156 @@
+/* Custom Delete Pop-up (Right Side) */
+.delete-confirm-popup {
+  background: white;
+  border-left: 5px solid #ff4d4d;
+  padding: 16px;
+  border-radius: 12px;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.15);
+  min-width: 280px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  font-family: inherit;
+}
+
+.popup-content h4 {
+  margin: 0;
+  color: #333;
+  font-size: 16px;
+}
+
+.popup-content p {
+  margin: 4px 0 0;
+  color: #777;
+  font-size: 13px;
+}
+
+.popup-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+}
+
+.btn-cancel-toast {
+  background: #f1f1f1;
+  border: none;
+  padding: 8px 16px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: 600;
+  font-size: 12px;
+  color: #666;
+}
+
+.btn-delete-toast {
+  background: #ff4d4d;
+  border: none;
+  padding: 8px 16px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: 600;
+  font-size: 12px;
+  color: white;
+}
+
+.btn-delete-toast:hover {
+  background: #e60000;
+}
+
+
+.bookings-container {
+  padding: 30px;
+  height: calc(100vh - 60px);
+  display: flex;
+  flex-direction: column;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  color: #333;
+  box-sizing: border-box;
+}
+
+/* Header */
+.bookings-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 25px; flex-shrink: 0; }
+.bookings-header h1 { margin: 0; font-size: 26px; font-weight: 700; color: #222; }
+.add-booking-btn { background: #6200EA; color: white; border: none; padding: 12px 24px; border-radius: 10px; font-weight: 600; cursor: pointer; font-size: 14px; transition: 0.2s; }
+.add-booking-btn:hover { background: #4500b5; transform: translateY(-1px); }
+
+/* Filter Tabs */
+.bookings-filter { display: flex; gap: 12px; margin-bottom: 20px; flex-shrink: 0; padding-bottom: 10px; border-bottom: 1px solid #f0f0f0; }
+.filter-tab { background: transparent; border: none; padding: 8px 18px; border-radius: 20px; color: #666; font-weight: 500; cursor: pointer; transition: 0.2s; }
+.filter-tab:hover { background: #f5f5f5; }
+.filter-tab.active { background: #EDE7F6; color: #6200EA; font-weight: 700; }
+
+/* Table */
+.bookings-table-wrapper { background: white; border-radius: 16px; box-shadow: 0 4px 20px rgba(0,0,0,0.04); flex-grow: 1; overflow: hidden; display: flex; flex-direction: column; margin-bottom: 20px; }
+.bookings-table { width: 100%; border-collapse: collapse; }
+.bookings-table th { background: #FAFAFA; padding: 18px 24px; text-align: left; color: #888; font-weight: 600; font-size: 13px; text-transform: uppercase; letter-spacing: 0.5px; position: sticky; top: 0; z-index: 10; }
+.bookings-table td { padding: 18px 24px; border-bottom: 1px solid #f5f5f5; font-size: 14px; color: #333; vertical-align: middle; }
+.bookings-table tbody tr:hover { background: #FAFAFA; }
+.empty-state { padding: 40px; text-align: center; color: #999; }
+
+/* Action Buttons */
+.action-icon { border: none; background: none; cursor: pointer; font-size: 13px; font-weight: 600; padding: 6px 12px; border-radius: 6px; margin-right: 8px; transition: 0.2s; }
+.action-icon.edit { background: #EDE7F6; color: #6200EA; }
+.action-icon.edit:hover { background: #D1C4E9; }
+.action-icon.delete { background: #FFEBEE; color: #C62828; }
+.action-icon.delete:hover { background: #FFCDD2; }
+
+/* --- STATUS COLORS (Bookings Specific) --- */
+.status-pending { background: #FFF3E0; color: #E65100; border: 1px solid #FFE0B2; }
+.status-confirmed { background: #E8F5E9; color: #2E7D32; border: 1px solid #C8E6C9; }
+.status-completed { background: #E3F2FD; color: #1565C0; border: 1px solid #BBDEFB; }
+.status-cancelled { background: #FFEBEE; color: #C62828; border: 1px solid #FFCDD2; }
+
+/* --- SMART DROPDOWN (Table) --- */
+.booking-dropdown { position: relative; width: 100%; }
+.booking-dropdown-trigger { padding: 8px 12px; border-radius: 8px; cursor: pointer; font-size: 13px; font-weight: 700; display: flex; justify-content: space-between; align-items: center; user-select: none; transition: 0.2s; }
+.booking-dropdown-trigger:hover { filter: brightness(0.95); }
+.booking-dropdown-menu { position: absolute; left: 0; width: 100%; background: white; border-radius: 8px; box-shadow: 0 5px 20px rgba(0,0,0,0.15); padding: 5px; list-style: none; z-index: 100; border: 1px solid #eee; }
+.booking-dropdown-menu.bottom { top: 110%; }
+.booking-dropdown-menu.top { bottom: 110%; box-shadow: 0 -5px 20px rgba(0,0,0,0.15); }
+.booking-dropdown-item { padding: 8px 12px; font-size: 13px; border-radius: 6px; cursor: pointer; margin-bottom: 4px; font-weight: 600; text-align: center; opacity: 0.8; }
+.booking-dropdown-item:hover { opacity: 1; transform: scale(1.02); }
+
+/* --- CUSTOM FORM COMPONENTS --- */
+.custom-input-container { margin-bottom: 20px; width: 100%; position: relative; }
+.custom-input-container label { display: block; margin-bottom: 8px; font-weight: 600; font-size: 13px; color: #555; text-transform: uppercase; }
+.custom-input { width: 100%; padding: 12px 15px; border: 1px solid #e0e0e0; border-radius: 8px; font-size: 14px; box-sizing: border-box; background: #f9f9f9; transition: 0.2s; }
+.custom-input:focus { border-color: #6200EA; background: white; outline: none; }
+
+.custom-select-box { width: 100%; padding: 12px 15px; border: 1px solid #e0e0e0; border-radius: 8px; font-size: 14px; background: #f9f9f9; cursor: pointer; display: flex; justify-content: space-between; align-items: center; box-sizing: border-box; }
+.custom-select-box.status-mode { font-weight: 700; border: none; } /* Badge style in form */
+.custom-select-list { position: absolute; top: 105%; left: 0; width: 100%; background: white; border-radius: 8px; box-shadow: 0 5px 20px rgba(0,0,0,0.15); padding: 5px; z-index: 200; list-style: none; border: 1px solid #eee; }
+.custom-select-option { padding: 10px; font-size: 14px; border-radius: 6px; cursor: pointer; color: #333; }
+.custom-select-option:hover { background: #f5f5f5; }
+.custom-select-option.selected { background: #EDE7F6; color: #6200EA; font-weight: 600; }
+
+/* Date Picker Popup */
+.bd-calendar-popup { position: absolute; top: 105%; left: 0; background: white; border-radius: 12px; box-shadow: 0 5px 20px rgba(0,0,0,0.15); padding: 15px; width: 280px; z-index: 200; border: 1px solid #eee; }
+.bd-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; font-weight: 700; font-size: 14px; }
+.bd-nav button { background: none; border: none; font-size: 18px; cursor: pointer; color: #666; }
+.bd-grid-head { display: grid; grid-template-columns: repeat(7, 1fr); text-align: center; font-size: 12px; color: #aaa; margin-bottom: 5px; }
+.bd-grid-body { display: grid; grid-template-columns: repeat(7, 1fr); gap: 5px; }
+.bd-day { height: 32px; display: flex; align-items: center; justify-content: center; font-size: 13px; border-radius: 50%; cursor: pointer; color: #333; }
+.bd-day:hover { background: #f0f0f0; }
+.bd-day.selected { background: #6200EA; color: white; font-weight: 600; }
+.bd-day.empty { cursor: default; }
+
+/* --- MODAL --- */
+.modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); backdrop-filter: blur(4px); display: flex; justify-content: center; align-items: center; z-index: 1000; }
+.modal-content { background: white; padding: 35px; border-radius: 16px; width: 500px; max-width: 90%; box-shadow: 0 10px 40px rgba(0,0,0,0.2); animation: slideUp 0.3s ease-out; }
+@keyframes slideUp { from { transform: translateY(20px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+.modal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 25px; }
+.modal-header h2 { margin: 0; font-size: 22px; color: #333; }
+.close-btn { background: none; border: none; font-size: 28px; color: #999; cursor: pointer; }
+.form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+.modal-footer { display: flex; justify-content: flex-end; gap: 15px; margin-top: 30px; border-top: 1px solid #f0f0f0; padding-top: 20px; }
+.btn-cancel { background: white; border: 1px solid #ddd; padding: 10px 24px; border-radius: 8px; font-weight: 600; color: #666; cursor: pointer; }
+.btn-save { background: #6200EA; border: none; padding: 10px 24px; border-radius: 8px; font-weight: 600; color: white; cursor: pointer; }
+
+/* --- TOAST (Sonner Custom) --- */
+.delete-toast-card { background: white; padding: 16px; border-radius: 12px; box-shadow: 0 10px 30px rgba(0,0,0,0.15); border: 1px solid #eee; display: flex; flex-direction: column; gap: 12px; min-width: 280px; }
+.dt-content strong { display: block; font-size: 15px; margin-bottom: 4px; color: #333; }
+.dt-content p { margin: 0; font-size: 13px; color: #777; }
+.dt-actions { display: flex; justify-content: flex-end; gap: 10px; }
+.dt-btn { padding: 8px 16px; border-radius: 6px; font-size: 13px; font-weight: 600; cursor: pointer; border: none; }
+.dt-btn.cancel { background: white; border: 1px solid #eee; color: #555; }
+.dt-btn.delete { background: #C62828; color: white; }

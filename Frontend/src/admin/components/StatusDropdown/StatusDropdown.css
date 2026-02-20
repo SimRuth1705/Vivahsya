@@ -1,0 +1,104 @@
+/* Container */
+.custom-dropdown {
+  position: relative;
+  width: 100%;
+  font-family: -apple-system, sans-serif;
+}
+
+/* Trigger Button */
+.dropdown-trigger {
+  width: 100%;
+  padding: 10px 12px;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  background-color: white;
+  cursor: pointer;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 14px;
+  font-weight: 500;
+  transition: all 0.2s;
+}
+
+.dropdown-trigger:hover {
+  border-color: #6200EA;
+  background-color: #fafafa;
+}
+
+.dropdown-arrow {
+  font-size: 10px;
+  color: #666;
+}
+
+/* --- THE MENU --- */
+.dropdown-menu {
+  position: absolute;
+  left: 0;
+  width: 100%;
+  background: white;
+  border-radius: 8px;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.15);
+  list-style: none;
+  padding: 6px;
+  z-index: 1000; /* High z-index to sit on top of table rows */
+  border: 1px solid #f0f0f0;
+  animation: fadeIn 0.2s ease;
+}
+
+/* --- SMART POSITIONING --- */
+
+/* Default: Open Downwards */
+.dropdown-menu.bottom {
+  top: 110%;
+  bottom: auto;
+}
+
+/* Smart: Open Upwards */
+.dropdown-menu.top {
+  bottom: 110%; /* Push it above the button */
+  top: auto;
+  box-shadow: 0 -4px 20px rgba(0,0,0,0.15); /* Shadow points up */
+}
+
+/* Menu Items */
+.dropdown-item {
+  padding: 10px;
+  font-size: 14px;
+  color: #333;
+  border-radius: 6px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  transition: background 0.2s;
+}
+
+.dropdown-item:hover {
+  background-color: #f5f5f5;
+}
+
+.dropdown-item.selected {
+  background-color: #F3E5F5;
+  color: #6200EA;
+  font-weight: 600;
+}
+
+/* Colors Dots */
+.status-dot { width: 8px; height: 8px; border-radius: 50%; display: inline-block; }
+.status-new { border-left: 4px solid #6200EA; } /* Optional: colored border on trigger */
+.status-dot.status-new { background-color: #6200EA; border: none; }
+
+.status-contacted { border-left: 4px solid #F57C00; }
+.status-dot.status-contacted { background-color: #F57C00; border: none; }
+
+.status-converted { border-left: 4px solid #2E7D32; }
+.status-dot.status-converted { background-color: #2E7D32; border: none; }
+
+.status-lost { border-left: 4px solid #C62828; }
+.status-dot.status-lost { background-color: #C62828; border: none; }
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(5px); }
+  to { opacity: 1; transform: translateY(0); }
+}

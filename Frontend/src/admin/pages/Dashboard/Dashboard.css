@@ -1,0 +1,198 @@
+.dashboard-container {
+  padding: 10px 30px;
+  height: calc(100vh - 60px);
+  display: flex;
+  flex-direction: column;
+  font-family:
+    -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  color: #333;
+  box-sizing: border-box;
+}
+
+.dashboard-header h1 {
+  font-size: 28px;
+  margin-bottom: 5px;
+  color: #333;
+}
+.dashboard-header p {
+  color: #777;
+  margin-bottom: 30px;
+}
+
+/* --- STATS GRID --- */
+.stats-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: 20px;
+  margin-bottom: 30px;
+}
+
+.stat-card {
+  background: white;
+  padding: 20px;
+  border-radius: 12px;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.03);
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  transition: transform 0.2s;
+}
+
+.stat-card:hover {
+  transform: translateY(-5px);
+}
+
+.icon-box {
+  width: 50px;
+  height: 50px;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 20px;
+}
+.purple {
+  background: #ebe0fd;
+  color: #6200ea;
+}
+.pink {
+  background: #f8bbd0;
+  color: #c2185b;
+}
+.green {
+  background: #e8f5e9;
+  color: #2e7d32;
+}
+.orange {
+  background: #fff3e0;
+  color: #ef6c00;
+}
+
+.stat-info h3 {
+  font-size: 14px;
+  color: #777;
+  font-weight: 500;
+  margin: 0;
+}
+.stat-number {
+  font-size: 24px;
+  font-weight: 700;
+  color: #333;
+  margin: 5px 0;
+}
+.stat-trend {
+  font-size: 12px;
+  color: #2e7d32;
+  font-weight: 600;
+}
+.stat-desc {
+  font-size: 12px;
+  color: #999;
+}
+
+/* --- CONTENT GRID --- */
+.dashboard-content-grid {
+  display: grid;
+  grid-template-columns: 2fr 1fr; /* Left side wider than right */
+  gap: 20px;
+}
+
+@media (max-width: 1000px) {
+  .dashboard-content-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+.content-card {
+  background: white;
+  padding: 25px;
+  border-radius: 12px;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.03);
+}
+
+.card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+.view-btn {
+  background: none;
+  border: none;
+  color: #6200ea;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+/* --- TABLE STYLES --- */
+.dashboard-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+.dashboard-table th {
+  text-align: left;
+  color: #999;
+  font-weight: 500;
+  padding: 10px 0;
+  border-bottom: 1px solid #eee;
+}
+.dashboard-table td {
+  padding: 15px 0;
+  color: #333;
+  font-weight: 500;
+  border-bottom: 1px solid #f9f9f9;
+}
+
+.status-badge {
+  padding: 5px 12px;
+  border-radius: 20px;
+  font-size: 12px;
+}
+.warning {
+  background: #fff8e1;
+  color: #f57f17;
+}
+.success {
+  background: #e8f5e9;
+  color: #2e7d32;
+}
+
+/* --- ACTIVITY LIST --- */
+.activity-list {
+  list-style: none;
+  padding: 0;
+}
+.activity-list li {
+  display: flex;
+  gap: 15px;
+  margin-bottom: 20px;
+}
+.dot {
+  width: 10px;
+  height: 10px;
+  background: #ebe0fd;
+  border-radius: 50%;
+  margin-top: 5px;
+}
+.time {
+  font-size: 12px;
+  color: #999;
+  margin-top: 4px;
+}
+
+.loading-screen {
+  width: 100%;
+  font-size: 18px;
+  font-weight: 600;
+  margin: 30px;
+}
+
+/* 2. Explicitly defines positive (useful if you add .negative later) */
+.positive {
+  color: #2e7d32; /* Green */
+}
+
+.negative {
+  color: #c62828; /* Red - Optional, for future use */
+}
