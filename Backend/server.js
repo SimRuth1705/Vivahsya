@@ -11,6 +11,20 @@ dotenv.config();
 
 const app = express();
 
+// backend/server.js
+const { adminOnly } = require('./middleware/authMiddleware');
+
+// Public/Employee Routes
+app.use('/api/auth', authRoutes); 
+app.use('/api/bookings', bookingRoutes);
+app.use('/api/vendors', vendorRoutes);
+app.use('/api/crm', crmRoutes);
+
+// OWNER ONLY ROUTES (Financial & Team Management)
+app.use('/api/leads', adminOnly, leadRoutes); // Protects the lead budgets
+app.use('/api/sales', adminOnly, require('./routes/sales')); 
+// Note: We apply adminOnly to auth/users inside the auth route or here
+
 // Middleware
 app.use(express.json());
 app.use(cors());

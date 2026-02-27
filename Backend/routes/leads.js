@@ -1,6 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const Lead = require('../models/Lead');
+const { adminOnly } = require('../middleware/authMiddleware');
 
 // 1. Get all leads
 router.get('/', async (req, res) => {

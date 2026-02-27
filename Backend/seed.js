@@ -1,62 +1,52 @@
-// backend/seed.js
 const mongoose = require('mongoose');
-const dotenv = require('dotenv');
 const bcrypt = require('bcryptjs');
-const User = require('./models/User');
+const User = require('./models/User'); 
+require('dotenv').config();
 
-
-// Load environment variables
-dotenv.config();
-
-console.log("1. Script started...");
-console.log("2. Checking Mongo URI...", process.env.MONGO_URI ? "✅ Found" : "❌ MISSING");
-
-if (!process.env.MONGO_URI) {
-  console.error("❌ FATAL ERROR: MONGO_URI is not defined in .env file.");
-  process.exit(1);
-}
-
-// Connect to DB
-mongoose.connect(process.env.MONGO_URI)
-  .then(() => {
-    console.log('3. ✅ Connected to MongoDB');
-    seedOwner();
-  })
-  .catch(err => {
-    console.error('❌ Database Connection Error:', err);
-    process.exit(1);
-  });
-
-const seedOwner = async () => {
+const seedAdmin = async () => {
   try {
-    console.log("4. Checking for existing admin...");
-    const existingUser = await User.findOne({ email: "admin@eventapp.com" });
+    console.log("Connecting to:", process.env.MONGO_URI);
+    await mongoose.connect(process.env.MONGO_URI);
+    console.log("✅ Connected to MongoDB");
+
+    const adminEmail = 'admin@vivahasya.com';
     
-    if (existingUser) {
-      console.log('⚠️ Owner account already exists.');
-      console.log('👉 Login with: admin@eventapp.com / admin123');
+    // Explicitly check if User is a function/model
+    if (typeof User !== 'function') {
+        console.error("❌ Error: User is not a valid Mongoose model. Check your export in User.js");
+        process.exit(1);
+    }
+
+    const existingAdmin = await User.findOne({ email: adminEmail });
+    
+    if (existingAdmin) {
+      console.log(`⚠️ Admin with email ${adminEmail} already exists!`);
       process.exit();
     }
 
-    console.log("5. Creating new Owner...");
     const salt = await bcrypt.genSalt(10);
     const hashedPassword = await bcrypt.hash('admin123', salt);
 
-    const owner = new User({
-      name: "Super Admin",
-      email: "admin@eventapp.com",
+    const adminUser = new User({
+      name: 'Vivahasya Admin',
+      email: adminEmail,
       password: hashedPassword,
-      role: "owner"
+      role: 'owner',
+      status: 'Active'
     });
 
-    await owner.save();
-    console.log('🎉 Owner Account Created Successfully!');
-    console.log('👉 Email: admin@eventapp.com');
-    console.log('👉 Password: admin123');
-    process.exit();
+    await adminUser.save();
+    console.log("------------------------------------------");
+    console.log("🚀 OWNER ACCOUNT CREATED SUCCESSFULLY!");
+    console.log("Email: " + adminEmail);
+    console.log("Password: admin123");
+    console.log("------------------------------------------");
 
-  } catch (error) {
-    console.error("❌ Error creating user:", error);
+    process.exit();
+  } catch (err) {
+    console.error("❌ Error seeding admin:", err);
     process.exit(1);
   }
 };
+
+seedAdmin();

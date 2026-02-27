@@ -1,74 +1,108 @@
 :root {
   --sb-closed: 75px;
-  --sb-open: 240px;
+  --sb-open: 260px;
+  --primary-purple: #8b5cf6;
+  --bg-dark: #0f1115;
+  --text-dim: #9ca3af;
 }
 
 .sidebar {
   height: 100vh;
-  position: fixed; /* Fixes the 'covering space' issue */
+  position: fixed;
   left: 0;
   top: 0;
   z-index: 1000;
-  background-color: #0f1115;
+  background-color: var(--bg-dark);
   transition: width 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   display: flex;
   flex-direction: column;
   padding: 1.5rem 0.75rem;
   overflow: hidden;
   box-sizing: border-box;
+  border-right: 1px solid #1f2937;
 }
 
 .sidebar.closed { width: var(--sb-closed); }
-.sidebar.open { width: var(--sb-open); box-shadow: 10px 0 30px rgba(0,0,0,0.4); }
+.sidebar.open { width: var(--sb-open); box-shadow: 10px 0 30px rgba(0,0,0,0.5); }
 
-/* Remove Underlines */
+/* Logo Styling */
+.logo-section {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  margin-bottom: 2.5rem;
+  padding-left: 8px;
+}
+
+.logo-icon {
+  min-width: 35px;
+  height: 35px;
+  background: var(--primary-purple);
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 8px;
+  font-weight: 800;
+  font-size: 1.2rem;
+}
+
+.logo-text {
+  color: white;
+  font-size: 1.4rem;
+  font-weight: 700;
+  white-space: nowrap;
+  transition: opacity 0.2s;
+}
+
+/* Navigation Items */
 .nav-item {
   text-decoration: none !important;
   display: flex;
   align-items: center;
-  padding: 0.85rem 1rem;
+  padding: 0.85rem;
   margin-bottom: 0.5rem;
   border-radius: 12px;
-  color: #9ca3af;
-  transition: all 0.2s;
+  color: var(--text-dim);
+  transition: all 0.2s ease;
 }
 
-.nav-item:hover, .nav-item.active {
-  background-color: #1b1e24;
+.nav-item .icon-wrapper {
+  font-size: 22px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 35px;
+}
+
+.label {
+  margin-left: 15px;
+  white-space: nowrap;
+  font-size: 1rem;
+  font-weight: 500;
+  transition: opacity 0.2s;
+}
+
+/* Visibility States */
+.visible { opacity: 1; visibility: visible; }
+.hidden { opacity: 0; visibility: hidden; width: 0; }
+
+/* Active & Hover States */
+.nav-item:hover {
+  background-color: rgba(255, 255, 255, 0.05);
   color: #ffffff;
-  text-decoration: none;
 }
 
 .nav-item.active {
   background-color: rgba(139, 92, 246, 0.15);
-  color: #8b5cf6;
+  color: var(--primary-purple);
 }
 
-.label {
-  margin-left: 12px;
-  white-space: nowrap;
-  font-size: 0.95rem;
-  font-weight: 500;
-}
-
-.logo-section {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  margin-bottom: 2rem;
-  padding-left: 5px;
-}
-
-/* Updated Layout Fix */
-.admin-content {
-  /* This margin ensures the Dashboard is never covered by the closed sidebar */
-  margin-left: var(--sb-closed); 
-  width: calc(100% - var(--sb-closed));
-  min-height: 100vh;
-  background-color: #f8fafc;
-  padding: 2rem;
-  box-sizing: border-box;
-  transition: margin-left 0.3s; /* Smooth adjustment if needed */
+/* Footer & Logout */
+.sidebar-footer {
+  margin-top: auto;
+  padding-top: 1rem;
+  border-top: 1px solid #1f2937;
 }
 
 .logout-btn {
@@ -76,11 +110,15 @@
   align-items: center;
   background: none;
   border: none;
-  color: #9ca3af;
+  color: var(--text-dim);
   cursor: pointer;
-  padding: 10px;
+  padding: 0.85rem;
   width: 100%;
-  border-radius: 10px;
+  border-radius: 12px;
+  transition: 0.2s;
 }
 
-.logout-btn:hover { color: #f87171; background: rgba(248, 113, 113, 0.1); }
+.logout-btn:hover {
+  background: rgba(239, 68, 68, 0.1);
+  color: #f87171;
+}

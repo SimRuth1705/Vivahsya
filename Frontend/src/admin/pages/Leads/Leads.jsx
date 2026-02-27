@@ -1,486 +1,274 @@
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect } from "react";
 import { Toaster, toast } from "sonner";
+import { 
+  HiOutlineSearch, HiOutlinePencilAlt, 
+  HiOutlineX 
+} from "react-icons/hi";
 import "./Leads.css";
+import CustomDropdown from "../../components/CustomDropdown/CustomDropdown";
+import CustomDatePicker from "../../components/CustomDatePicker/CustomDatePicker"; 
 
-// --- 1. TABLE STATUS DROPDOWN (Quick change from the table) ---
-const TableStatusDropdown = ({ currentStatus, onStatusChange }) => {
-  const [isOpen, setIsOpen] = useState(false);
-  const ref = useRef(null);
+const Leads = () => {
+  const [leads, setLeads] = useState([]);
+  const [searchTerm, setSearchTerm] = useState("");
+  const [showEditModal, setShowEditModal] = useState(false);
+  const [currentLead, setCurrentLead] = useState(null);
 
-  useEffect(() => {
-    const handleClick = (e) => {
-      if (ref.current && !ref.current.contains(e.target)) setIsOpen(false);
-    };
-    document.addEventListener("mousedown", handleClick);
-    return () => document.removeEventListener("mousedown", handleClick);
-  }, []);
+  // --- ROLE CHECK LOGIC ---
+  const user = JSON.parse(localStorage.getItem("user"));
+  const isOwner = user?.role === 'owner';
 
-  const statuses = ["New", "Contacted", "Converted", "Lost"];
-
-  return (
-    <div
-      className="table-status-container"
-      ref={ref}
-      style={{ position: "relative" }}
-    >
-      <button
-        className={`status-badge status-${currentStatus.toLowerCase()} clickable`}
-        onClick={(e) => {
-          e.preventDefault();
-          setIsOpen(!isOpen);
-        }}
-      >
-        {currentStatus} ▼
-      </button>
-      {isOpen && (
-        <ul
-          className="table-status-menu"
-          style={{
-            position: "absolute",
-            zIndex: 100,
-            background: "white",
-            border: "1px solid #ddd",
-            borderRadius: "4px",
-            padding: "5px",
-            listStyle: "none",
-            width: "120px",
-            boxShadow: "0 2px 10px rgba(0,0,0,0.1)",
-            top: "100%",
-            left: "0",
-          }}
-        >
-          {statuses.map((s) => (
-            <li
-              key={s}
-              style={{ padding: "8px", cursor: "pointer", fontSize: "12px" }}
-              onClick={() => {
-                onStatusChange(s);
-                setIsOpen(false);
-              }}
-            >
-              {s}
-            </li>
-          ))}
-        </ul>
-      )}
-    </div>
-  );
-};
-
-// --- 2. CUSTOM SELECT (Used in the Modal Form) ---
-const CustomSelect = ({
-  label,
-  options,
-  value,
-  onChange,
-  isStatus = false,
-}) => {
-  const [isOpen, setIsOpen] = useState(false);
-  const ref = useRef(null);
-
-  useEffect(() => {
-    const handleClick = (e) => {
-      if (ref.current && !ref.current.contains(e.target)) setIsOpen(false);
-    };
-    document.addEventListener("mousedown", handleClick);
-    return () => document.removeEventListener("mousedown", handleClick);
-  }, []);
-
-  const getStatusClass = (status) => {
-    if (!isStatus) return "";
-    switch (status) {
-      case "New":
-        return "status-new";
-      case "Contacted":
-        return "status-contacted";
-      case "Converted":
-        return "status-converted";
-      case "Lost":
-        return "status-lost";
-      default:
-        return "";
+  // --- 1. Fetch Real Leads from MongoDB ---
+  const fetchLeads = async () => {
+    try {
+      const response = await fetch("http://localhost:5000/api/leads", {
+        headers: {
+          // Send the token so the backend middleware doesn't block the request
+          "Authorization": `Bearer ${localStorage.getItem("token")}`
+        }
+      });
+      const data = await response.json();
+      
+      if (response.ok) {
+        setLeads(data);
+      } else {
+        toast.error(data.message || "Unauthorized access");
+      }
+    } catch (error) {
+      toast.error("Failed to sync leads with database");
     }
   };
 
-  const handleOptionClick = (e, opt) => {
-    e.preventDefault();
-    e.stopPropagation();
-    onChange(opt);
-    setIsOpen(false);
-  };
-
-  return (
-    <div className="form-group" ref={ref} style={{ position: "relative" }}>
-      <label>{label}</label>
-      <div
-        className={`custom-select-trigger ${isStatus ? getStatusClass(value) + " badge-trigger" : ""}`}
-        onClick={(e) => {
-          e.preventDefault();
-          setIsOpen(!isOpen);
-        }}
-      >
-        <span>{value}</span>
-        <span className="arrow">{isOpen ? "▲" : "▼"}</span>
-      </div>
-      {isOpen && (
-        <ul
-          className="custom-select-menu"
-          style={{
-            display: "block",
-            position: "absolute",
-            zIndex: 10000,
-            background: "white",
-            width: "100%",
-            border: "1px solid #ddd",
-            borderRadius: "8px",
-            marginTop: "5px",
-            boxShadow: "0 4px 12px rgba(0,0,0,0.15)",
-          }}
-        >
-          {options.map((opt) => (
-            <li
-              key={opt}
-              className={`custom-select-item ${value === opt ? "selected" : ""}`}
-              onClick={(e) => handleOptionClick(e, opt)}
-              style={{ padding: "10px", cursor: "pointer", listStyle: "none" }}
-            >
-              {opt}
-            </li>
-          ))}
-        </ul>
-      )}
-    </div>
-  );
-};
-
-// --- 3. MAIN LEADS COMPONENT ---
-const Leads = () => {
-  const [leads, setLeads] = useState([]);
-  const [filter, setFilter] = useState("All");
-  const [showModal, setShowModal] = useState(false);
-  const [isEditing, setIsEditing] = useState(false);
-  const [currentId, setCurrentId] = useState(null);
-  const [loading, setLoading] = useState(true);
-  const [formData, setFormData] = useState({
-    name: "",
-    email: "",
-    phone: "",
-    source: "Website",
-    status: "New",
-    notes: "",
-  });
-
-  // FETCH LEADS FROM MONGODB
   useEffect(() => {
-    const fetchLeads = async () => {
-      try {
-        const response = await fetch("http://localhost:5000/api/leads");
-        const data = await response.json();
-        setLeads(data);
-        setLoading(false);
-      } catch (error) {
-        toast.error("Failed to load leads from database");
-        setLoading(false);
-      }
-    };
     fetchLeads();
   }, []);
 
-  const updateLeadStatus = async (id, newStatus) => {
+  // --- 2. Save Edits to MongoDB ---
+  const handleUpdate = async (e) => {
+    e.preventDefault();
     try {
-      const response = await fetch(`http://localhost:5000/api/leads/${id}`, {
+      const response = await fetch(`http://localhost:5000/api/leads/${currentLead._id}`, {
         method: "PUT",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ status: newStatus }),
+        headers: { 
+          "Content-Type": "application/json",
+          "Authorization": `Bearer ${localStorage.getItem("token")}`
+        },
+        body: JSON.stringify(currentLead),
       });
-
-      // Inside Leads.jsx -> updateLeadStatus function
-      if (newStatus === "Converted") {
-        await fetch("http://localhost:5000/api/bookings", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            title: updatedLead.name,
-            type: "Wedding",
-            date: new Date().toISOString().split("T")[0],
-            startTime: "09:00",
-            endTime: "10:00",
-            amount: "₹0",
-            source: updatedLead.source, 
-            status: "Pending",
-            leadId: updatedLead._id,
-          }),
-        });
-        toast.success("Lead converted with Source tracking!");
-      }
 
       if (response.ok) {
         const updatedLead = await response.json();
-        setLeads((prev) => prev.map((l) => (l._id === id ? updatedLead : l)));
-        if (newStatus === "Converted") {
-          await fetch("http://localhost:5000/api/bookings", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({
-              title: updatedLead.name,
-              type: "Wedding",
-              date: new Date().toISOString().split("T")[0],
-              amount: "₹0",
-              status: "Pending",
-              leadId: updatedLead._id,
-            }),
-          });
-          toast.success("Lead converted and synced with Bookings & Calendar!");
-        } else {
-          toast.success(`Status updated to ${newStatus}`);
-        }
+        setLeads(leads.map(l => l._id === updatedLead._id ? updatedLead : l));
+        toast.success("Client Details Updated!");
+        setShowEditModal(false);
+      } else {
+        toast.error("Update failed. Check permissions.");
       }
-    } catch (error) {
-      toast.error("Connection error: Could not sync with database");
+    } catch (err) {
+      toast.error("Network error: Could not reach server.");
     }
   };
 
-  const filteredLeads =
-    filter === "All" ? leads : leads.filter((l) => l.status === filter);
-
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    const url = isEditing
-      ? `http://localhost:5000/api/leads/${currentId}`
-      : "http://localhost:5000/api/leads";
-    const method = isEditing ? "PUT" : "POST";
+  const handleInjectTestLead = async () => {
+    const dummyLead = {
+      name: "Arjun Patel",
+      contact: "9876543210",
+      email: "arjun@example.com",
+      eventType: "Wedding",
+      date: "2026-11-20",
+      duration: "2 Days",
+      tradition: "North Indian",
+      budget: "8,00,000",
+      location: "Taj West End",
+      guestCount: 450,
+      status: "On Talk"
+    };
 
     try {
-      const response = await fetch(url, {
-        method,
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(formData),
+      const response = await fetch("http://localhost:5000/api/leads", {
+        method: "POST",
+        headers: { 
+          "Content-Type": "application/json",
+          "Authorization": `Bearer ${localStorage.getItem("token")}`
+        },
+        body: JSON.stringify(dummyLead),
       });
 
       if (response.ok) {
-        const savedLead = await response.json();
-        if (isEditing) {
-          setLeads(leads.map((l) => (l._id === currentId ? savedLead : l)));
-          toast.success("Lead updated successfully!");
-        } else {
-          setLeads([savedLead, ...leads]);
-          toast.success("New lead saved to MongoDB!");
-        }
-        closeModal();
+        toast.success("Test lead injected!");
+        fetchLeads();
       }
-    } catch (error) {
-      toast.error("Error connecting to database");
+    } catch (err) {
+      toast.error("Network error.");
     }
   };
 
-  const handleDelete = (id) => {
-    toast.custom(
-      (t) => (
-        <div className="custom-toast-box">
-          <div className="toast-text">
-            <strong>Delete Lead?</strong>
-            <p>This action cannot be undone.</p>
-          </div>
-          <div className="toast-actions">
-            <button
-              className="toast-btn cancel"
-              onClick={() => toast.dismiss(t)}
-            >
-              Cancel
-            </button>
-            <button
-              className="toast-btn delete"
-              onClick={async () => {
-                try {
-                  await fetch(`http://localhost:5000/api/leads/${id}`, {
-                    method: "DELETE",
-                  });
-                  setLeads((prev) => prev.filter((l) => l._id !== id));
-                  toast.dismiss(t);
-                  toast.success("Lead deleted");
-                } catch (err) {
-                  toast.error("Failed to delete lead");
-                }
-              }}
-            >
-              Delete
-            </button>
-          </div>
-        </div>
-      ),
-      { duration: Infinity },
-    );
+  const handleEditClick = (lead) => {
+    setCurrentLead(lead);
+    setShowEditModal(true);
   };
 
-  const handleEdit = (lead) => {
-    setFormData(lead);
-    setCurrentId(lead._id);
-    setIsEditing(true);
-    setShowModal(true);
+  const handleInputChange = (e) => {
+    const { name, value } = e.target;
+    setCurrentLead({ ...currentLead, [name]: value });
   };
 
-  const closeModal = () => {
-    setShowModal(false);
-    setIsEditing(false);
-    setFormData({
-      name: "",
-      email: "",
-      phone: "",
-      source: "Website",
-      status: "New",
-      notes: "",
-    });
+  const handleCustomDropdownChange = (name, value) => {
+    setCurrentLead({ ...currentLead, [name]: value });
   };
-
-  if (loading) return <div className="loading-screen">Loading Leads...</div>;
 
   return (
-    <div className="leads-container">
+    <div className="leads-page">
       <Toaster position="top-right" richColors />
 
       <div className="leads-header">
-        <h1>Leads</h1>
-        <button className="add-lead-btn" onClick={() => setShowModal(true)}>
-          + New Lead
-        </button>
+        <div className="title-area">
+          <h1>Inbound Client Leads</h1>
+          <p>Review and edit details submitted by the client team</p>
+        </div>
+        
+        <div className="leads-utility">
+          {isOwner && (
+            <button onClick={handleInjectTestLead} className="inject-btn">
+              + Inject Test Lead
+            </button>
+          )}
+
+          <div className="search-wrapper">
+            <HiOutlineSearch className="search-icon" />
+            <input 
+              type="text" 
+              placeholder="Search by client name..." 
+              onChange={(e) => setSearchTerm(e.target.value)} 
+            />
+          </div>
+        </div>
       </div>
 
-      <div className="filter-bar">
-        {["All", "New", "Contacted", "Converted", "Lost"].map((f) => (
-          <button
-            key={f}
-            className={`filter-btn ${filter === f ? "active" : ""}`}
-            onClick={() => setFilter(f)}
-          >
-            {f}
-          </button>
-        ))}
-      </div>
-
-      <div className="table-wrapper">
+      <div className="leads-table-container">
         <table className="leads-table">
           <thead>
             <tr>
-              <th>Name</th>
-              <th>Contact</th>
-              <th>Source</th>
+              <th>Client / Contact</th>
+              <th>Event / Date</th>
+              <th>Tradition</th>
+              <th>Location / Guests</th>
+              {isOwner && <th>Budget</th>} {/* PROTECTED COLUMN */}
               <th>Status</th>
-              <th>Actions</th>
+              <th>Action</th>
             </tr>
           </thead>
           <tbody>
-            {filteredLeads.map((lead) => (
+            {leads.filter(l => (l.name || "").toLowerCase().includes(searchTerm.toLowerCase())).map((lead) => (
               <tr key={lead._id}>
                 <td>
-                  <strong>{lead.name}</strong>
+                  <div className="primary-text">{lead.name}</div>
+                  <div className="secondary-text">{lead.contact}</div>
                 </td>
                 <td>
-                  <div>{lead.email}</div>
-                  <small style={{ color: "#888" }}>{lead.phone}</small>
-                </td>
-                <td>{lead.source}</td>
-                <td>
-                  <TableStatusDropdown
-                    currentStatus={lead.status}
-                    onStatusChange={(newStatus) =>
-                      updateLeadStatus(lead._id, newStatus)
-                    }
-                  />
+                  <div className="primary-text">{lead.eventType || 'N/A'}</div>
+                  <div className="secondary-text">{lead.date || 'TBD'}</div>
                 </td>
                 <td>
-                  <button
-                    className="action-btn edit"
-                    onClick={() => handleEdit(lead)}
-                  >
-                    Edit
-                  </button>
-                  <button
-                    className="action-btn delete"
-                    onClick={() => handleDelete(lead._id)}
-                  >
-                    Delete
+                  <span className={`tradition-tag ${lead.tradition ? lead.tradition.toLowerCase().replace(' ', '-') : 'other'}`}>
+                    {lead.tradition || 'N/A'}
+                  </span>
+                </td>
+                <td>
+                  <div className="primary-text">{lead.location || 'N/A'}</div>
+                  <div className="secondary-text">{lead.guestCount || 0} Guests</div>
+                </td>
+                
+                {/* PROTECTED DATA CELL */}
+                {isOwner && <td className="budget-text">₹{lead.budget || '0'}</td>}
+                
+                <td>
+                  <span className={`status-pill ${(lead.status || "on-talk").toLowerCase().replace(' ', '-')}`}>
+                    {lead.status}
+                  </span>
+                </td>
+                <td>
+                  <button className="edit-action-btn" onClick={() => handleEditClick(lead)}>
+                    <HiOutlinePencilAlt /> Edit
                   </button>
                 </td>
               </tr>
             ))}
           </tbody>
         </table>
-        {filteredLeads.length === 0 && (
-          <div className="no-data">No leads found.</div>
-        )}
       </div>
 
-      {showModal && (
+      {showEditModal && currentLead && (
         <div className="modal-overlay">
-          <div className="modal-content">
+          <div className="lead-modal-refined">
             <div className="modal-header">
-              <h2>{isEditing ? "Edit Lead" : "Add New Lead"}</h2>
-              <button className="close-modal-btn" onClick={closeModal}>
-                &times;
-              </button>
+              <div className="header-title">
+                <h2>Edit Client Submission</h2>
+                <p>Modify details for {currentLead.name}</p>
+              </div>
+              <button className="close-btn" onClick={() => setShowEditModal(false)}><HiOutlineX /></button>
             </div>
-            <form onSubmit={handleSubmit}>
-              <div className="form-grid">
-                <div className="form-group">
-                  <label>Full Name</label>
-                  <input
-                    type="text"
-                    value={formData.name}
-                    onChange={(e) =>
-                      setFormData({ ...formData, name: e.target.value })
-                    }
-                    required
-                  />
-                </div>
-                <div className="form-group">
-                  <label>Email Address</label>
-                  <input
-                    type="email"
-                    value={formData.email}
-                    onChange={(e) =>
-                      setFormData({ ...formData, email: e.target.value })
-                    }
-                    required
-                  />
+            
+            <form onSubmit={handleUpdate} className="refined-form">
+              <div className="form-section">
+                <h3 className="section-label">CLIENT & EVENT DETAILS</h3>
+                <div className="form-grid-refined">
+                  <div className="field-wrapper">
+                    <label>Client Name</label>
+                    <input name="name" value={currentLead.name || ''} onChange={handleInputChange} required />
+                  </div>
+                  <div className="field-wrapper">
+                    <label>Contact Number</label>
+                    <input name="contact" value={currentLead.contact || ''} onChange={handleInputChange} required />
+                  </div>
+                  <div className="field-wrapper">
+                    <label>Event Type</label>
+                    <input name="eventType" value={currentLead.eventType || ''} onChange={handleInputChange} />
+                  </div>
+                  <div className="field-wrapper">
+                    <CustomDatePicker
+                      label="Event Date"
+                      value={currentLead.date || ''}
+                      onChange={(val) => handleCustomDropdownChange('date', val)}
+                    />
+                  </div>
                 </div>
               </div>
-              <div className="form-grid">
-                <div className="form-group">
-                  <label>Phone Number</label>
-                  <input
-                    type="text"
-                    value={formData.phone}
-                    onChange={(e) =>
-                      setFormData({ ...formData, phone: e.target.value })
-                    }
-                    required
-                  />
+
+              <div className="form-section">
+                <h3 className="section-label">CUSTOMIZATION & STATUS</h3>
+                <div className="form-grid-refined">
+                  <div className="field-wrapper">
+                    <label>Tradition</label>
+                    <CustomDropdown
+                      options={['South Indian', 'North Indian', 'Christian', 'Muslim', 'Other']}
+                      selected={currentLead.tradition || ''}
+                      onSelect={(val) => handleCustomDropdownChange('tradition', val)}
+                    />
+                  </div>
+
+                  {/* PROTECTED INPUT FIELD */}
+                  {isOwner && (
+                    <div className="field-wrapper">
+                      <label>Budget</label>
+                      <input name="budget" value={currentLead.budget || ''} onChange={handleInputChange} />
+                    </div>
+                  )}
+
+                  <div className="field-wrapper full-width">
+                    <label>Initial Status</label>
+                    <CustomDropdown
+                      options={['On Talk', 'Follow Up', 'Confirm', 'Lost']}
+                      selected={currentLead.status || ''}
+                      onSelect={(val) => handleCustomDropdownChange('status', val)}
+                    />
+                  </div>
                 </div>
-                <CustomSelect
-                  label="Source"
-                  options={["Website", "Instagram", "Referral", "Other"]}
-                  value={formData.source}
-                  onChange={(val) => setFormData({ ...formData, source: val })}
-                />
               </div>
-              <CustomSelect
-                label="Status"
-                options={["New", "Contacted", "Converted", "Lost"]}
-                value={formData.status}
-                onChange={(val) => setFormData({ ...formData, status: val })}
-                isStatus={true}
-              />
-              <div className="modal-actions">
-                <button
-                  type="button"
-                  className="cancel-btn"
-                  onClick={closeModal}
-                >
-                  Cancel
-                </button>
-                <button type="submit" className="save-btn">
-                  Save Lead
-                </button>
+
+              <div className="modal-footer-refined">
+                <button type="button" className="btn-discard" onClick={() => setShowEditModal(false)}>Cancel</button>
+                <button type="submit" className="btn-save">Update Details</button>
               </div>
             </form>
           </div>

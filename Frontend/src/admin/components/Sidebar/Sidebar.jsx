@@ -7,17 +7,22 @@ import {
   HiOutlineCurrencyDollar, HiOutlineLogout 
 } from 'react-icons/hi';
 
-const Sidebar = ({ userRole, onLogout }) => {
+const Sidebar = ({ onLogout }) => {
   const [isHovered, setIsHovered] = useState(false);
+  
+  // Get current user from localStorage
+  const user = JSON.parse(localStorage.getItem("user"));
+  const userRole = user?.role || 'employee';
 
   const menuItems = [
-    { name: "Dashboard", path: "/admin/dashboard", icon: <HiOutlineViewGrid /> },
-    { name: "Leads", path: "/admin/leads", icon: <HiOutlineUserGroup /> },
-    { name: "Bookings", path: "/admin/bookings", icon: <HiOutlineBadgeCheck /> },
-    { name: "Events", path: "/admin/events", icon: <HiOutlineCalendar /> },
-    { name: "Vendors", path: "/admin/vendors", icon: <HiOutlineClipboardList /> },
-    { name: "CRM", path: "/admin/crm", icon: <HiOutlineChartPie /> },
-    { name: "Sales", path: "/admin/sales", icon: <HiOutlineCurrencyDollar /> },
+    { name: "Dashboard", path: "/admin/dashboard", icon: <HiOutlineViewGrid />, role: 'all' },
+    { name: "Leads", path: "/admin/leads", icon: <HiOutlineUserGroup />, role: 'owner' }, // Protected
+    { name: "Bookings", path: "/admin/bookings", icon: <HiOutlineBadgeCheck />, role: 'all' },
+    { name: "Events", path: "/admin/events", icon: <HiOutlineCalendar />, role: 'all' },
+    { name: "Vendors", path: "/admin/vendors", icon: <HiOutlineClipboardList />, role: 'all' },
+    { name: "CRM", path: "/admin/crm", icon: <HiOutlineChartPie />, role: 'all' },
+    { name: "Users", path: "/admin/users", icon: <HiOutlineUserGroup />, role: 'owner' }, // Protected
+    { name: "Sales", path: "/admin/sales", icon: <HiOutlineCurrencyDollar />, role: 'owner' }, // Protected
   ];
 
   return (
@@ -29,30 +34,36 @@ const Sidebar = ({ userRole, onLogout }) => {
       <div className="sidebar-header">
         <div className="logo-section">
           <div className="logo-icon">V</div>
-          {isHovered && <span className="logo-text">Vivahasya</span>}
+          <span className={`logo-text ${isHovered ? 'visible' : 'hidden'}`}>Vivahasya</span>
         </div>
       </div>
 
       <nav className="sidebar-nav">
-        {menuItems.map((item) => (
-          <NavLink 
-            key={item.name}
-            to={item.path} 
-            className={({ isActive }) => `nav-item ${isActive ? "active" : ""}`}
-            style={{ textDecoration: 'none' }} // Extra insurance against underlines
-          >
-            <span className="icon">{item.icon}</span>
-            {isHovered && <span className="label">{item.name}</span>}
-          </NavLink>
-        ))}
+        {menuItems.map((item) => {
+          // If the item is owner-only and user is an employee, skip it
+          if (item.role === 'owner' && userRole !== 'owner') return null;
+
+          return (
+            <NavLink 
+              key={item.name}
+              to={item.path} 
+              className={({ isActive }) => `nav-item ${isActive ? "active" : ""}`}
+            >
+              <span className="icon-wrapper">{item.icon}</span>
+              <span className={`label ${isHovered ? 'visible' : 'hidden'}`}>{item.name}</span>
+            </NavLink>
+          );
+        })}
       </nav>
 
-      <div className="sidebar-footer">
-        <button onClick={onLogout} className="logout-btn">
-          <HiOutlineLogout size={22} />
-          {isHovered && <span className="logout-text">Logout</span>}
-        </button>
-      </div>
+<div className="sidebar-footer">
+  <button onClick={onLogout} className="logout-btn">
+    <span className="icon-wrapper"><HiOutlineLogout size={22} /></span>
+    <span className={`label ${isHovered ? 'visible' : 'hidden'}`}>
+      Logout
+    </span>
+  </button>
+</div>
     </aside>
   );
 };

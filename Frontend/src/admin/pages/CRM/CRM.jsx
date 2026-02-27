@@ -1,248 +1,214 @@
 import React, { useState, useEffect } from "react";
 import { Toaster, toast } from "sonner";
+import { 
+  HiOutlineClock, HiOutlineUsers, HiOutlineCurrencyDollar, 
+  HiOutlineAdjustments, HiOutlineLocationMarker,
+  HiOutlineX
+} from "react-icons/hi";
 import "./CRM.css";
-
-// --- SEARCH COMPONENT ---
-const SearchBar = ({ value, onChange }) => (
-  <div className="crm-search-container">
-    <span className="search-icon">🔍</span>
-    <input
-      type="text"
-      placeholder="Search clients by name, phone, or email..."
-      value={value}
-      onChange={(e) => onChange(e.target.value)}
-      className="crm-search-input"
-    />
-  </div>
-);
+import CustomDropdown from "../../components/CustomDropdown/CustomDropdown"; // <-- Imported CustomDropdown
 
 const CRM = () => {
-  const [clients, setClients] = useState([]);
-  const [searchTerm, setSearchTerm] = useState("");
-  const [showModal, setShowModal] = useState(false);
-  const [isEditing, setIsEditing] = useState(false);
-  const [currentId, setCurrentId] = useState(null);
-  const [loading, setLoading] = useState(true);
+  const [leads, setLeads] = useState([]);
+  
+  // Updated default sort state to match the exact string from the CustomDropdown
+  const [sortBy, setSortBy] = useState("Recent Enquiry"); 
+  const [filterStatus, setFilterStatus] = useState("All");
+  const [selectedLead, setSelectedLead] = useState(null); 
 
-  const [formData, setFormData] = useState({
-    name: "",
-    phone: "",
-    email: "",
-    location: "",
-    events: 0,
-    totalSpent: "0",
-  });
-
-  // 1. GET ALL CLIENTS
-  const fetchClients = async () => {
+  // --- 1. FETCH REAL LEADS FROM MONGODB ---
+  const fetchLeads = async () => {
     try {
-      const res = await fetch("http://localhost:5000/api/crm");
-      if (!res.ok) throw new Error("Failed to fetch");
-      const data = await res.json();
-      setClients(data);
-      setLoading(false);
-    } catch (err) {
-      toast.error("Database connection failed");
-      setLoading(false);
+      const response = await fetch("http://localhost:5000/api/leads");
+      const data = await response.json();
+      setLeads(data);
+    } catch (error) {
+      toast.error("Failed to sync CRM with database");
     }
   };
 
   useEffect(() => {
-    fetchClients();
+    fetchLeads();
   }, []);
 
-  // 2. SEARCH FILTER
-  const filteredClients = clients.filter(
-    (client) =>
-      client.name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      client.phone?.includes(searchTerm) ||
-      client.email?.toLowerCase().includes(searchTerm.toLowerCase())
-  );
-
-  // 3. ADD OR UPDATE HANDLER
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-
-    const method = isEditing ? "PUT" : "POST";
-    const url = isEditing 
-      ? `http://localhost:5000/api/crm/${currentId}` 
-      : "http://localhost:5000/api/crm";
-
+  // --- 2. CONVERT LEAD TO BOOKING ---
+  const handleConfirmLead = async (lead) => {
     try {
-      const res = await fetch(url, {
-        method,
+      const loadingToast = toast.loading("Converting lead to booking...");
+
+      const response = await fetch(`http://localhost:5000/api/crm/confirm/${lead._id}`, {
+        method: "POST", 
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(formData), 
       });
 
-      if (res.ok) {
-        toast.success(isEditing ? "Profile Updated Successfully!" : "New Client Added!");
-        fetchClients(); 
-        closeModal();
+      if (response.ok) {
+        toast.dismiss(loadingToast);
+        toast.success(`${lead.name} has been moved to Bookings!`, {
+          description: "Client profile and Booking event created successfully.",
+        });
+        
+        fetchLeads(); // Instantly refresh the board
+        setSelectedLead(null); // Close the modal
       } else {
-        const errorData = await res.json();
-        toast.error(errorData.message || "Something went wrong");
+        const errData = await response.json();
+        toast.dismiss(loadingToast);
+        toast.error(`Conversion failed: ${errData.message}`);
       }
     } catch (err) {
-      toast.error("Network error: Server is offline");
+      toast.error("Network error: Could not reach the server.");
     }
   };
 
-  // 4. DELETE HANDLER (RIGHT-SIDE TOAST)
-  const handleDelete = (id) => {
-    toast.custom((t) => (
-      <div className="crm-toast-box">
-        <div className="toast-content">
-          <strong>Delete Client?</strong>
-          <p>This will permanently remove their data from Vivahasya.</p>
-        </div>
-        <div className="toast-actions">
-          <button className="t-btn cancel" onClick={() => toast.dismiss(t)}>Cancel</button>
-          <button 
-            className="t-btn delete" 
-            onClick={async () => {
-              try {
-                const res = await fetch(`http://localhost:5000/api/crm/${id}`, { method: "DELETE" });
-                if (res.ok) {
-                  setClients(prev => prev.filter(c => c._id !== id));
-                  toast.dismiss(t);
-                  toast.success("Client records deleted");
-                }
-              } catch (err) {
-                toast.error("Could not delete from database");
-              }
-            }}
-          >
-            Confirm
-          </button>
-        </div>
-      </div>
-    ), { position: 'top-right', duration: Infinity });
-  };
-
-  // 5. EDIT INITIALIZER
-  const handleEdit = (client) => {
-    setFormData({
-      name: client.name,
-      phone: client.phone,
-      email: client.email || "",
-      location: client.location || "",
-      events: client.events || 0,
-      totalSpent: client.totalSpent || "0",
+  // --- 3. BULLETPROOF SORTING & FILTERING ---
+  const processedLeads = leads
+    .filter(lead => filterStatus === "All" || lead.status === filterStatus)
+    .sort((a, b) => {
+      // Logic updated to match the new CustomDropdown options
+      if (sortBy === "Recent Enquiry") return new Date(b.enquireDate || Date.now()) - new Date(a.enquireDate || Date.now());
+      if (sortBy === "Event Date") return new Date(a.date || Date.now()) - new Date(b.date || Date.now());
+      return 0;
     });
-    setCurrentId(client._id);
-    setIsEditing(true);
-    setShowModal(true);
-  };
-
-  const closeModal = () => {
-    setShowModal(false);
-    setIsEditing(false);
-    setCurrentId(null);
-    setFormData({
-      name: "",
-      phone: "",
-      email: "",
-      location: "",
-      events: 0,
-      totalSpent: "0",
-    });
-  };
-
-  if (loading) return <div className="loading">Syncing Vivahasya CRM...</div>;
 
   return (
-    <div className="crm-container">
+    <div className="crm-page">
       <Toaster position="top-right" richColors />
       
-      <div className="crm-header">
-        <div className="header-title">
-          <h1>Customer Relations</h1>
-          <span className="client-count">{clients.length} Total Clients</span>
-        </div>
-        <button className="add-client-btn" onClick={() => { setIsEditing(false); setShowModal(true); }}>
-          + Add Client
-        </button>
-      </div>
-
+      {/* TOOLBAR */}
       <div className="crm-toolbar">
-        <SearchBar value={searchTerm} onChange={setSearchTerm} />
+        <div className="toolbar-left">
+          <HiOutlineAdjustments className="filter-icon" />
+          <span className="toolbar-label">CRM Lead Engine</span>
+        </div>
+
+        {/* --- REPLACED SELECTS WITH CUSTOM DROPDOWNS --- */}
+        <div className="toolbar-right" style={{ display: 'flex', gap: '15px', alignItems: 'flex-end' }}>
+          
+          <div style={{ width: '180px' }}>
+            <label style={{ fontSize: '12px', fontWeight: 'bold', color: '#64748b', marginBottom: '6px', display: 'block', textTransform: 'uppercase' }}>Status Filter</label>
+            <CustomDropdown 
+              options={['All', 'Confirm', 'On Talk', 'Follow Up']}
+              selected={filterStatus}
+              onSelect={setFilterStatus}
+            />
+          </div>
+
+          <div style={{ width: '180px' }}>
+            <label style={{ fontSize: '12px', fontWeight: 'bold', color: '#64748b', marginBottom: '6px', display: 'block', textTransform: 'uppercase' }}>Sort By</label>
+            <CustomDropdown 
+              options={['Recent Enquiry', 'Event Date']}
+              selected={sortBy}
+              onSelect={setSortBy}
+            />
+          </div>
+
+        </div>
       </div>
 
-      <div className="crm-table-wrapper">
-        <table className="crm-table">
-          <thead>
-            <tr>
-              <th>Client Name</th>
-              <th>Contact Info</th>
-              <th>Location</th>
-              <th>History</th>
-              <th>Lifetime Value</th>
-              <th>Actions</th>
-            </tr>
-          </thead>
-          <tbody>
-            {filteredClients.map((client) => (
-              <tr key={client._id}>
-                <td>
-                  <div className="client-name-cell">
-                    <div className="client-avatar">{client.name ? client.name.charAt(0) : "?"}</div>
-                    <span className="name-text">{client.name}</span>
-                  </div>
-                </td>
-                <td>
-                  <div className="contact-cell">
-                    <span>{client.phone}</span>
-                    <span className="sub-text">{client.email}</span>
-                  </div>
-                </td>
-                <td>{client.location}</td>
-                <td><span className="badge-events">{client.events || 0} Events</span></td>
-                <td className="value-text">₹{client.totalSpent || 0}</td>
-                <td>
-                  <button className="crm-action-btn edit" onClick={() => handleEdit(client)}>Edit</button>
-                  <button className="crm-action-btn delete" onClick={() => handleDelete(client._id)}>Delete</button>
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-        {filteredClients.length === 0 && <div className="crm-empty">No clients found matching "{searchTerm}"</div>}
-      </div>
+      {/* LEADS GRID */}
+      <div className="leads-grid">
+        {processedLeads.length === 0 ? (
+          <div style={{ padding: "40px", color: "#64748b", gridColumn: "1 / -1", textAlign: "center" }}>
+            No leads found for this status.
+          </div>
+        ) : (
+          processedLeads.map((lead) => (
+            <div key={lead._id} className="lead-card">
+              <div className={`lead-status-dot ${(lead.status || 'on-talk').replace(/\s+/g, '-').toLowerCase()}`}></div>
+              <div className="lead-badge">{lead.status || 'On Talk'}</div>
+              
+              <div className="lead-header">
+                <h3>{lead.name}</h3>
+                <span className="tradition-tag">{lead.tradition || 'Standard'}</span>
+              </div>
 
-      {showModal && (
-        <div className="modal-overlay" onClick={(e) => e.target.className === "modal-overlay" && closeModal()}>
-          <div className="modal-content">
-            <div className="modal-header">
-              <h2>{isEditing ? "Edit Profile" : "Add New Client"}</h2>
-              <button className="close-btn" onClick={closeModal}>&times;</button>
+              <div className="lead-body">
+                <div className="info-row"><HiOutlineClock /> <span>{lead.date || 'TBD'}</span></div>
+                <div className="info-row"><HiOutlineUsers /> <span>{lead.guestCount || 0} Guests</span></div>
+                <div className="info-row"><HiOutlineCurrencyDollar /> <span>₹{lead.budget || '0'}</span></div>
+              </div>
+
+              <div className="lead-footer">
+                <button className="btn-view" onClick={() => setSelectedLead(lead)}>View Details</button>
+                {lead.status !== 'Confirm' && (
+                  <button className="btn-convert" onClick={() => handleConfirmLead(lead)}>Confirm Lead</button>
+                )}
+              </div>
             </div>
-            <form onSubmit={handleSubmit}>
-              <div className="form-row">
-                <div className="input-group">
-                  <label>Full Name</label>
-                  <input type="text" value={formData.name} onChange={(e) => setFormData({ ...formData, name: e.target.value })} required />
-                </div>
-                <div className="input-group">
-                  <label>Phone Number</label>
-                  <input type="tel" value={formData.phone} onChange={(e) => setFormData({ ...formData, phone: e.target.value })} required />
+          ))
+        )}
+      </div>
+
+      {/* --- VIEW DETAILS MODAL --- */}
+      {selectedLead && (
+        <div className="modal-overlay" onClick={() => setSelectedLead(null)}>
+          <div className="details-modal" onClick={(e) => e.stopPropagation()}>
+            <div className="modal-header">
+              <div className="header-text">
+                <h2>{selectedLead.name}</h2>
+                <span className="sub-text">
+                  Enquired on {selectedLead.enquireDate ? new Date(selectedLead.enquireDate).toLocaleDateString() : 'Unknown Date'}
+                </span>
+              </div>
+              <button className="close-modal" onClick={() => setSelectedLead(null)}>
+                <HiOutlineX />
+              </button>
+            </div>
+
+            <div className="modal-content-grid">
+              <div className="detail-item">
+                <label>Contact Number</label>
+                <p>{selectedLead.contact}</p>
+              </div>
+              <div className="detail-item">
+                <label>Event Type</label>
+                <p>{selectedLead.eventType || 'N/A'}</p>
+              </div>
+              <div className="detail-item">
+                <label>Event Date</label>
+                <p>{selectedLead.date || 'TBD'}</p>
+              </div>
+              <div className="detail-item">
+                <label>Duration</label>
+                <p>{selectedLead.duration || 'N/A'}</p>
+              </div>
+              <div className="detail-item">
+                <label>Preferred Location</label>
+                <p><HiOutlineLocationMarker /> {selectedLead.location || 'N/A'}</p>
+              </div>
+              <div className="detail-item">
+                <label>Tradition</label>
+                <p className="tradition-highlight">{selectedLead.tradition || 'N/A'}</p>
+              </div>
+              <div className="detail-item full-width">
+                <label>Requested Services</label>
+                <div className="services-tags">
+                  {(selectedLead.services || []).length > 0 ? (
+                    selectedLead.services.map((s, i) => (
+                      <span key={i} className="service-tag">{s}</span>
+                    ))
+                  ) : (
+                    <span className="service-tag">None Specified</span>
+                  )}
                 </div>
               </div>
-              <div className="form-row">
-                <div className="input-group">
-                  <label>Email Address</label>
-                  <input type="email" value={formData.email} onChange={(e) => setFormData({ ...formData, email: e.target.value })} />
-                </div>
-                <div className="input-group">
-                  <label>Location</label>
-                  <input type="text" value={formData.location} onChange={(e) => setFormData({ ...formData, location: e.target.value })} />
-                </div>
+              <div className="detail-item">
+                <label>Guest Count</label>
+                <p>{selectedLead.guestCount || 0} People</p>
               </div>
-              <div className="modal-footer">
-                <button type="button" className="btn-cancel" onClick={closeModal}>Cancel</button>
-                <button type="submit" className="btn-save">Save Profile</button>
+              <div className="detail-item">
+                <label>Estimated Budget</label>
+                <p className="budget-text">₹{selectedLead.budget || '0'}</p>
               </div>
-            </form>
+            </div>
+
+            <div className="modal-actions">
+              <button className="btn-outline" onClick={() => setSelectedLead(null)}>Close</button>
+              {selectedLead.status !== 'Confirm' && (
+                <button className="btn-primary" onClick={() => handleConfirmLead(selectedLead)}>
+                  Confirm & Move to Bookings
+                </button>
+              )}
+            </div>
           </div>
         </div>
       )}

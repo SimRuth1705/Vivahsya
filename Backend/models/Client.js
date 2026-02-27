@@ -9,4 +9,5 @@ const ClientSchema = new mongoose.Schema({
   totalSpent: { type: String, default: '0' }
 }, { timestamps: true });
 
-module.exports = mongoose.model('Client', ClientSchema);
+// Uses the safety check so it never throws an OverwriteModelError
+module.exports = mongoose.models.Client || mongoose.model('Client', ClientSchema);

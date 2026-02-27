@@ -2,25 +2,23 @@ const mongoose = require('mongoose');
 
 const BookingSchema = new mongoose.Schema({
   title: { type: String, required: true },
-  type: { 
-    type: String, 
-    required: true, 
-    enum: ['Wedding', 'Birthday', 'Corporate', 'Anniversary'] 
-  },
-  date: { type: String, required: true }, // Keeping String to match your calendar format
+  
+  // 👇 Removed the strict 'enum' array here so it accepts any event type from the CRM
+  type: { type: String, required: true }, 
+  
+  date: { type: String, required: true },
   startTime: { type: String }, 
   endTime: { type: String },
   amount: { type: String, required: true },
   
-  // --- THE RELATIONSHIP BRIDGE ---
   clientId: { 
     type: mongoose.Schema.Types.ObjectId, 
-    ref: 'Client', // Links to CRM collection
+    ref: 'Client', 
     required: true 
   },
   vendorId: { 
     type: mongoose.Schema.Types.ObjectId, 
-    ref: 'Vendor' // Links to Vendors collection
+    ref: 'Vendor' 
   },
   leadId: { 
     type: mongoose.Schema.Types.ObjectId, 
@@ -31,11 +29,7 @@ const BookingSchema = new mongoose.Schema({
     ref: 'User' 
   },
   
-  // --- STATUS & METADATA ---
-  source: { 
-    type: String, 
-    default: 'Website' 
-  },
+  source: { type: String, default: 'Website' },
   status: { 
     type: String, 
     required: true, 
@@ -44,4 +38,5 @@ const BookingSchema = new mongoose.Schema({
   }
 }, { timestamps: true });
 
-module.exports = mongoose.model('Booking', BookingSchema);
+// 👇 Added the safety check here
+module.exports = mongoose.models.Booking || mongoose.model('Booking', BookingSchema);

@@ -1,4 +1,3 @@
-// backend/models/User.js
 const mongoose = require('mongoose');
 
 const UserSchema = new mongoose.Schema({
@@ -7,10 +6,17 @@ const UserSchema = new mongoose.Schema({
   password: { type: String, required: true },
   role: { 
     type: String, 
-    enum: ['owner', 'employee'], 
+    enum: ['owner', 'employee', 'client'], 
     default: 'employee' 
+  },
+  status: { 
+    type: String, 
+    enum: ['Active', 'Inactive'], 
+    default: 'Active' 
   }
 }, { timestamps: true });
 
-// 👇 THIS LINE IS CRITICAL
-module.exports = mongoose.model('User', UserSchema);
+// Check if the model exists before defining it
+const User = mongoose.models.User || mongoose.model('User', UserSchema);
+
+module.exports = User;
