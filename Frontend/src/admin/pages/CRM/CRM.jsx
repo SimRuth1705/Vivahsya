@@ -2,17 +2,14 @@ import React, { useState, useEffect } from "react";
 import { Toaster, toast } from "sonner";
 import { 
   HiOutlineClock, HiOutlineUsers, HiOutlineCurrencyDollar, 
-  HiOutlineAdjustments, HiOutlineLocationMarker,
+  HiOutlineAdjustments, HiOutlineChevronDown, HiOutlineLocationMarker,
   HiOutlineX
 } from "react-icons/hi";
 import "./CRM.css";
-import CustomDropdown from "../../components/CustomDropdown/CustomDropdown"; // <-- Imported CustomDropdown
 
 const CRM = () => {
   const [leads, setLeads] = useState([]);
-  
-  // Updated default sort state to match the exact string from the CustomDropdown
-  const [sortBy, setSortBy] = useState("Recent Enquiry"); 
+  const [sortBy, setSortBy] = useState("newest");
   const [filterStatus, setFilterStatus] = useState("All");
   const [selectedLead, setSelectedLead] = useState(null); 
 
@@ -63,9 +60,8 @@ const CRM = () => {
   const processedLeads = leads
     .filter(lead => filterStatus === "All" || lead.status === filterStatus)
     .sort((a, b) => {
-      // Logic updated to match the new CustomDropdown options
-      if (sortBy === "Recent Enquiry") return new Date(b.enquireDate || Date.now()) - new Date(a.enquireDate || Date.now());
-      if (sortBy === "Event Date") return new Date(a.date || Date.now()) - new Date(b.date || Date.now());
+      if (sortBy === "newest") return new Date(b.enquireDate || Date.now()) - new Date(a.enquireDate || Date.now());
+      if (sortBy === "eventDate") return new Date(a.date || Date.now()) - new Date(b.date || Date.now());
       return 0;
     });
 
@@ -80,27 +76,29 @@ const CRM = () => {
           <span className="toolbar-label">CRM Lead Engine</span>
         </div>
 
-        {/* --- REPLACED SELECTS WITH CUSTOM DROPDOWNS --- */}
-        <div className="toolbar-right" style={{ display: 'flex', gap: '15px', alignItems: 'flex-end' }}>
-          
-          <div style={{ width: '180px' }}>
-            <label style={{ fontSize: '12px', fontWeight: 'bold', color: '#64748b', marginBottom: '6px', display: 'block', textTransform: 'uppercase' }}>Status Filter</label>
-            <CustomDropdown 
-              options={['All', 'Confirm', 'On Talk', 'Follow Up']}
-              selected={filterStatus}
-              onSelect={setFilterStatus}
-            />
+        <div className="toolbar-right">
+          <div className="custom-select-wrapper">
+            <label>Status Filter</label>
+            <div className="select-container">
+              <select value={filterStatus} onChange={(e) => setFilterStatus(e.target.value)}>
+                <option value="All">All Status</option>
+                <option value="Confirm">Confirm</option>
+                <option value="On Talk">On Talk</option>
+                <option value="Follow Up">Follow Up</option>
+              </select>
+              <HiOutlineChevronDown className="chevron" />
+            </div>
           </div>
-
-          <div style={{ width: '180px' }}>
-            <label style={{ fontSize: '12px', fontWeight: 'bold', color: '#64748b', marginBottom: '6px', display: 'block', textTransform: 'uppercase' }}>Sort By</label>
-            <CustomDropdown 
-              options={['Recent Enquiry', 'Event Date']}
-              selected={sortBy}
-              onSelect={setSortBy}
-            />
+          <div className="custom-select-wrapper">
+            <label>Sort By</label>
+            <div className="select-container">
+              <select value={sortBy} onChange={(e) => setSortBy(e.target.value)}>
+                <option value="newest">Recent Enquiry</option>
+                <option value="eventDate">Event Date</option>
+              </select>
+              <HiOutlineChevronDown className="chevron" />
+            </div>
           </div>
-
         </div>
       </div>
 
@@ -129,6 +127,7 @@ const CRM = () => {
 
               <div className="lead-footer">
                 <button className="btn-view" onClick={() => setSelectedLead(lead)}>View Details</button>
+                {/* Hide confirm button if already confirmed */}
                 {lead.status !== 'Confirm' && (
                   <button className="btn-convert" onClick={() => handleConfirmLead(lead)}>Confirm Lead</button>
                 )}
@@ -182,6 +181,7 @@ const CRM = () => {
               <div className="detail-item full-width">
                 <label>Requested Services</label>
                 <div className="services-tags">
+                  {/* Safely map over services, defaulting to empty array if missing */}
                   {(selectedLead.services || []).length > 0 ? (
                     selectedLead.services.map((s, i) => (
                       <span key={i} className="service-tag">{s}</span>

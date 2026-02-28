@@ -7,8 +7,6 @@ const jwt = require('jsonwebtoken');
 // Import the middleware we created
 const { protectOwner } = require('../middleware/roleMiddleware');
 
-router.get('/users', protectOwner, async (req, res) => { ... });
-
 // --- 1. LOGIN ROUTE (Public) ---
 router.post('/login', async (req, res) => {
   try {
@@ -56,10 +54,12 @@ router.post('/register', protectOwner, async (req, res) => {
     });
 
     const savedUser = await newUser.save();
-    // Don't send the password back in the response
-    const { password: _, ...userResponse } = savedUser._doc;
+    
+    // Convert to object and remove password before sending
+    const userResponse = savedUser.toObject();
+    delete userResponse.password;
+    
     res.status(201).json(userResponse);
-
   } catch (err) {
     res.status(500).json({ error: err.message });
   }

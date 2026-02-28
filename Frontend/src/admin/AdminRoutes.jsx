@@ -11,7 +11,6 @@ import CRM from './pages/CRM/CRM';
 import Bookings from './pages/Bookings/Bookings';
 import Events from './pages/Events/Events';
 import Vendors from './pages/Vendors/Vendors';
-import Sales from './pages/Sales/Sales';
 import Users from './pages/Users/Users';
 
 // AdminRoutes.jsx
@@ -39,16 +38,6 @@ const AdminRoutes = ({ setIsAuthenticated, onLogout }) => {
         <Route path="events" element={<Events />} />
         <Route path="vendors" element={<Vendors />} />
         <Route path="leads" element={<Leads />} />
-
-        {/* 🔒 OWNER ONLY: These have a "Double Lock" (Token + Role) */}
-        <Route 
-          path="sales" 
-          element={
-            <ProtectedRoute requiredRole="owner">
-              <Sales />
-            </ProtectedRoute>
-          } 
-        />
         <Route 
           path="users" 
           element={
