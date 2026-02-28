@@ -1,0 +1,79 @@
+.testimonials {
+  padding: 4rem 0;
+  background-color: #fffaf6;
+  overflow: hidden;
+}
+
+.testimonials-heading {
+  text-align: center;
+  font-size: 2rem;
+  margin-bottom: 2.5rem;
+  color: #2c3e50;
+  letter-spacing: 0.08em;
+}
+
+.reviews-wrapper {
+  width: 100%;
+  overflow: hidden;
+}
+
+.reviews-track {
+  display: flex;
+  gap: 1.5rem;
+  width: max-content;
+  animation: scrollReviews 30s linear infinite;
+}
+
+/* Pause animation when hovering any card */
+.reviews-track:hover {
+  animation-play-state: paused;
+}
+
+@keyframes scrollReviews {
+  from {
+    transform: translateX(0);
+  }
+  to {
+    transform: translateX(-50%);
+  }
+}
+
+.review-card {
+  min-width: 18rem;
+  background-color: #ffffff;
+  padding: 1.5rem;
+  border-radius: 0.75rem;
+  box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.08);
+  transition:
+    transform 0.3s ease,
+    box-shadow 0.3s ease,
+    opacity 0.3s ease;
+}
+
+/* Elegant hover effect */
+.review-card:hover {
+  transform: translateY(-0.4rem);
+  box-shadow: 0 1rem 2rem rgba(0, 0, 0, 0.12);
+}
+
+/* Optional focus effect (keep if you like) */
+.reviews-track:hover .review-card {
+  opacity: 0.6;
+}
+
+.reviews-track:hover .review-card:hover {
+  opacity: 1;
+}
+
+.review-text {
+  font-style: italic;
+  font-size: 0.95rem;
+  color: #555;
+  margin-bottom: 0.75rem;
+}
+
+.review-name {
+  font-size: 0.85rem;
+  color: #c38b68;
+  letter-spacing: 0.05em;
+}

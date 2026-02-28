@@ -1,0 +1,127 @@
+@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600&family=Poppins:wght@300;400&display=swap');
+
+
+
+.stories-section {
+  overflow: hidden; /* required */
+}
+
+.stories-right {
+  overflow: hidden; /* important for clean parallax */
+}
+
+.story-big-img,
+.story-img {
+  will-change: transform;
+}
+.stories-section {
+  padding: 6rem 6rem;
+  background-color: #fdfaf7;
+  font-family: 'Poppins', sans-serif;
+  position: relative;
+  z-index: 1;
+}
+
+.stories-container {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 4rem;
+  align-items: center;
+  max-width: 1400px;
+  margin: 0 auto;
+}
+
+/* LEFT */
+.stories-label {
+  font-family: "Playfair Display", serif;
+  font-size: 1.1rem;
+  color: #666;
+  margin-bottom: 0.5rem;
+  display: block;
+}
+
+.stories-heading {
+  font-family: "Playfair Display", serif;
+  font-size: 3rem;
+  font-weight: 400;
+  line-height: 1.15;
+  color: #1e1e1e;
+  margin-bottom: 1.5rem;
+}
+
+.stories-desc {
+  font-size: 1rem;
+  color: #666;
+  line-height: 1.7;
+  max-width: 32rem;
+  margin-bottom: 3rem;
+}
+
+/* SMALL GRID */
+.stories-small-grid {
+  display: flex;
+  gap: 1.5rem;
+}
+
+.story-card {
+  flex: 1;
+}
+
+.story-img {
+  width: 100%;
+  height: 18rem;
+  border-radius: 1rem;
+  background-size: cover;
+  background-position: center;
+  margin-bottom: 1rem;
+}
+
+.img-1 {
+  background-image: url("../../assets/support-imgR.jpeg");
+}
+
+.img-2 {
+  background-image: url("../../assets/support-imgE.jpeg");
+}
+
+.card-title {
+  font-family: "Playfair Display", serif;
+  font-size: 1.1rem;
+  margin: 0 0 0.25rem 0;
+}
+
+.card-location {
+  font-size: 0.9rem;
+  color: #777;
+}
+
+/* RIGHT SIDE */
+.stories-right {
+  display: flex;
+  justify-content: flex-end;
+}
+
+.story-big-img {
+  width: 100%;
+  max-width: 36rem;
+  height: 38rem;
+  border-radius: 1rem;
+  background-size: cover;
+  background-position: center;
+  background-image: url("../../assets/support-imgM.jpeg");
+}
+
+/* RESPONSIVE */
+@media (max-width: 1024px) {
+  .stories-container {
+    grid-template-columns: 1fr;
+  }
+
+  .stories-right {
+    justify-content: center;
+  }
+
+  .story-big-img {
+    height: 26rem;
+  }
+}

@@ -1,98 +1,108 @@
-import React, { useEffect, useRef } from "react";
+import { useEffect, useRef } from "react";
+import gsap from "gsap";
+import { ScrollTrigger } from "gsap/ScrollTrigger";
 import "./Services.css";
 
-const Services = () => {
+gsap.registerPlugin(ScrollTrigger);
+
+function Services() {
   const containerRef = useRef(null);
-  const trackRef = useRef(null);
+  const titleRef = useRef(null);
 
-  const servicesData = [
-    { id: 1, title: "Decor", description: "Our team will design the decors with your expectation" },
-    { id: 2, title: "Events", description: "The whole events will be managed from end to end by our team" },
-    { id: 3, title: "Budgeting", description: "Just say the budget we will create a sample for your event as per your choice" },
-    { id: 4, title: "End-to-End", description: "Our team will complete the event from start to finish" },
-    { id: 5, title: "Planning", description: "Strategic and thoughtful planning" },
-    { id: 6, title: "Execution", description: "Every detail handled with care" },
-    { id: 7, title: "Coordination", description: "Perfect vendor coordination" },
-    { id: 8, title: "Customization", description: "Tailored experiences for you" },
-    { id: 9, title: "Logistics", description: "Smooth operational management" },
-    { id: 10, title: "Support", description: "On-ground support till the last minute" },
-  ];
-
-  /* Scroll Horizontal Movement */
   useEffect(() => {
-    const handleScroll = () => {
-      if (window.innerWidth < 1023) return;
+    // --- 1. Title Splitting Fix ---
+    const titleText = titleRef.current;
+    if (titleText && !titleText.dataset.split) {
+      const content = titleText.innerText;
+      const words = content.split(/\s+/); // Split by any whitespace
+      titleText.innerHTML = "";
+      
+      words.forEach((word) => {
+        const wrapper = document.createElement("span");
+        wrapper.className = "title-word-wrapper";
+        const inner = document.createElement("span");
+        inner.className = "title-word";
+        // &nbsp; ensures the space between words is preserved in the DOM
+        inner.innerHTML = word + "&nbsp;"; 
+        wrapper.appendChild(inner);
+        titleText.appendChild(wrapper);
+      });
+      // Mark as split so it doesn't split again on re-renders
+      titleText.dataset.split = "true";
+    }
 
-      const container = containerRef.current;
-      const track = trackRef.current;
-      if (!container || !track) return;
+    // --- 2. Timeline with Fixed Repeat Logic ---
+    const tl = gsap.timeline({
+      scrollTrigger: {
+        trigger: containerRef.current,
+        start: "top 80%",
+        end: "bottom 20%",
+        // Using 'onEnterBack' and 'onEnter' for fresh starts
+        toggleActions: "play reverse play reverse",
+      },
+    });
 
-      const rect = container.getBoundingClientRect();
-      const totalScroll = container.offsetHeight - window.innerHeight;
+    // Ensure the words start from below every single time
+    tl.fromTo(
+      ".title-word",
+      { y: "110%" }, // Move slightly more for safety
+      { 
+        y: "0%", 
+        duration: 0.8, 
+        stagger: 0.1, 
+        ease: "power4.out",
+        immediateRender: false // Important for re-entry consistency
+      }
+    ).fromTo(
+      ".editorial-card",
+      { y: 60, opacity: 0 },
+      { 
+        y: 0, 
+        opacity: 1, 
+        duration: 0.8, 
+        stagger: 0.15, 
+        ease: "power3.out" 
+      },
+      "-=0.5"
+    );
 
-      if (rect.top <= 0 && rect.bottom >= window.innerHeight) {
-        const progress = Math.abs(rect.top) / totalScroll;
-        const maxTranslate = track.scrollWidth - window.innerWidth;
-        track.style.transform = `translateX(-${progress * maxTranslate}px)`;
+    return () => {
+      if (ScrollTrigger.getById("services-trigger")) {
+        ScrollTrigger.getById("services-trigger").kill();
       }
     };
-
-    window.addEventListener("scroll", handleScroll);
-    return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
-  /* Dynamic Height Calculation */
-  useEffect(() => {
-    if (window.innerWidth < 1023) return;
-
-    const container = containerRef.current;
-    const track = trackRef.current;
-    if (!container || !track) return;
-
-    const setHeight = () => {
-      const scrollWidth = track.scrollWidth;
-      container.style.height = `${scrollWidth}px`;
-    };
-
-    setHeight();
-    window.addEventListener("resize", setHeight);
-    return () => window.removeEventListener("resize", setHeight);
-  }, []);
+  const services = [
+    { title: "End to End Planning", desc: "Orchestrating every heartbeat of your day.", color: "#1a1a1a" },
+    { title: "Wedding Decor", desc: "Sculpting environments that tell your story.", color: "#ff4d4d" },
+    { title: "Destination Weddings", desc: "Seamless luxury across global borders.", color: "#ff8504" },
+    { title: "Photography & Cinematography", desc: "Timeless frames for ephemeral moments.", color: "#2d3436" }
+  ];
 
   return (
-    <section className="services-container">
-      <div className="horizontal-section" ref={containerRef}>
-        <div className="horizontal-sticky">
-          <h1 className="main-title">Our Services</h1>
+    <section className="services-section" ref={containerRef}>
+      <h1 className="section-title" ref={titleRef}>
+        WHY WE MATTER TO YOU.
+      </h1>
 
-          <div className="services-grid" ref={trackRef}>
-            {servicesData.map((service) => (
-              <div key={service.id} className="service-card">
-                <div className="service-image-wrapper">
-                  <div className="service-image" />
-                </div>
-
-                <div className="service-text">
-                  <h3 className="card-title">
-                    <span className="quote-mark">“</span>
-                    {service.title}
-                  </h3>
-                  <p className="card-desc">{service.description}</p>
-                </div>
+      <div className="editorial-grid">
+        {services.map((service, index) => (
+          <div key={index} className="editorial-card">
+            <div className="card-bg" style={{ backgroundColor: service.color }}></div>
+            <div className="card-content">
+              <span className="card-num">0{index + 1}</span>
+              <div className="text-wrapper">
+                <h3>{service.title}</h3>
+                <p className="card-desc">{service.desc}</p>
               </div>
-            ))}
-          </div>
-
-          <div className="service-btn">
-            <div className="btn-wrapper">
-              <div className="css-swirl-arrow"></div>
-              <button className="btn">Services</button>
+              <div className="card-line"></div>
             </div>
           </div>
-        </div>
+        ))}
       </div>
     </section>
   );
-};
+}
 
 export default Services;

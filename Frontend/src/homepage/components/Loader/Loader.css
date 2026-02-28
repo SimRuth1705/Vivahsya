@@ -1,0 +1,65 @@
+.gate-loader {
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+  overflow: hidden;
+  background-color: #fffaf6;
+}
+
+.gate {
+  position: absolute;
+  top: 0;
+  width: 50%;
+  height: 100%;
+  background-color: #f6e6d8;
+  z-index: 2;
+}
+
+.left-gate {
+  left: 0;
+  animation: openLeft 1.2s ease-in-out forwards;
+  animation-delay: 1.5s;
+}
+
+.right-gate {
+  right: 0;
+  animation: openRight 1.2s ease-in-out forwards;
+  animation-delay: 1.5s;
+}
+
+
+.gate-center {
+  position: absolute;
+  inset: 0;
+  z-index: 3;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+}
+
+.gate-center img {
+  width: 120px;
+  margin-bottom: 1rem;
+}
+
+.gate-center p {
+  font-family: "Barlow", sans-serif;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  font-size: 0.75rem;
+  color: #c38b68;
+}
+
+@keyframes openLeft {
+  to {
+    transform: translateX(-100%);
+  }
+}
+
+@keyframes openRight {
+  to {
+    transform: translateX(100%);
+  }
+}

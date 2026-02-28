@@ -1,11 +1,27 @@
-import Services from "../components/Services/Services"
+import Hero from "../components/Hero/Hero";
+import OurAesthetic from "../components/OurAesthetic/OurAesthetic.jsx";
+import CelebrationScroll from "../components/CelebrationScroll/CelebrationScroll";
+import Services from "../components/Services/Services";
+import Testimonials from "../components/Testimonials/Testimonials";
+import Inquiry from "../components/Inquiry/Inquiry";
+import ContactFooter from "../components/ContactFooter/ContactFooter";
+import Faq from "../components/Faq/faq.jsx";
 
-function home() {
+// Home.jsx
+function Home({ introReady }) {
   return (
     <>
-    <Services />
+      <Hero />
+      {/* Pass the loading state down */}
+      <OurAesthetic introReady={introReady} />
+      <CelebrationScroll />
+      <Services />
+      <Testimonials />
+      <Inquiry />
+      <Faq introReady={introReady} /> 
+      <ContactFooter />
     </>
-  )
+  );
 }
 
-export default home
+export default Home;

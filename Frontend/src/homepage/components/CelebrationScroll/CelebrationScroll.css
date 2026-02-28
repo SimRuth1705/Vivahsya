@@ -1,0 +1,163 @@
+@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600&family=Poppins:wght@300;400&display=swap');
+
+.celebration-section {
+  background: linear-gradient(to bottom, #fdfaf7 0%, #fdd8c0 60%);
+  padding: 6rem 0;
+}
+
+.horizontal-sticky {
+  position: sticky;
+  top: 0;
+  height: 100vh;
+  display: flex;
+  align-items: center;
+  overflow: hidden;
+}
+
+.celebration-track {
+  display: flex;
+  gap: 6rem;
+  padding: 0 0 0 5rem;
+  align-items: flex-start; /* important */
+  will-change: transform;
+}
+.horizontal-buffer {
+  width: 50vw;
+  flex-shrink: 0;
+}
+
+/* BASE */
+.floating-box {
+  border-radius: 1.4rem;
+  background: #ddd;
+  flex-shrink: 0;
+  transition: transform 0.4s ease;
+  box-shadow: 0 1.5rem 3rem rgba(0, 0, 0, 0.05);
+}
+
+/* The couples photos are split in groups */
+/* the whole groups are under this one div */
+.image-container{
+  display: flex;
+  gap: 10rem;
+}
+.img{
+  background-position: center;
+  background-size: cover;
+  border-radius: 1rem;
+}
+/* Groups 1 below (group-left and group-right) */
+.heading{
+  font-family: "playfair display", "sans";
+  line-height: 2rem;
+  font-weight: 100;
+  color: #4a4a4a;
+}
+.title-1 {
+  font-family: "Playfair Display", serif;
+  font-size: 3rem;
+  text-align: center;
+  font-weight: 100;
+  color: #4a4a4a;
+}
+.group1{
+  display: flex;
+  gap: 1rem;
+  margin-top: 4rem;
+}
+.group-left{
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+.portrait-1{
+  height: 25rem;
+  width: 17rem;
+  background-image: url("../../assets/c2.jpeg");
+}
+.portrait-2{
+  height: 18rem;
+  width: 12rem;
+  margin-left: 3rem;
+  margin-top: 5rem;
+  background-image: url("../../assets/c1.jpeg");
+}
+.group-right{
+  display: flex;
+  gap: 1rem;
+  flex-direction: column;
+}
+.landscape-1{
+  height: 10rem;
+  width: 10rem;
+  margin-top: 15rem;
+  margin-left: -5rem;
+  background-image: url("../../assets/c5.jpeg");
+}
+.landscape-2{
+  height: 10rem;
+  width: 18rem;
+  margin-left: 10rem;
+  background-image: url("../../assets/c4.jpeg");
+}
+.t1{
+  /* margin-top: -1rem; */
+}
+/* group-2 */
+.group2{
+  display: flex;
+  gap: 1rem;
+  margin-bottom: 4rem;
+}
+.group-intro2{
+  margin-top: 20rem;
+}
+.text-g2{
+  margin-left: 5rem;
+}
+.square-1{
+  height: 20rem;
+  width: 20rem;
+  margin-top: 20rem;
+  background-image: url("../../assets/d1.jpeg");
+}
+.square-2{
+  height: 15rem;
+  width: 15rem;
+  margin-top: 3rem;
+  margin-left: 5rem;
+  background-image: url("../../assets/d2.jpeg");
+}
+.square-3{
+  height: 12rem;
+  width: 12rem;
+  margin-left: -5rem;
+  margin-top: 3rem;
+  background-image: url("../../assets/d3.jpeg");
+}
+/* group-3 */
+.group3{
+  display: flex;
+  gap: 1rem;
+  margin-top: 5rem;
+}
+.big-portrait{
+  height: 25rem;
+  width: 25rem;
+  background-image: url("../../assets/e1.jpeg");
+}
+.medium-square{
+  height: 12rem;
+  width: 12rem;
+  margin-top: 5rem;
+  margin-left: 1rem;
+  background-image: url("../../assets/e2.jpeg");
+  background-position: right;
+}
+.small-square{
+  height: 16rem;
+  width: 16rem;
+  margin-left: 3rem;
+  margin-top: 3rem;
+  background-image: url("../../assets/e3.jpeg");
+}
