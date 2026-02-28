@@ -1,0 +1,236 @@
+/* ============================= */
+/*        TIMELINE PAGE          */
+/* ============================= */
+
+.timeline-container {
+  padding: 80px 20px;
+  background: #f9f6f2;
+  font-family: "Segoe UI", sans-serif;
+}
+
+.timeline-container h2 {
+  text-align: center;
+  font-size: 36px;
+  margin-bottom: 60px;
+  color: #5a3e2b;
+  letter-spacing: 1px;
+}
+
+/* ============================= */
+/*         MAIN TIMELINE         */
+/* ============================= */
+
+.timeline {
+  position: relative;
+  max-width: 1100px;
+  margin: auto;
+}
+
+/* Center Line */
+.line {
+  position: absolute;
+  left: 50%;
+  width: 4px;
+  background: linear-gradient(to bottom, #c9974d, #b8863b);
+  top: 0;
+  bottom: 0;
+  transform: translateX(-50%);
+  border-radius: 10px;
+}
+
+/* ============================= */
+/*        TIMELINE ITEMS         */
+/* ============================= */
+
+.timeline-item {
+  padding: 20px 40px;
+  position: relative;
+  width: 50%;
+  box-sizing: border-box;
+}
+
+/* Left Side */
+.timeline-item.left {
+  left: 0;
+  text-align: right;
+}
+
+/* Right Side */
+.timeline-item.right {
+  left: 50%;
+}
+
+/* Gold Circle Dot */
+.timeline-item::after {
+  content: "";
+  position: absolute;
+  width: 18px;
+  height: 18px;
+  background: #c9974d;
+  border: 3px solid #fff;
+  top: 35px;
+  border-radius: 50%;
+  z-index: 1;
+}
+
+.timeline-item.left::after {
+  right: -9px;
+}
+
+.timeline-item.right::after {
+  left: -9px;
+}
+
+/* ============================= */
+/*          EVENT CARD           */
+/* ============================= */
+
+.content {
+  background: #ffffff;
+  padding: 25px;
+  border-radius: 14px;
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.05);
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.content:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 12px 35px rgba(0, 0, 0, 0.08);
+}
+
+/* ============================= */
+/*        EVENT HEADER           */
+/* ============================= */
+
+.event-header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 12px;
+}
+
+.event-header h3 {
+  font-size: 20px;
+  color: #5a3e2b;
+  margin: 0;
+}
+
+.event-icon {
+  width: 42px;
+  height: 42px;
+  object-fit: contain;
+}
+
+/* ============================= */
+/*        STATUS BADGE           */
+/* ============================= */
+
+.status.confirmed {
+  background: #d4edda;
+  color: #2e7d32;
+  padding: 5px 12px;
+  border-radius: 20px;
+  font-size: 12px;
+  font-weight: 600;
+  margin-left: auto;
+}
+
+/* ============================= */
+/*        EVENT DETAILS TEXT     */
+/* ============================= */
+
+.content p {
+  margin: 6px 0;
+  color: #444;
+  font-size: 14px;
+}
+
+/* ============================= */
+/*         VIEW BUTTON           */
+/* ============================= */
+
+.view-btn {
+  margin-top: 15px;
+  padding: 10px 20px;
+  background: linear-gradient(135deg, #c9974d, #b8863b);
+  border: none;
+  border-radius: 8px;
+  color: #ffffff;
+  cursor: pointer;
+  font-weight: 600;
+  font-size: 14px;
+  transition: all 0.3s ease;
+}
+
+.view-btn:hover {
+  transform: scale(1.05);
+  box-shadow: 0 6px 15px rgba(200, 150, 70, 0.3);
+}
+
+/* ============================= */
+/*      EXPANDED SCHEDULE        */
+/* ============================= */
+
+.event-details {
+  margin-top: 15px;
+  background: #f3ede6;
+  padding: 15px;
+  border-radius: 8px;
+  animation: fadeIn 0.3s ease-in-out;
+}
+
+.event-details ul {
+  padding-left: 18px;
+  margin: 0;
+}
+
+.event-details li {
+  margin-bottom: 8px;
+  font-size: 14px;
+  color: #5a3e2b;
+}
+
+/* Fade Animation */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* ============================= */
+/*        RESPONSIVE DESIGN      */
+/* ============================= */
+
+@media screen and (max-width: 768px) {
+
+  .line {
+    left: 8px;
+  }
+
+  .timeline-item {
+    width: 100%;
+    padding-left: 40px;
+    padding-right: 15px;
+    margin-bottom: 40px;
+  }
+
+  .timeline-item.left,
+  .timeline-item.right {
+    left: 0;
+    text-align: left;
+  }
+
+  .timeline-item::after {
+    left: 0;
+  }
+
+  .timeline-item.left::after,
+  .timeline-item.right::after {
+    left: -2px;
+  }
+}

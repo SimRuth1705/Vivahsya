@@ -1,0 +1,86 @@
+.booking-page {
+  min-height: 100vh;
+  background: linear-gradient(to right, #f8f4f0, #f1e6dc);
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+.booking-container {
+  width: 100%;
+  max-width: 700px;
+  margin: 60px auto;
+  text-align: center;
+}
+
+.booking-container h1 {
+  font-size: 32px;
+  margin-bottom: 30px;
+  color: #5a3e36;
+}
+
+.booking-card {
+  background: #ffffff;
+  padding: 30px;
+  border-radius: 12px;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+  text-align: left;
+}
+
+.detail {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 15px;
+  padding: 10px 0;
+  border-bottom: 1px solid #eee;
+}
+
+.detail span {
+  font-weight: bold;
+  color: #333;
+}
+
+.detail p {
+  margin: 0;
+  color: #666;
+}
+
+.status p {
+  color: green;
+  font-weight: bold;
+}
+
+/* Footer */
+
+.footer {
+  background-color: #5a3e36;
+  color: white;
+  padding: 40px 20px 20px;
+}
+
+.footer-content {
+  display: flex;
+  justify-content: space-around;
+  flex-wrap: wrap;
+  margin-bottom: 20px;
+}
+
+.footer-content div {
+  margin: 10px 20px;
+}
+
+.footer h3 {
+  margin-bottom: 10px;
+}
+
+.footer p {
+  margin: 5px 0;
+  font-size: 14px;
+}
+
+.copyright {
+  text-align: center;
+  border-top: 1px solid rgba(255, 255, 255, 0.3);
+  padding-top: 15px;
+  font-size: 13px;
+}

@@ -1,0 +1,135 @@
+.venue-detail-page{
+    background:#f4ede4;
+    min-height:100vh;
+    padding-bottom:80px;
+    font-family: 'Playfair Display', serif;
+}
+
+/* HERO */
+.venue-detail-hero{
+    padding:30px 20px;
+    text-align:center;
+    color:#d39d5f;
+}
+
+.venue-detail-hero h1{
+    font-size:36px;
+    letter-spacing:2px;
+}
+
+.venue-detail-hero p{
+    margin-top:10px;
+    font-size:18px;
+}
+
+.check-btn{
+    margin-top:20px;
+    padding:12px 30px;
+    border:none;
+    border-radius:30px;
+    background:#e6e6e6;
+    cursor:pointer;
+    font-weight:600;
+}
+
+.check-btn:hover{
+    background:#B87333;
+    color:white;
+}
+
+/* ABOUT */
+.venue-about{
+    text-align:center;
+    padding:20px 20px;
+}
+
+.venue-about h2{
+    color:#d39d5f;
+    font-size:28px;
+}
+
+.venue-info-box{
+    display:flex;
+    justify-content:center;
+    gap:40px;
+    margin-top:30px;
+    flex-wrap:wrap;
+}
+
+.venue-info-box div{
+    background:#ddd;
+    padding:18px 28px;
+    border-radius:20px;
+    font-weight:600;
+}
+
+/* ================= GALLERY ================= */
+/* ================= GALLERY ================= */
+
+.venue-gallery{
+    text-align:center;
+    margin-top:60px;
+}
+
+.venue-gallery h2{
+    color:#d39d5f;
+    font-size:28px;
+    margin-bottom:40px;
+}
+
+/* SIMPLE GRID LIKE VENUE PAGE */
+.gallery-grid{
+    width:80%;
+    margin:0 auto;
+    display:grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap:30px;
+}
+
+/* IMAGE SAME SIZE AS VENUE PAGE */
+.gallery-grid img{
+    width:100%;
+    height:220px;   /* same as venue cards */
+    object-fit:cover;
+    border-radius:16px;
+    box-shadow:0 10px 25px rgba(0,0,0,0.15);
+    transition:0.4s;
+}
+
+/* HOVER */
+.gallery-grid img:hover{
+    transform:scale(1.05);
+}
+
+/* LOCATION CENTER */
+.venue-location{
+    margin-top:80px;
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    justify-content:center;
+    text-align:center;
+}
+
+.venue-location h2{
+    font-size:28px;
+    margin-bottom:10px;
+    color:#000;
+}
+
+.venue-location p{
+    font-size:20px;
+    margin-top:5px;
+}
+
+@media (max-width:900px){
+  .gallery-grid{
+    grid-template-columns: repeat(2,1fr);
+  }
+}
+
+@media (max-width:500px){
+  .gallery-grid{
+    grid-template-columns:1fr;
+  }
+}

@@ -1,0 +1,139 @@
+.venue-page{
+    width:100%;
+    min-height:100vh;
+    background:#f5efe7;
+}
+
+/* HERO */
+.venue-hero{
+    padding:70px 20px;
+    text-align:center;
+    color:#d39d5f;
+}
+
+.venue-hero h1{
+    font-size:28px;
+    letter-spacing:2px;
+}
+
+.venue-hero p{
+    margin-top:10px;
+    font-size:16px;
+}
+
+/* TITLE */
+.venue-title{
+    text-align:center;
+    padding-top:20px;
+}
+
+.venue-title h2{
+    font-size:40px;
+    color:#d39d5f;
+}
+
+/* BUTTONS */
+
+.venue-locations button{
+    padding:12px 28px;
+    border:none;
+    border-radius:30px;
+    background:#dcdcdc;   /* grey default */
+    color:black;
+    cursor:pointer;
+    font-weight:500;
+    transition:0.3s;
+}
+.venue-locations{
+    display:flex;
+    justify-content:center;   /* keep center */
+    align-items:center;
+    gap:20px;
+    margin-top:30px;
+}
+
+/* HOVER ONLY */
+.venue-locations button:hover{
+    background:#cfcfcf;
+}
+
+/* ACTIVE ONLY WHEN CLICKED */
+.active-city{
+    background:#b87333 !important;
+    color:white !important;
+}
+
+/* GRID */
+.venue-grid{
+    width:80%;
+    margin:80px auto;
+    display:grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap:35px;
+}
+
+/* CARD */
+.venue-card{
+    position:relative;
+    overflow:hidden;
+    border-radius:12px;
+    text-decoration:none;
+}
+
+/* IMAGE */
+.venue-card img{
+    width:100%;
+    height:320px;
+    object-fit:cover;
+    border-radius:12px;
+    transition:0.5s ease;
+    display:block;
+}
+
+/* ZOOM */
+.venue-card:hover img{
+    transform:scale(1.08);
+}
+
+/* OVERLAY */
+.venue-overlay{
+    position:absolute;
+    inset:0;
+    background:rgba(0,0,0,0.35);
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    opacity:0;
+    transition:0.4s ease;
+}
+
+/* SHOW */
+.venue-card:hover .venue-overlay{
+    opacity:1;
+}
+
+/* TEXT */
+.venue-overlay h3{
+    color:white;
+    font-size:26px;
+    letter-spacing:2px;
+    transform:translateY(20px);
+    transition:0.4s ease;
+}
+
+.venue-card:hover .venue-overlay h3{
+    transform:translateY(0);
+}
+
+/* RESPONSIVE */
+@media (max-width: 1024px){
+    .venue-grid{
+        grid-template-columns: repeat(2,1fr);
+    }
+}
+
+@media (max-width: 600px){
+    .venue-grid{
+        grid-template-columns:1fr;
+    }
+}

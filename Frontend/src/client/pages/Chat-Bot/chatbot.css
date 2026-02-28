@@ -1,0 +1,125 @@
+/* IMPORT LUXURY FONT */
+@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600&family=Poppins:wght@300;400;500&display=swap');
+
+
+/* FLOAT ICON */
+.chat-icon{
+    position:fixed;
+    bottom:25px;
+    right:25px;
+    background:linear-gradient(135deg,#eb7834,#eb7834);
+    color:white;
+    font-size:22px;
+    padding:16px;
+    border-radius:50%;
+    cursor:pointer;
+    z-index:9999;
+    box-shadow:0 5px 20px rgba(0,0,0,0.3);
+    font-family: 'Playfair Display', serif;
+}
+
+/* GLASS CHAT BOX */
+.chat-box{
+    position:fixed;
+    bottom:90px;
+    right:25px;
+    width:320px;
+    height:420px;
+    backdrop-filter:blur(20px);
+    background:rgba(255,255,255,0.15);
+    border-radius:20px;
+    box-shadow:0 8px 30px rgba(0,0,0,0.3);
+    display:flex;
+    flex-direction:column;
+    overflow:hidden;
+    z-index:9999;
+    border:1px solid rgba(255,255,255,0.3);
+    font-family: 'Playfair Display', serif;
+}
+
+/* HEADER */
+.chatbot-header{
+  background:#eb7834;
+  color:white;
+  padding:14px 18px;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  border-top-left-radius:20px;
+  border-top-right-radius:20px;
+  font-family: 'Playfair Display', serif;   
+}
+
+/* title */
+.chatbot-title{
+  font-size:16px;
+  font-weight:600;
+  letter-spacing:0.5px;
+}
+
+/* close button */
+.chatbot-close{
+  font-size:22px;
+  cursor:pointer;
+  font-weight:bold;
+}
+
+/* BODY */
+.chat-body{
+    flex:1;
+    padding:12px;
+    overflow-y:auto;
+    font-size:14px;
+}
+
+/* BOT MESSAGE */
+.bot-msg{
+    background:white;
+    padding:10px 14px;
+    border-radius:14px;
+    margin:8px 0;
+    width:fit-content;
+}
+
+/* USER MESSAGE */
+.user-msg{
+    background:#eb7834;
+    color:white;
+    padding:10px 14px;
+    border-radius:14px;
+    margin:8px 0;
+    margin-left:auto;
+    width:fit-content;
+}
+
+/* INPUT */
+.chat-input{
+    display:flex;
+    border-top:1px solid rgb(0, 0, 0);
+}
+
+.chat-input input{
+    flex:1;
+    padding:12px;
+    border:none;
+    outline:none;
+    background:transparent;
+    color:black;
+}
+
+.chat-input button{
+    background:#eb7834;
+    border:none;
+    color:white;
+    padding:12px 16px;
+    cursor:pointer;
+}
+
+.close-btn{
+    position:absolute;
+    right:15px;
+    top:10px;
+    cursor:pointer;
+    font-size:18px;
+    font-weight:bold;
+}

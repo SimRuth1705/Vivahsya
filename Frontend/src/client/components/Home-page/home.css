@@ -1,0 +1,189 @@
+/* ================= GOOGLE FONTS ================= */
+@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=Lato:wght@300;400;700&display=swap');
+
+/* ================= ROOT VARIABLES ================= */
+:root {
+    --gold-color: #d4af37;
+    --text-light: #f8f8f8;
+    --overlay-bg: rgba(0, 0, 0, 0.4);
+}
+
+/* ================= RESET ================= */
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+/* ================= MAIN CONTAINER ================= */
+.home-container {
+    position: relative;
+    width: 100%;
+    height: 100vh;
+    overflow: hidden;
+    color: var(--text-light);
+    font-family: 'Lato', sans-serif;
+}
+
+/* ================= BACKGROUND SLIDESHOW ================= */
+.hero-slider {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: -1;
+}
+
+.slide {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    background-size: cover;
+    background-position: center;
+    opacity: 0;
+    transition: opacity 1.5s ease-in-out;
+}
+
+.slide.active {
+    opacity: 1;
+}
+
+/* ================= OVERLAY ================= */
+.overlay {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(to bottom,
+            rgba(0, 0, 0, 0.6) 0%,
+            rgba(0, 0, 0, 0.2) 50%,
+            rgba(0, 0, 0, 0.6) 100%);
+    pointer-events: none;
+}
+
+/* ================= LOGO ================= */
+.logo-container {
+    position: absolute;
+    top: 1.5rem;
+    left: 3rem;
+    z-index: 20;
+}
+
+.home-logo {
+    width: 80px;
+    height: auto;
+    object-fit: contain;
+    margin-left: 10px;
+}
+
+/* ================= NAVBAR ================= */
+.navbar {
+    position: absolute;
+    top: 0;
+    width: 100%;
+    padding: 2rem 4rem;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 10;
+}
+
+.nav-links {
+    display: flex;
+    gap: 3rem;
+}
+
+.nav-links a {
+    color: var(--text-light);
+    text-decoration: none;
+    text-transform: uppercase;
+    font-size: 0.9rem;
+    letter-spacing: 2px;
+    font-weight: 300;
+    position: relative;
+    transition: color 0.3s ease;
+}
+
+.nav-links a::after {
+    content: '';
+    position: absolute;
+    width: 0;
+    height: 1px;
+    bottom: -5px;
+    left: 0;
+    background-color: var(--gold-color);
+    transition: width 0.3s ease;
+}
+
+.nav-links a:hover {
+    color: var(--gold-color);
+}
+
+.nav-links a:hover::after {
+    width: 100%;
+}
+
+/* ================= HERO CONTENT ================= */
+.hero-content {
+    position: relative;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    padding: 0 4rem;
+    text-align: center;
+}
+
+/* ================= SLIDER DOTS ================= */
+.slider-dots {
+    position: absolute;
+    bottom: 3rem;
+    left: 50%;
+    transform: translateX(-50%);
+    display: flex;
+    gap: 1rem;
+    z-index: 10;
+}
+
+.dot {
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    border: 1px solid var(--text-light);
+    background-color: transparent;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.dot:hover {
+    background-color: rgba(255, 255, 255, 0.5);
+}
+
+.dot.active {
+    background-color: var(--gold-color);
+    border-color: var(--gold-color);
+    transform: scale(1.2);
+}
+
+/* ================= RESPONSIVE ================= */
+@media (max-width: 768px) {
+    .logo-container {
+        left: 50%;
+        transform: translateX(-50%);
+        top: 1rem;
+    }
+
+    .navbar {
+        padding: 1.5rem;
+        top: 5rem;
+    }
+
+    .nav-links {
+        display: none;
+    }
+
+    .hero-content {
+        padding: 2rem;
+    }
+}
