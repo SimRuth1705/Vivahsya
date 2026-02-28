@@ -3,11 +3,11 @@ import { useEffect, useState } from "react";
 import Lenis from "@studio-freight/lenis";
 import { gsap } from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
+import ClientRoutes from "./client/ClientRoutes";
 
 // Layout/Global Components
 import Navbar from "./homepage/components/Navbar/Navbar";
 import Loader from "./homepage/components/Loader/Loader";
-import ProtectedRoute from './homepage/components/ProtectedRoute/ProtectedRoute';
 import { AuthProvider } from './homepage/components/AuthContext/AuthContext'; // Context provider for auth state
 
 // Route Bundles
@@ -74,9 +74,7 @@ function App() {
           <Route
             path="/client/*"
             element={
-              <ProtectedRoute>
-                <ClientApp />
-              </ProtectedRoute>
+                <ClientRoutes />
             }
           />
 

@@ -9,11 +9,11 @@ const Navbar = () => {
     const navbarClass = isHomePage ? 'navbar home' : 'navbar default';
 
     const navItems = [
-        { name: 'Portfolio', path: '/portfolio' },
-        { name: 'Booking', path: '/booking' },
-        { name: 'Timeline', path: '/timeline' },
-        { name: 'Venues', path: '/venues' },
-        { name: 'Our Works', path: '/our-works' }
+        { name: 'Portfolio', path: '/client/portfolio' },
+        { name: 'Booking', path: '/client/booking' },
+        { name: 'Timeline', path: '/client/timeline' },
+        { name: 'Venues', path: '/client/venues' },
+        { name: 'Our Works', path: '/client/our-works' }
     ];
 
     return (
