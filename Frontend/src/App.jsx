@@ -3,34 +3,34 @@ import { useEffect, useState } from "react";
 import Lenis from "@studio-freight/lenis";
 import { gsap } from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
-import ClientRoutes from "./client/ClientRoutes";
 
 // Layout/Global Components
-import Navbar from "./homepage/components/Navbar/Navbar";
+import NavBar from "./homepage/components/NavBar/NavBar";
 import Loader from "./homepage/components/Loader/Loader";
-import { AuthProvider } from './homepage/components/AuthContext/AuthContext'; // Context provider for auth state
+import { AuthProvider } from './homepage/components/AuthContext/AuthContext'; 
 
 // Route Bundles
-import AdminRoutes from './admin/AdminRoutes'; // The admin routes you provided
-import ClientApp from './client/ClientRoutes';     // The client routing you provided
+import AdminRoutes from './admin/AdminRoutes'; 
+import ClientApp from './client/ClientRoutes'; // Consolidated naming conflict
 
 // Homepage Pages
 import Home from "./homepage/pages/Home";
 import Portfolio from "./homepage/pages/Portfolio";
 import LoginPage from './homepage/pages/LoginPage';
 
+// Note: Ensure ProtectedRoute is imported or defined here if used
+// import ProtectedRoute from './components/ProtectedRoute';
+
 gsap.registerPlugin(ScrollTrigger);
 
 function App() {
   const [loading, setLoading] = useState(true);
-  const [isAuthenticated, setIsAuthenticated] = useState(false); // Track login state
-
+  const [isAuthenticated, setIsAuthenticated] = useState(false); 
 
   /* Loader Logic */
   useEffect(() => {
     const timer = setTimeout(() => {
       setLoading(false);
-      // Give the DOM a tiny moment to paint, then refresh GSAP
       setTimeout(() => {
         ScrollTrigger.refresh();
       }, 100);
@@ -48,41 +48,43 @@ function App() {
 
   return (
     <>
-    <AuthProvider> 
-      {loading && <Loader />}
-      <BrowserRouter>
-      <Navbar /> 
-        <Routes>
-          {/* 1. PUBLIC LANDING PAGES */}
-          <Route path="/" element={<><Navbar introReady={!loading} /><Home introReady={!loading} /></>} />
-          <Route path="/portfolio" element={<><Navbar introReady={!loading} /><Portfolio /></>} />
-          <Route path="/login" element={<LoginPage />} />
+      <AuthProvider> 
+        {loading && <Loader />}
+        <BrowserRouter>
+          {/* Global NavBar: Stays visible across all routes */}
+          <NavBar introReady={!loading} /> 
+          
+          <Routes>
+            {/* 1. PUBLIC LANDING PAGES */}
+            <Route path="/" element={<Home introReady={!loading} />} />
+            <Route path="/portfolio" element={<Portfolio />} />
+            <Route path="/login" element={<LoginPage />} />
 
-          {/* 2. ADMIN PORTAL (Nested & Protected) */}
-          {/* Note the '/*' - this allows AdminRoutes to handle sub-paths like /admin/dashboard */}
-          <Route 
-            path="/admin/*" 
-            element={
-              <AdminRoutes 
-                setIsAuthenticated={setIsAuthenticated} 
-                onLogout={() => setIsAuthenticated(false)} 
-              />
-            } 
-          />
+            {/* 2. ADMIN PORTAL (Nested & Protected) */}
+            <Route 
+              path="/admin/*" 
+              element={
+                <AdminRoutes 
+                  setIsAuthenticated={setIsAuthenticated} 
+                  onLogout={() => setIsAuthenticated(false)} 
+                />
+              } 
+            />
 
-          {/* 3. CLIENT PORTAL (Protected) */}
-          <Route
-            path="/client/*"
-            element={
-                <ClientRoutes />
-            }
-          />
+            {/* 3. CLIENT PORTAL (Protected) */}
+            <Route
+              path="/client/*"
+              element={
+                // Ensure ProtectedRoute is properly defined in your project
+                <ClientApp />
+              }
+            />
 
-          {/* 4. FALLBACK */}
-          <Route path="*" element={<Navigate to="/" replace />} />
-        </Routes>
-      </BrowserRouter>
-    </AuthProvider>
+            {/* 4. FALLBACK */}
+            <Route path="*" element={<Navigate to="/" replace />} />
+          </Routes>
+        </BrowserRouter>
+      </AuthProvider>
     </>
   );
 }

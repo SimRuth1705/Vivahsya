@@ -9,16 +9,16 @@
 
 .navbar {
   width: 100%;
-  height: 70px;                 /* shorter height */
-
+  height: 70px;
   display: flex;
   align-items: center;
-  justify-content: space-between;
-
+  justify-content: space-between; /* Pushes logo left, actions right */
   padding: 0 4rem;
-
-  background-color: #ffffff;
+  background-color: #ffffff !important;
   border-bottom: 1px solid rgba(0,0,0,0.05);
+  position: sticky;
+  top: 0;
+  z-index: 1000;
 }
 
 /* Logo Section */
@@ -26,13 +26,14 @@
   display: flex;
   align-items: center;
   gap: 0.6rem;
+  flex: 1; /* Allows logo area to take space */
 }
 
-.logo-container img {
-  height: 3rem;                /* slightly smaller logo */
+.nav-logo {
+  height: 40px; /* Controlled height */
+  width: auto;
 }
 
-/* Only Vivahasya */
 .brand-name {
   font-family: "Playfair Display", serif;
   font-size: 1.3rem;
@@ -41,21 +42,23 @@
   color: #d4702d;
 }
 
-/* Nav links */
+/* Nav links - Centered Flow */
 .nav-links {
   display: flex;
+  align-items: center;
+  justify-content: center;
   gap: 2.2rem;
   list-style: none;
-
-  font-family: "Poppins", sans-serif;
-  font-size: 0.85rem;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
+  flex: 2; /* Takes more space to stay centered */
 }
 
 .nav-links li a {
   text-decoration: none;
   color: #333;
+  font-family: "Poppins", sans-serif;
+  font-size: 0.85rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
   transition: color 0.3s ease;
 }
 
@@ -63,23 +66,40 @@
   color: #d4702d;
 }
 
-/* Login Button */
+/* Action/Button Section */
+.nav-actions {
+  display: flex;
+  justify-content: flex-end;
+  flex: 1; /* Mirrors the logo area for balance */
+}
+
 .nav-btn {
   text-decoration: none;
   padding: 0.55rem 1.4rem;
   border-radius: 40px;
-
-  background-color: #d4702d; /* you can change later */
+  background-color: #d4702d;
   color: #ffffff;
-
+  border: none;
+  cursor: pointer;
   font-family: "Poppins", sans-serif;
   font-size: 0.8rem;
   letter-spacing: 0.08em;
-
   transition: all 0.3s ease;
 }
 
 .nav-btn:hover {
   background-color: #b85c1f;
   transform: translateY(-2px);
+}
+
+/* Responsive */
+@media (max-width: 1024px) {
+  .navbar { padding: 0 2rem; }
+  .nav-links { gap: 1.2rem; }
+}
+
+@media (max-width: 768px) {
+  .nav-links { display: none; } /* Standard behavior for mobile without a toggle */
+  .logo-container { flex: 1; }
+  .nav-actions { flex: 1; }
 }
