@@ -3,6 +3,7 @@ import { Link, useNavigate } from "react-router-dom";
 import { useContext } from "react";
 import { AuthContext } from "../AuthContext/AuthContext";
 import logo from "../../assets/vlogo.png";
+import vivahasya_logo from "../../assets/vivahasya-logo.png";
 
 function NavBar() {
   const { user, logout } = useContext(AuthContext);
@@ -14,10 +15,9 @@ function NavBar() {
   };
 
   return (
-    <nav className="navbar">
+    <nav className="Navbar">
       <div className="logo-container">
-        <img src={logo} alt="Vivahasya logo" className="nav-logo" />
-        <span className="brand-name">Vivahasya</span>
+        <img src={vivahasya_logo} alt="Vivahasya logo" className="nav-logo" />
       </div>
 
       <ul className="nav-links">

@@ -8,7 +8,7 @@
 background: url("../../assets/hero-img3.png") center center / cover no-repeat;
 
   display: flex;
-  align-items: flex-end;
+  align-items: center;
   justify-content: center;
 
   font-family: "Poppins", sans-serif;
@@ -20,8 +20,7 @@ background: url("../../assets/hero-img3.png") center center / cover no-repeat;
   background-color: rgba(255, 255, 255, 0.377);
   backdrop-filter: blur(0.2rem);
   padding: 2rem;
-  border-top-left-radius: 1rem;
-  border-top-right-radius: 1rem;
+  border-radius: 1rem;
   transition: all 0.3s ease;
 }
 .hero-content:hover {

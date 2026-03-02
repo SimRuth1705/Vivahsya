@@ -1,33 +1,29 @@
-import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
+import { BrowserRouter, Routes, Route, Navigate, useLocation } from "react-router-dom";
 import { useEffect, useState } from "react";
 import Lenis from "@studio-freight/lenis";
 import { gsap } from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 
-// Layout/Global Components
-import NavBar from "./homepage/components/NavBar/NavBar";
+// Layout / Global
+import NavBar from "./homepage/components/NavBar/Navbar";
 import Loader from "./homepage/components/Loader/Loader";
-import { AuthProvider } from './homepage/components/AuthContext/AuthContext'; 
+import { AuthProvider } from "./homepage/components/AuthContext/AuthContext";
 
 // Route Bundles
-import AdminRoutes from './admin/AdminRoutes'; 
-import ClientApp from './client/ClientRoutes'; // Consolidated naming conflict
+import AdminRoutes from "./admin/AdminRoutes";
+import ClientApp from "./client/ClientRoutes";
 
 // Homepage Pages
 import Home from "./homepage/pages/Home";
 import Portfolio from "./homepage/pages/Portfolio";
-import LoginPage from './homepage/pages/LoginPage';
-
-// Note: Ensure ProtectedRoute is imported or defined here if used
-// import ProtectedRoute from './components/ProtectedRoute';
+import LoginPage from "./homepage/pages/LoginPage";
 
 gsap.registerPlugin(ScrollTrigger);
 
 function App() {
   const [loading, setLoading] = useState(true);
-  const [isAuthenticated, setIsAuthenticated] = useState(false); 
 
-  /* Loader Logic */
+  // Loader Logic
   useEffect(() => {
     const timer = setTimeout(() => {
       setLoading(false);
@@ -38,7 +34,7 @@ function App() {
     return () => clearTimeout(timer);
   }, []);
 
-  /* Smooth Scroll Logic */
+  // Smooth Scroll Logic
   useEffect(() => {
     const lenis = new Lenis({ duration: 1.8, smooth: true });
     lenis.on("scroll", ScrollTrigger.update);
@@ -47,44 +43,42 @@ function App() {
   }, []);
 
   return (
+    <AuthProvider>
+      {loading && <Loader />}
+      <BrowserRouter>
+        <AppContent loading={loading} />
+      </BrowserRouter>
+    </AuthProvider>
+  );
+}
+
+function AppContent({ loading }) {
+  const location = useLocation();
+
+  // Hide navbar on admin and client routes
+  const hideNavbar =
+    location.pathname.startsWith("/client") ||
+    location.pathname.startsWith("/admin");
+
+  return (
     <>
-      <AuthProvider> 
-        {loading && <Loader />}
-        <BrowserRouter>
-          {/* Global NavBar: Stays visible across all routes */}
-          <NavBar introReady={!loading} /> 
-          
-          <Routes>
-            {/* 1. PUBLIC LANDING PAGES */}
-            <Route path="/" element={<Home introReady={!loading} />} />
-            <Route path="/portfolio" element={<Portfolio />} />
-            <Route path="/login" element={<LoginPage />} />
+      {!hideNavbar && <NavBar introReady={!loading} />}
 
-            {/* 2. ADMIN PORTAL (Nested & Protected) */}
-            <Route 
-              path="/admin/*" 
-              element={
-                <AdminRoutes 
-                  setIsAuthenticated={setIsAuthenticated} 
-                  onLogout={() => setIsAuthenticated(false)} 
-                />
-              } 
-            />
+      <Routes>
+        {/* Public Pages */}
+        <Route path="/" element={<Home introReady={!loading} />} />
+        <Route path="/portfolio" element={<Portfolio />} />
+        <Route path="/login" element={<LoginPage />} />
 
-            {/* 3. CLIENT PORTAL (Protected) */}
-            <Route
-              path="/client/*"
-              element={
-                // Ensure ProtectedRoute is properly defined in your project
-                <ClientApp />
-              }
-            />
+        {/* Admin Portal */}
+        <Route path="/admin/*" element={<AdminRoutes />} />
 
-            {/* 4. FALLBACK */}
-            <Route path="*" element={<Navigate to="/" replace />} />
-          </Routes>
-        </BrowserRouter>
-      </AuthProvider>
+        {/* Client Portal */}
+        <Route path="/client/*" element={<ClientApp />} />
+
+        {/* Fallback */}
+        <Route path="*" element={<Navigate to="/" replace />} />
+      </Routes>
     </>
   );
 }
