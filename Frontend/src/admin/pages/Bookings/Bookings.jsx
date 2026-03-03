@@ -45,16 +45,19 @@ const Bookings = () => {
       const bookingsData = await bookRes.json();
       const vendorsData = await vendorRes.json();
       const venuesData = await venueRes.json();
-      
+
       setBookings(bookingsData);
       setVendors(vendorsData);
       setVenues(venuesData);
-      
+
       // Extract clients from bookings that have clientId populated
       const clientsFromBookings = bookingsData
-        .filter(b => b.clientId)
-        .map(b => b.clientId)
-        .filter((client, index, self) => self.findIndex(c => c._id === client._id) === index);
+        .filter((b) => b.clientId)
+        .map((b) => b.clientId)
+        .filter(
+          (client, index, self) =>
+            self.findIndex((c) => c._id === client._id) === index,
+        );
       setClients(clientsFromBookings);
     } catch (error) {
       console.error("Fetch error:", error);

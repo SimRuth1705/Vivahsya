@@ -21,10 +21,17 @@ const clientRoutes = require("./routes/clients");
 const app = express();
 
 // --- 3. MIDDLEWARE ---
-app.use(cors({
-  origin: ["http://localhost:5173", "http://localhost:5174", "http://localhost:5175", "http://localhost:3000"],
-  credentials: true
-}));
+app.use(
+  cors({
+    origin: [
+      "http://localhost:5173",
+      "http://localhost:5174",
+      "http://localhost:5175",
+      "http://localhost:3000",
+    ],
+    credentials: true,
+  }),
+);
 app.use(express.json());
 app.use("/uploads", express.static(path.join(__dirname, "uploads")));
 
@@ -35,7 +42,7 @@ app.get("/api/health", (req, res) => {
 
 // --- 5. MOUNT API ROUTES ---
 // IMPORTANT: This prefix is added to EVERY route in auth.js
-app.use("/api/auth", authRoutes); 
+app.use("/api/auth", authRoutes);
 
 app.use("/api/bookings", bookingRoutes);
 app.use("/api/vendors", vendorRoutes);
@@ -55,7 +62,7 @@ const seedAdmin = async () => {
         email: "admin@vivahasya.com",
         password: hashedPassword,
         role: "owner",
-        status: "Active"
+        status: "Active",
       });
       console.log("🚀 Admin account seeded: admin@vivahasya.com / admin123");
     }
@@ -65,12 +72,13 @@ const seedAdmin = async () => {
 };
 
 // --- 7. DATABASE & SERVER START ---
-mongoose.connect(process.env.MONGO_URI)
+mongoose
+  .connect(process.env.MONGO_URI)
   .then(() => {
     console.log("✅ MongoDB Connected to Atlas");
     seedAdmin();
   })
-  .catch(err => console.log("❌ DB Error:", err));
+  .catch((err) => console.log("❌ DB Error:", err));
 
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => console.log(`🚀 Server on port ${PORT}`));

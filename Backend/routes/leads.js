@@ -1,10 +1,10 @@
-const express = require('express');
+const express = require("express");
 const router = express.Router();
-const Lead = require('../models/Lead');
-const { protect, adminOnly } = require('../middleware/authMiddleware');
+const Lead = require("../models/Lead");
+const { protect, adminOnly } = require("../middleware/authMiddleware");
 
 // 1. Get all leads (🔒 Owner Only)
-router.get('/', protect, adminOnly, async (req, res) => {
+router.get("/", protect, adminOnly, async (req, res) => {
   try {
     const leads = await Lead.find().sort({ createdAt: -1 });
     res.json(leads);
@@ -14,7 +14,7 @@ router.get('/', protect, adminOnly, async (req, res) => {
 });
 
 // 2. Add a new lead (🔓 Public)
-router.post('/', async (req, res) => {
+router.post("/", async (req, res) => {
   const lead = new Lead(req.body);
   try {
     const newLead = await lead.save();
@@ -25,9 +25,11 @@ router.post('/', async (req, res) => {
 });
 
 // 3. Update lead status or info (🔒 Owner/Admin Only)
-router.put('/:id', protect, adminOnly, async (req, res) => {
+router.put("/:id", protect, adminOnly, async (req, res) => {
   try {
-    const updatedLead = await Lead.findByIdAndUpdate(req.params.id, req.body, { new: true });
+    const updatedLead = await Lead.findByIdAndUpdate(req.params.id, req.body, {
+      new: true,
+    });
     res.json(updatedLead);
   } catch (err) {
     res.status(400).json({ message: err.message });
@@ -35,7 +37,7 @@ router.put('/:id', protect, adminOnly, async (req, res) => {
 });
 
 // 4. Delete a lead (🔒 Owner/Admin Only)
-router.delete('/:id', protect, adminOnly, async (req, res) => {
+router.delete("/:id", protect, adminOnly, async (req, res) => {
   try {
     await Lead.findByIdAndDelete(req.params.id);
     res.json({ message: "Lead deleted" });

@@ -1,24 +1,26 @@
-const express = require('express');
+const express = require("express");
 const router = express.Router();
-const bcrypt = require('bcryptjs');
-const nodemailer = require('nodemailer');
-const Lead = require('../models/Lead');
-const Booking = require('../models/Booking');
-const Client = require('../models/Client'); 
-const User = require('../models/User');
-const { adminOnly, protect } = require('../middleware/authMiddleware');
+const bcrypt = require("bcryptjs");
+const nodemailer = require("nodemailer");
+const Lead = require("../models/Lead");
+const Booking = require("../models/Booking");
+const Client = require("../models/Client");
+const User = require("../models/User");
+const { adminOnly, protect } = require("../middleware/authMiddleware");
 
 // ✅ GET ALL CLIENTS (For Admin Dashboard)
-router.get('/', protect, adminOnly, async (req, res) => {
+router.get("/", protect, adminOnly, async (req, res) => {
   try {
     const clients = await Client.find().sort({ createdAt: -1 });
     res.json(clients);
   } catch (err) {
-    res.status(500).json({ message: "Could not fetch clients", error: err.message });
+    res
+      .status(500)
+      .json({ message: "Could not fetch clients", error: err.message });
   }
 });
 
-router.post('/confirm/:id', adminOnly, async (req, res) => {
+router.post("/confirm/:id", adminOnly, async (req, res) => {
   try {
     // 1. Find the Lead
     const lead = await Lead.findById(req.params.id);
@@ -27,7 +29,7 @@ router.post('/confirm/:id', adminOnly, async (req, res) => {
     // 2. Setup Credentials Logic
     const username = lead.name;
     const userEmail = lead.email;
-    const cleanName = lead.name.replace(/\s/g, '').toLowerCase();
+    const cleanName = lead.name.replace(/\s/g, "").toLowerCase();
     const tempPassword = `${cleanName.slice(0, 4)}@26`;
 
     // 3. Create Client & Booking (Database Work)
@@ -36,7 +38,7 @@ router.post('/confirm/:id', adminOnly, async (req, res) => {
       phone: lead.contact,
       email: lead.email,
       location: lead.location,
-      totalSpent: lead.budget || '0'
+      totalSpent: lead.budget || "0",
     });
     const savedClient = await newClient.save();
 
@@ -44,7 +46,7 @@ router.post('/confirm/:id', adminOnly, async (req, res) => {
       title: `${lead.name}'s Event`,
       clientId: savedClient._id,
       leadId: lead._id,
-      status: 'Confirmed'
+      status: "Confirmed",
     });
     await newBooking.save();
 
@@ -57,20 +59,20 @@ router.post('/confirm/:id', adminOnly, async (req, res) => {
       user = new User({
         name: username,
         email: userEmail,
-        password: hashedPassword, 
-        role: 'client',
-        leadId: lead._id 
+        password: hashedPassword,
+        role: "client",
+        leadId: lead._id,
       });
       await user.save();
     }
 
     // 5. NODEMAILER LOGIC (Must be defined before .sendMail)
     const transporter = nodemailer.createTransport({
-      service: 'gmail',
+      service: "gmail",
       auth: {
-        user: process.env.EMAIL_USER, 
-        pass: process.env.EMAIL_PASS  
-      }
+        user: process.env.EMAIL_USER,
+        pass: process.env.EMAIL_PASS,
+      },
     });
 
     const mailOptions = {
@@ -88,7 +90,7 @@ router.post('/confirm/:id', adminOnly, async (req, res) => {
           </div>
           <p><em>Note: Your password is the first 4 letters of your name + @26.</em></p>
         </div>
-      `
+      `,
     };
 
     // 6. Execute Send (With error logging)
@@ -101,17 +103,18 @@ router.post('/confirm/:id', adminOnly, async (req, res) => {
     }
 
     // 7. Update Lead Status
-    lead.status = 'Converted'; 
+    lead.status = "Converted";
     await lead.save();
 
-    res.status(200).json({ 
+    res.status(200).json({
       message: "Client onboarded and credentials emailed.",
-      credentials: { username, password: tempPassword } 
+      credentials: { username, password: tempPassword },
     });
-
   } catch (err) {
     console.error("Conversion Error:", err);
-    res.status(500).json({ message: "Internal server error during conversion." });
+    res
+      .status(500)
+      .json({ message: "Internal server error during conversion." });
   }
 });
 

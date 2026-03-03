@@ -5,19 +5,31 @@ const ProtectedRoute = ({ children, requiredRole }) => {
   const token = localStorage.getItem('token');
   const user = JSON.parse(localStorage.getItem('user'));
 
-  // 1. If not logged in at all, go to login
+  // 1. If not logged in at all
   if (!token || !user) {
-    // 🛑 FIX: Use the full path /admin/login
     return <Navigate to="/admin/login" replace />;
   }
 
-  // 2. Check role
-  if (requiredRole && user.role !== requiredRole) {
-    // 🛑 FIX: Use absolute path /admin/dashboard
-    return <Navigate to="/admin/dashboard" replace />;
+  // 2. Hierarchical Role Check
+  // Logic: 'owner' has access to EVERYTHING. 
+  // 'admin' only has access if specifically required.
+  const isOwner = user.role === 'owner';
+  const isAdmin = user.role === 'admin';
+
+  if (requiredRole) {
+    const hasPermission = 
+      isOwner || 
+      (requiredRole === 'admin' && isAdmin) || 
+      user.role === requiredRole;
+
+    if (!hasPermission) {
+      console.warn(`Access Denied: ${user.role} tried to access ${requiredRole}`);
+      // Redirect to a safe page the user DOES have access to
+      return <Navigate to="/admin/dashboard" replace />;
+    }
   }
 
-  // 3. Otherwise, show the protected content
+  // 3. Success!
   return children;
 };
 
