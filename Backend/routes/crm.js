@@ -6,7 +6,17 @@ const Lead = require('../models/Lead');
 const Booking = require('../models/Booking');
 const Client = require('../models/Client'); 
 const User = require('../models/User');
-const { adminOnly } = require('../middleware/authMiddleware');
+const { adminOnly, protect } = require('../middleware/authMiddleware');
+
+// ✅ GET ALL CLIENTS (For Admin Dashboard)
+router.get('/', protect, adminOnly, async (req, res) => {
+  try {
+    const clients = await Client.find().sort({ createdAt: -1 });
+    res.json(clients);
+  } catch (err) {
+    res.status(500).json({ message: "Could not fetch clients", error: err.message });
+  }
+});
 
 router.post('/confirm/:id', adminOnly, async (req, res) => {
   try {

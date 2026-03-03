@@ -17,7 +17,7 @@ const Navbar = () => {
 
     return (
         <nav className={navbarClass}>
-            <NavLink to="/">
+            <NavLink to="/Client">
                 <img src={logo} alt="logo" className="logo" />
             </NavLink>
             <ul className="nav-list">

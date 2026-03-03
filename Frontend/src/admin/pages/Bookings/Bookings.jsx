@@ -1,6 +1,10 @@
 import React, { useState, useEffect, useRef } from "react";
 import { Toaster, toast } from "sonner";
-import { HiOutlinePencilAlt, HiOutlineTrash, HiOutlineOfficeBuilding } from "react-icons/hi"; // Added venue icon
+import {
+  HiOutlinePencilAlt,
+  HiOutlineTrash,
+  HiOutlineOfficeBuilding,
+} from "react-icons/hi"; // Added venue icon
 import "./Bookings.css";
 
 // --- (Keep your existing BookingStatusDropdown, CustomSelect, and CustomDatePicker components as they are) ---
@@ -14,7 +18,7 @@ const Bookings = () => {
   const [showModal, setShowModal] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
   const [currentId, setCurrentId] = useState(null);
-  
+
   const [formData, setFormData] = useState({
     title: "",
     type: "Wedding",
@@ -30,26 +34,30 @@ const Bookings = () => {
   const fetchData = async () => {
     try {
       const token = localStorage.getItem("token");
-      const headers = { "Authorization": `Bearer ${token}` };
+      const headers = { Authorization: `Bearer ${token}` };
 
-      const [bookRes, clientRes, vendorRes, venueRes] = await Promise.all([
+      const [bookRes, vendorRes, venueRes] = await Promise.all([
         fetch("http://localhost:5000/api/bookings", { headers }),
-        fetch("http://localhost:5000/api/crm", { headers }),
         fetch("http://localhost:5000/api/vendors", { headers }),
-        fetch("http://localhost:5000/api/venues", { headers }), // Fetching your new venues
+        fetch("http://localhost:5000/api/venues", { headers }),
       ]);
 
-      setBookings(await bookRes.json());
-      setClients(await clientRes.json());
-      setVendors(await vendorRes.json());
-      setVenues(await venueRes.json()); 
+      const bookingsData = await bookRes.json();
+      const vendorsData = await vendorRes.json();
+      const venuesData = await venueRes.json();
+      
+      setBookings(bookingsData);
+      setVendors(vendorsData);
+      setVenues(venuesData);
+      
+      // Extract clients from bookings that have clientId populated
+      const clientsFromBookings = bookingsData
+        .filter(b => b.clientId)
+        .map(b => b.clientId)
+        .filter((client, index, self) => self.findIndex(c => c._id === client._id) === index);
+      setClients(clientsFromBookings);
     } catch (error) {
-      toast.error("Failed to sync database components");
-    }
-  };
-
-  useEffect(() => {
-    fetchData();
+      console.error("Fetch error:", error);
   }, []);
 
   const handleEdit = (booking) => {
@@ -71,13 +79,13 @@ const Bookings = () => {
     const url = isEditing
       ? `http://localhost:5000/api/bookings/${currentId}`
       : "http://localhost:5000/api/bookings";
-    
+
     try {
       const response = await fetch(url, {
         method: isEditing ? "PUT" : "POST",
-        headers: { 
+        headers: {
           "Content-Type": "application/json",
-          "Authorization": `Bearer ${localStorage.getItem("token")}`
+          Authorization: `Bearer ${localStorage.getItem("token")}`,
         },
         body: JSON.stringify(formData),
       });
@@ -135,14 +143,18 @@ const Bookings = () => {
           <tbody>
             {filteredBookings.map((b) => (
               <tr key={b._id}>
-                <td><strong>{b.title}</strong></td>
+                <td>
+                  <strong>{b.title}</strong>
+                </td>
                 <td>{b.clientId?.name || "No Client"}</td>
                 <td>
-                  <span className="venue-cell">
-                    {b.venueId?.name || "TBD"} 
+                  <span className="venue-cell">{b.venueId?.name || "TBD"}</span>
+                </td>
+                <td>
+                  <span className="vendor-tag">
+                    {b.vendorId?.name || "Unassigned"}
                   </span>
                 </td>
-                <td><span className="vendor-tag">{b.vendorId?.name || "Unassigned"}</span></td>
                 <td>{b.date}</td>
                 <td style={{ width: "160px" }}>
                   <BookingStatusDropdown
@@ -151,8 +163,18 @@ const Bookings = () => {
                   />
                 </td>
                 <td>
-                  <button className="action-icon edit" onClick={() => handleEdit(b)}>Edit</button>
-                  <button className="action-icon delete" onClick={() => handleDelete(b._id)}>Delete</button>
+                  <button
+                    className="action-icon edit"
+                    onClick={() => handleEdit(b)}
+                  >
+                    Edit
+                  </button>
+                  <button
+                    className="action-icon delete"
+                    onClick={() => handleDelete(b._id)}
+                  >
+                    Delete
+                  </button>
                 </td>
               </tr>
             ))}
@@ -161,11 +183,18 @@ const Bookings = () => {
       </div>
 
       {showModal && (
-        <div className="modal-overlay" onClick={(e) => e.target.className === "modal-overlay" && closeModal()}>
+        <div
+          className="modal-overlay"
+          onClick={(e) =>
+            e.target.className === "modal-overlay" && closeModal()
+          }
+        >
           <div className="modal-content">
             <div className="modal-header">
               <h2>{isEditing ? "Edit Assignment" : "New Assignment"}</h2>
-              <button className="close-btn" onClick={closeModal}>&times;</button>
+              <button className="close-btn" onClick={closeModal}>
+                &times;
+              </button>
             </div>
             <form onSubmit={handleSubmit}>
               <div className="form-row">
@@ -175,7 +204,9 @@ const Bookings = () => {
                     type="text"
                     className="custom-input"
                     value={formData.title}
-                    onChange={(e) => setFormData({ ...formData, title: e.target.value })}
+                    onChange={(e) =>
+                      setFormData({ ...formData, title: e.target.value })
+                    }
                     required
                   />
                 </div>
@@ -185,7 +216,9 @@ const Bookings = () => {
                     type="text"
                     className="custom-input"
                     value={formData.amount}
-                    onChange={(e) => setFormData({ ...formData, amount: e.target.value })}
+                    onChange={(e) =>
+                      setFormData({ ...formData, amount: e.target.value })
+                    }
                     required
                   />
                 </div>
@@ -196,13 +229,17 @@ const Bookings = () => {
                   label="Assign Client"
                   options={clients}
                   value={formData.clientId}
-                  onChange={(val) => setFormData({ ...formData, clientId: val })}
+                  onChange={(val) =>
+                    setFormData({ ...formData, clientId: val })
+                  }
                 />
                 <CustomSelect
                   label="Assign Vendor"
                   options={vendors}
                   value={formData.vendorId}
-                  onChange={(val) => setFormData({ ...formData, vendorId: val })}
+                  onChange={(val) =>
+                    setFormData({ ...formData, vendorId: val })
+                  }
                 />
               </div>
 
@@ -218,7 +255,12 @@ const Bookings = () => {
                 <div className="form-sub-row">
                   <CustomSelect
                     label="Event Type"
-                    options={["Wedding", "Birthday", "Corporate", "Anniversary"]}
+                    options={[
+                      "Wedding",
+                      "Birthday",
+                      "Corporate",
+                      "Anniversary",
+                    ]}
                     value={formData.type}
                     onChange={(val) => setFormData({ ...formData, type: val })}
                   />
@@ -234,8 +276,16 @@ const Bookings = () => {
               </div>
 
               <div className="modal-footer">
-                <button type="button" className="btn-cancel" onClick={closeModal}>Cancel</button>
-                <button type="submit" className="btn-save">Save Assignment</button>
+                <button
+                  type="button"
+                  className="btn-cancel"
+                  onClick={closeModal}
+                >
+                  Cancel
+                </button>
+                <button type="submit" className="btn-save">
+                  Save Assignment
+                </button>
               </div>
             </form>
           </div>

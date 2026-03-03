@@ -14,7 +14,9 @@ const authRoutes = require("./routes/auth");
 const bookingRoutes = require("./routes/bookings");
 const leadRoutes = require("./routes/leads");
 const vendorRoutes = require("./routes/vendors");
+const venueRoutes = require("./routes/venues");
 const crmRoutes = require("./routes/crm");
+const clientRoutes = require("./routes/clients");
 
 const app = express();
 
@@ -37,8 +39,10 @@ app.use("/api/auth", authRoutes);
 
 app.use("/api/bookings", bookingRoutes);
 app.use("/api/vendors", vendorRoutes);
+app.use("/api/venues", venueRoutes);
 app.use("/api/crm", crmRoutes);
 app.use("/api/leads", leadRoutes);
+app.use("/api/clients", clientRoutes);
 
 // --- 6. ADMIN SEEDING LOGIC ---
 const seedAdmin = async () => {
