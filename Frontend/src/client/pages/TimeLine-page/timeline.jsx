@@ -1,6 +1,9 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
+import { useParams } from "react-router-dom";
+import { HiOutlineClock, HiOutlineLocationMarker, HiOutlineCalendar } from "react-icons/hi";
 import "./Timeline.css";
 
+// Import your local assets
 import engagementImg from "../../assets/engagement.png";
 import haldiImg from "../../assets/haldi.png";
 import mehendiImg from "../../assets/mehendi.png";
@@ -8,121 +11,86 @@ import weddingImg from "../../assets/wedding.png";
 import receptionImg from "../../assets/reception.png";
 
 const Timeline = () => {
-
+  const { id } = useParams(); // Grabs the Booking ID from the URL
   const [openIndex, setOpenIndex] = useState(null);
+  const [bookingData, setBookingData] = useState(null);
+  const [loading, setLoading] = useState(true);
 
-  const events = [
-    {
-      title: "Engagement Ceremony",
-      image: engagementImg,
-      status: "Confirmed",
-      date: "28 April 2026",
-      time: "09:00 AM",
-      venue: "Grand Hilton",
-      schedule: [
-        "07:00 AM – Guest Arrivals",
-        "08:30 AM – Breakfast Service",
-        "10:30 AM – Ring Exchange",
-        "01:00 PM – Lunch"
-      ]
-    },
-    {
-      title: "Haldi Function",
-      image: haldiImg,
-      status: "Confirmed",
-      date: "28 April 2026",
-      time: "11:00 AM",
-      venue: "Grand Hilton",
-      schedule: [
-        "11:00 AM – Rituals Begin",
-        "12:30 PM – Music & Dance",
-        "01:30 PM – Lunch"
-      ]
-    },
-    {
-      title: "Mehendi Night",
-      image: mehendiImg,
-      status: "Confirmed",
-      date: "28 April 2026",
-      time: "05:00 PM",
-      venue: "Grand Hilton",
-      schedule: [
-        "05:00 PM – Mehendi Start",
-        "07:00 PM – DJ Night",
-        "09:00 PM – Dinner"
-      ]
-    },
-    {
-      title: "Wedding Ceremony",
-      image: weddingImg,
-      status: "Confirmed",
-      date: "29 April 2026",
-      time: "10:00 AM",
-      venue: "Royal Palace Convention Hall",
-      schedule: [
-        "08:00 AM – Baraat Arrival",
-        "09:00 AM – Welcome Rituals",
-        "10:00 AM – Muhurtham",
-        "12:30 PM – Wedding Lunch"
-      ]
-    },
-    {
-      title: "Reception",
-      image: receptionImg,
-      status: "Confirmed",
-      date: "29 April 2026",
-      time: "06:00 PM",
-      venue: "Royal Palace Convention Hall",
-      schedule: [
-        "06:00 PM – Guest Welcome",
-        "07:00 PM – Couple Entry",
-        "08:00 PM – Cake Cutting",
-        "09:00 PM – Dinner"
-      ]
-    }
-  ];
+  // Mapping local assets to event titles
+  const imageMap = {
+    "Engagement Ceremony": engagementImg,
+    "Haldi Function": haldiImg,
+    "Mehendi Night": mehendiImg,
+    "Wedding Ceremony": weddingImg,
+    "Reception": receptionImg
+  };
+
+  useEffect(() => {
+    // Fetch the specific booking using the ID from the URL
+    fetch(`http://localhost:5000/api/bookings/${id}`)
+      .then((res) => {
+        if (!res.ok) throw new Error("Booking not found");
+        return res.json();
+      })
+      .then((data) => {
+        setBookingData(data);
+        setLoading(false);
+      })
+      .catch((err) => {
+        console.error("Error fetching timeline:", err);
+        setLoading(false);
+      });
+  }, [id]);
 
   const toggleEvent = (index) => {
     setOpenIndex(openIndex === index ? null : index);
   };
 
+  if (loading) return <div className="loading-screen">Loading Wedding Schedule...</div>;
+  if (!bookingData) return <div className="error-screen">Wedding Schedule Not Found.</div>;
+
   return (
-    <div className="timeline-container">
-      <h2>Wedding Timeline</h2>
+    <div className="timeline-page-wrapper">
+      <header className="timeline-hero">
+        <h1>{bookingData.title}</h1>
+        <p>A celebration of love and togetherness</p>
+      </header>
 
-      <div className="timeline">
-        <div className="line"></div>
+      <div className="timeline-container">
+        <div className="vertical-line"></div>
 
-        {events.map((event, index) => (
-          <div
-            key={index}
-            className={`timeline-item ${
-              index % 2 === 0 ? "left" : "right"
-            }`}
+        {bookingData.timeline && bookingData.timeline.map((event, index) => (
+          <div 
+            key={index} 
+            className={`timeline-item ${index % 2 === 0 ? "left" : "right"}`}
           >
-            <div className="content">
-
-              <div className="event-header">
-                <img src={event.image} alt={event.title} className="event-icon" />
-                <h3>{event.title}</h3>
-                <span className="status confirmed">
-                  {event.status}
-                </span>
+            <div className="timeline-dot"></div>
+            
+            <div className="content-card">
+              <div className="event-main">
+                <img 
+                  src={imageMap[event.title] || weddingImg} 
+                  alt={event.title} 
+                  className="event-image" 
+                />
+                <div className="event-info">
+                  <span className="event-type-tag">{event.title}</span>
+                  <h3>{event.venue}</h3>
+                  
+                  <div className="meta-info">
+                    <span><HiOutlineCalendar /> {event.date}</span>
+                    <span><HiOutlineClock /> {event.time}</span>
+                  </div>
+                </div>
               </div>
 
-              <p><strong>Date:</strong> {event.date}</p>
-              <p><strong>Time:</strong> {event.time}</p>
-              <p><strong>Venue:</strong> {event.venue}</p>
-
-              <button
-                className="view-btn"
-                onClick={() => toggleEvent(index)}
-              >
-                {openIndex === index ? "Hide Event" : "View Event"}
+              <button className="expand-btn" onClick={() => toggleEvent(index)}>
+                {openIndex === index ? "Close Details" : "View Full Schedule"}
               </button>
 
               {openIndex === index && (
-                <div className="event-details">
+                <div className="expanded-details">
+                  <h4>Event Schedule</h4>
                   <ul>
                     {event.schedule.map((item, i) => (
                       <li key={i}>{item}</li>
@@ -130,7 +98,6 @@ const Timeline = () => {
                   </ul>
                 </div>
               )}
-
             </div>
           </div>
         ))}

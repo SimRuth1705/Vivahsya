@@ -14,21 +14,17 @@ const Leads = () => {
   const [showEditModal, setShowEditModal] = useState(false);
   const [currentLead, setCurrentLead] = useState(null);
 
-  // --- ROLE CHECK LOGIC ---
   const user = JSON.parse(localStorage.getItem("user"));
   const isOwner = user?.role === 'owner';
 
-  // --- 1. Fetch Real Leads from MongoDB ---
   const fetchLeads = async () => {
     try {
       const response = await fetch("http://localhost:5000/api/leads", {
         headers: {
-          // Send the token so the backend middleware doesn't block the request
           "Authorization": `Bearer ${localStorage.getItem("token")}`
         }
       });
       const data = await response.json();
-      
       if (response.ok) {
         setLeads(data);
       } else {
@@ -43,7 +39,6 @@ const Leads = () => {
     fetchLeads();
   }, []);
 
-  // --- 2. Save Edits to MongoDB ---
   const handleUpdate = async (e) => {
     e.preventDefault();
     try {
@@ -69,42 +64,38 @@ const Leads = () => {
     }
   };
 
-  const handleInjectTestLead = async () => {
-    const dummyLead = {
-      name: "Arjun Patel",
-      contact: "9876543210",
-      email: "arjun@example.com",
-      eventType: "Wedding",
-      date: "2026-11-20",
-      duration: "2 Days",
-      tradition: "North Indian",
-      budget: "8,00,000",
-      location: "Taj West End",
-      guestCount: 450,
-      status: "On Talk"
-    };
+  // --- Inside your Leads component ---
 
-    try {
-      const response = await fetch("http://localhost:5000/api/leads", {
-        method: "POST",
-        headers: { 
-          "Content-Type": "application/json",
-          "Authorization": `Bearer ${localStorage.getItem("token")}`
-        },
-        body: JSON.stringify(dummyLead),
-      });
+// --- Inside Leads.jsx ---
 
-      if (response.ok) {
-        toast.success("Test lead injected!");
-        fetchLeads();
+const handleSendMail = async () => {
+  const toastId = toast.loading(`Sending credentials to ${currentLead.email}...`);
+  
+  try {
+    // ✅ CHANGE 'leads' TO 'crm' TO MATCH YOUR server.js ROUTE
+    const response = await fetch(`http://localhost:5000/api/crm/confirm/${currentLead._id}`, {
+      method: "POST",
+      headers: { 
+        "Authorization": `Bearer ${localStorage.getItem("token")}` 
       }
-    } catch (err) {
-      toast.error("Network error.");
+    });
+
+    const data = await response.json();
+
+    if (response.ok) {
+      toast.success("Mail Sent! Client can now login.", { id: toastId });
+      fetchLeads();
+      setShowEditModal(false);
+    } else {
+      toast.error(data.message || "Mail failed to send.", { id: toastId });
     }
-  };
+  } catch (err) {
+    toast.error("Server connection error.", { id: toastId });
+  }
+};
 
   const handleEditClick = (lead) => {
-    setCurrentLead(lead);
+    setCurrentLead({ ...lead });
     setShowEditModal(true);
   };
 
@@ -113,9 +104,24 @@ const Leads = () => {
     setCurrentLead({ ...currentLead, [name]: value });
   };
 
-  const handleCustomDropdownChange = (name, value) => {
+  const handleCustomChange = (name, value) => {
     setCurrentLead({ ...currentLead, [name]: value });
   };
+
+  const traditionOptions = [
+    { value: 'South Indian', label: 'South Indian' },
+    { value: 'North Indian', label: 'North Indian' },
+    { value: 'Christian', label: 'Christian' },
+    { value: 'Muslim', label: 'Muslim' },
+    { value: 'Other', label: 'Other' }
+  ];
+
+  const statusOptions = [
+    { value: 'On Talk', label: 'On Talk' },
+    { value: 'Follow Up', label: 'Follow Up' },
+    { value: 'Confirm', label: 'Confirm' },
+    { value: 'Lost', label: 'Lost' }
+  ];
 
   return (
     <div className="leads-page">
@@ -128,17 +134,12 @@ const Leads = () => {
         </div>
         
         <div className="leads-utility">
-          {isOwner && (
-            <button onClick={handleInjectTestLead} className="inject-btn">
-              + Inject Test Lead
-            </button>
-          )}
-
           <div className="search-wrapper">
             <HiOutlineSearch className="search-icon" />
             <input 
               type="text" 
               placeholder="Search by client name..." 
+              value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)} 
             />
           </div>
@@ -153,47 +154,46 @@ const Leads = () => {
               <th>Event / Date</th>
               <th>Tradition</th>
               <th>Location / Guests</th>
-              {isOwner && <th>Budget</th>} {/* PROTECTED COLUMN */}
+              {isOwner && <th>Budget</th>}
               <th>Status</th>
               <th>Action</th>
             </tr>
           </thead>
           <tbody>
-            {leads.filter(l => (l.name || "").toLowerCase().includes(searchTerm.toLowerCase())).map((lead) => (
-              <tr key={lead._id}>
-                <td>
-                  <div className="primary-text">{lead.name}</div>
-                  <div className="secondary-text">{lead.contact}</div>
-                </td>
-                <td>
-                  <div className="primary-text">{lead.eventType || 'N/A'}</div>
-                  <div className="secondary-text">{lead.date || 'TBD'}</div>
-                </td>
-                <td>
-                  <span className={`tradition-tag ${lead.tradition ? lead.tradition.toLowerCase().replace(' ', '-') : 'other'}`}>
-                    {lead.tradition || 'N/A'}
-                  </span>
-                </td>
-                <td>
-                  <div className="primary-text">{lead.location || 'N/A'}</div>
-                  <div className="secondary-text">{lead.guestCount || 0} Guests</div>
-                </td>
-                
-                {/* PROTECTED DATA CELL */}
-                {isOwner && <td className="budget-text">₹{lead.budget || '0'}</td>}
-                
-                <td>
-                  <span className={`status-pill ${(lead.status || "on-talk").toLowerCase().replace(' ', '-')}`}>
-                    {lead.status}
-                  </span>
-                </td>
-                <td>
-                  <button className="edit-action-btn" onClick={() => handleEditClick(lead)}>
-                    <HiOutlinePencilAlt /> Edit
-                  </button>
-                </td>
-              </tr>
-            ))}
+            {leads
+              .filter(l => (l.name || "").toLowerCase().includes(searchTerm.toLowerCase()))
+              .map((lead) => (
+                <tr key={lead._id}>
+                  <td>
+                    <div className="primary-text">{lead.name}</div>
+                    <div className="secondary-text">{lead.contact || lead.email}</div>
+                  </td>
+                  <td>
+                    <div className="primary-text">{lead.eventType || 'N/A'}</div>
+                    <div className="secondary-text">{lead.date || 'TBD'}</div>
+                  </td>
+                  <td>
+                    <span className={`tradition-tag ${(lead.tradition || "other").toLowerCase().replace(' ', '-')}`}>
+                      {lead.tradition || 'N/A'}
+                    </span>
+                  </td>
+                  <td>
+                    <div className="primary-text">{lead.location || 'N/A'}</div>
+                    <div className="secondary-text">{lead.guestCount || 0} Guests</div>
+                  </td>
+                  {isOwner && <td className="budget-text">₹{lead.budget || '0'}</td>}
+                  <td>
+                    <span className={`status-pill ${(lead.status || "new").toLowerCase().replace(' ', '-')}`}>
+                      {lead.status}
+                    </span>
+                  </td>
+                  <td>
+                    <button className="edit-action-btn" onClick={() => handleEditClick(lead)}>
+                      <HiOutlinePencilAlt /> Edit
+                    </button>
+                  </td>
+                </tr>
+              ))}
           </tbody>
         </table>
       </div>
@@ -229,7 +229,7 @@ const Leads = () => {
                     <CustomDatePicker
                       label="Event Date"
                       value={currentLead.date || ''}
-                      onChange={(val) => handleCustomDropdownChange('date', val)}
+                      onChange={(val) => handleCustomChange('date', val)}
                     />
                   </div>
                 </div>
@@ -241,13 +241,12 @@ const Leads = () => {
                   <div className="field-wrapper">
                     <label>Tradition</label>
                     <CustomDropdown
-                      options={['South Indian', 'North Indian', 'Christian', 'Muslim', 'Other']}
+                      options={traditionOptions}
                       selected={currentLead.tradition || ''}
-                      onSelect={(val) => handleCustomDropdownChange('tradition', val)}
+                      onSelect={(val) => handleCustomChange('tradition', val)}
                     />
                   </div>
 
-                  {/* PROTECTED INPUT FIELD */}
                   {isOwner && (
                     <div className="field-wrapper">
                       <label>Budget</label>
@@ -258,17 +257,22 @@ const Leads = () => {
                   <div className="field-wrapper full-width">
                     <label>Initial Status</label>
                     <CustomDropdown
-                      options={['On Talk', 'Follow Up', 'Confirm', 'Lost']}
+                      options={statusOptions}
                       selected={currentLead.status || ''}
-                      onSelect={(val) => handleCustomDropdownChange('status', val)}
+                      onSelect={(val) => handleCustomChange('status', val)}
                     />
                   </div>
                 </div>
               </div>
 
+              {/* UPDATED MODAL FOOTER WITH 3 BUTTONS */}
               <div className="modal-footer-refined">
                 <button type="button" className="btn-discard" onClick={() => setShowEditModal(false)}>Cancel</button>
-                <button type="submit" className="btn-save">Update Details</button>
+                
+                <div className="footer-right-group">
+                  <button type="button" className="btn-send-mail" onClick={handleSendMail}>Send Mail</button>
+                  <button type="submit" className="btn-save">Update Details</button>
+                </div>
               </div>
             </form>
           </div>

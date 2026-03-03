@@ -23,7 +23,7 @@ function ClientRoutes() {
         <Route path="/" element={<Home />} />
         <Route path="/booking" element={<Booking />} />
         <Route path="/portfolio" element={<Portfolio />} />
-        <Route path="/timeline" element={<Timeline />} />
+        <Route path="/timeline/:id" element={<Timeline />} />
         <Route path="/venues" element={<Venues />} />
         <Route path="/venue/:city/:name" element={<VenueDetails />} />
       </Routes>

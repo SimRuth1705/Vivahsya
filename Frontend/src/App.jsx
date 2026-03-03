@@ -21,45 +21,14 @@ import LoginPage from "./homepage/pages/LoginPage";
 
 gsap.registerPlugin(ScrollTrigger);
 
-function App() {
-  const [loading, setLoading] = useState(true);
-
-  // Loader Logic
-  useEffect(() => {
-    const timer = setTimeout(() => {
-      setLoading(false);
-      setTimeout(() => {
-        ScrollTrigger.refresh();
-      }, 100);
-    }, 2700);
-    return () => clearTimeout(timer);
-  }, []);
-
-  // Smooth Scroll Logic
-  useEffect(() => {
-    const lenis = new Lenis({ duration: 1.8, smooth: true });
-    lenis.on("scroll", ScrollTrigger.update);
-    gsap.ticker.add((time) => lenis.raf(time * 1000));
-    return () => lenis.destroy();
-  }, []);
-
-  return (
-    <AuthProvider>
-      {loading && <Loader />}
-      <BrowserRouter>
-        <AppContent loading={loading} />
-      </BrowserRouter>
-    </AuthProvider>
-  );
-}
-
-function AppContent({ loading }) {
+// ---------------- APP CONTENT ----------------
+const AppContent = ({ loading }) => {
   const location = useLocation();
 
-  // Hide navbar on admin and client routes
+  // Hide navbar for admin & client portals
   const hideNavbar =
-    location.pathname.startsWith("/client") ||
-    location.pathname.startsWith("/admin");
+    location.pathname.startsWith("/admin") ||
+    location.pathname.startsWith("/client");
 
   return (
     <>
@@ -82,6 +51,46 @@ function AppContent({ loading }) {
         <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>
     </>
+  );
+};
+
+// ---------------- MAIN APP ----------------
+function App() {
+  const [loading, setLoading] = useState(true);
+
+  // Loader Logic
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setLoading(false);
+      setTimeout(() => {
+        ScrollTrigger.refresh();
+      }, 100);
+    }, 2700);
+
+    return () => clearTimeout(timer);
+  }, []);
+
+  // Smooth Scroll (Lenis)
+  useEffect(() => {
+    const lenis = new Lenis({ duration: 1.8, smooth: true });
+    lenis.on("scroll", ScrollTrigger.update);
+
+    gsap.ticker.add((time) => {
+      lenis.raf(time * 1000);
+    });
+
+    return () => {
+      lenis.destroy();
+    };
+  }, []);
+
+  return (
+    <AuthProvider>
+      {loading && <Loader />}
+      <BrowserRouter>
+        <AppContent loading={loading} />
+      </BrowserRouter>
+    </AuthProvider>
   );
 }
 

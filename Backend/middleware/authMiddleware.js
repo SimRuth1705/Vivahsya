@@ -1,29 +1,37 @@
-// backend/middleware/authMiddleware.js
 const jwt = require('jsonwebtoken');
+const User = require('../models/User');
 
-const adminOnly = (req, res, next) => {
-  // Get token from header
-  const token = req.header('Authorization')?.split(' ')[1];
+// 1. The Protect Middleware
+// Ensure the name here is exactly 'protect'
+const protect = async (req, res, next) => {
+  let token;
 
-  if (!token) {
-    return res.status(401).json({ message: "No token, authorization denied" });
+  if (req.headers.authorization && req.headers.authorization.startsWith('Bearer')) {
+    try {
+      token = req.headers.authorization.split(' ')[1];
+      const decoded = jwt.verify(token, process.env.JWT_SECRET);
+      
+      // Attach user to request (including role and leadId)
+      req.user = await User.findById(decoded.id).select('-password');
+      next();
+    } catch (error) {
+      res.status(401).json({ message: 'Not authorized, token failed' });
+    }
   }
 
-  try {
-    const decoded = jwt.verify(token, process.env.JWT_SECRET);
-    req.user = decoded;
-
-    // Check if user is an owner
-    if (req.user.role !== 'owner') {
-      return res.status(403).json({ 
-        message: "Permission Denied: Only owners can access financial data." 
-      });
-    }
-
-    next();
-  } catch (err) {
-    res.status(401).json({ message: "Token is not valid" });
+  if (!token) {
+    res.status(401).json({ message: 'Not authorized, no token' });
   }
 };
 
-module.exports = { adminOnly };
+// 2. The AdminOnly Middleware
+const adminOnly = (req, res, next) => {
+  if (req.user && (req.user.role === 'admin' || req.user.role === 'owner')) {
+    next();
+  } else {
+    res.status(403).json({ message: 'Access denied: Admins only' });
+  }
+};
+
+// 3. THE EXPORT (This is line 33 where your error is)
+module.exports = { protect, adminOnly };

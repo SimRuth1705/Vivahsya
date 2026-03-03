@@ -1,22 +1,43 @@
-.admin-layout-wrapper {
+/* Layout Reset */
+.admin-container {
   display: flex;
   min-height: 100vh;
-  background-color: #f8fafc;
+  /* Changed background to white as requested */
+  background-color: #ffffff; 
+  margin: 0;
+  padding: 0;
+  overflow-x: hidden;
+  font-family: 'Inter', -apple-system, sans-serif;
+  color: #1e293b; 
 }
 
+/* Main Content Area */
 .admin-main-content {
   flex: 1;
-  /* Adjust this padding-left based on your collapsed sidebar width (e.g., 80px) */
-  padding-left: 80px; 
-  transition: padding-left 0.3s ease;
-  width: 100%;
+  /* Matches the Sidebar's width precisely to avoid overlap */
+  margin-left: 85px; 
+  padding: 0;
+  margin-top: 0;
+  margin-bottom: 0;
+  margin-right: 0;
+  transition: margin-left 0.3s ease-in-out;
+  min-width: 0;
+  background-color: #ffffff;
 }
 
-/* If the sidebar is open, push the content more if you aren't using an overlay */
-/* This depends on how you handle the .sidebar.open class */
+/* Shift content if sidebar is expanded */
+.admin-container:has(.sidebar.open) .admin-main-content {
+  margin-left: 260px;
+}
 
-.page-container {
-  padding: 20px;
-  max-width: 1600px;
-  margin: 0 auto;
+/* Style for the children (Tables, Forms, etc.) */
+.admin-main-content > * {
+  width: 100%;
+  margin: 0;
+}
+
+/* Selection color update for better visibility on white */
+::selection {
+  background-color: rgba(139, 92, 246, 0.2);
+  color: #1e293b;
 }

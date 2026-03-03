@@ -1,5 +1,5 @@
-import React from "react";
-import { useParams } from "react-router-dom";
+import React, { useState } from "react";
+import { useParams, useLocation } from "react-router-dom";
 import "./VenueDetail.css";
 
 import v1 from "../../assets/wedding-hero-1.jpg";
@@ -8,161 +8,142 @@ import v3 from "../../assets/wedding-hero-3.jpg";
 import v4 from "../../assets/wedding-hero-4.jpg";
 
 const VenueDetails = () => {
+  const { name } = useParams();
+  const location = useLocation();
+  const stateVenue = location.state?.venue;
 
-  const { city, name } = useParams();
+  const [activeTab, setActiveTab] = useState("portfolio");
+  const [showAllPhotos, setShowAllPhotos] = useState(false);
 
-  const venueInfo = {
+  const venue = {
+    images: stateVenue?.image
+      ? [stateVenue.image, v2, v3, v4]
+      : [v1, v2, v3, v4],
+  };
 
-    Bangalore: {
-      "Royal Palace": {
-        price: "1,50,000",
-        capacity: "500 Guests",
-        food: "Veg & Non-Veg",
-        images: [v1, v2, v3, v4]
-      },
-      "Garden Hall": {
-        price: "1,20,000",
-        capacity: "300 Guests",
-        food: "Veg",
-        images: [v2, v1, v3, v4]
-      },
-      "Grand Resort": {
-        price: "2,00,000",
-        capacity: "700 Guests",
-        food: "Veg & Non-Veg",
-        images: [v3, v1, v2, v4]
-      },
-      "Elite Banquet": {
-        price: "1,80,000",
-        capacity: "600 Guests",
-        food: "Veg & Non-Veg",
-        images: [v4, v1, v2, v3]
-      }
-    },
+  const heroImage = venue.images[0];
+  const decodedName = decodeURIComponent(name).replace(/-/g, " ");
 
-    Goa: {
-      "Beach Resort": {
-        price: "3,00,000",
-        capacity: "800 Guests",
-        food: "Veg & Non-Veg",
-        images: [v1, v2, v3, v4]
-      },
-      "Sea Palace": {
-        price: "2,80,000",
-        capacity: "500 Guests",
-        food: "Veg & Non-Veg",
-        images: [v2, v3, v1, v4]
-      },
-      "Sunset Hall": {
-        price: "2,20,000",
-        capacity: "350 Guests",
-        food: "Veg",
-        images: [v3, v1, v2, v4]
-      },
-      "Ocean View": {
-        price: "3,50,000",
-        capacity: "900 Guests",
-        food: "Veg & Non-Veg",
-        images: [v4, v3, v2, v1]
-      }
-    },
+  // Build gallery (max 19 images)
+  const allImages = [];
+  if (stateVenue?.image) {
+    allImages.push(stateVenue.image);
 
-    Mangalore: {
-      "Coastal Hall": {
-        price: "1,40,000",
-        capacity: "300 Guests",
-        food: "Veg",
-        images: [v1, v2, v3, v4]
-      },
-      "Temple Garden": {
-        price: "1,60,000",
-        capacity: "400 Guests",
-        food: "Veg",
-        images: [v2, v3, v1, v4]
-      },
-      "Palm Resort": {
-        price: "2,10,000",
-        capacity: "500 Guests",
-        food: "Veg & Non-Veg",
-        images: [v3, v1, v2, v4]
-      },
-      "Lotus Venue": {
-        price: "1,80,000",
-        capacity: "450 Guests",
-        food: "Veg",
-        images: [v4, v3, v2, v1]
-      }
-    },
+    const pathParts = stateVenue.image.split("/");
+    const filename = pathParts.pop();
+    const basePath = pathParts.join("/") + "/";
 
-    Shivamogga: {
-      "Green Valley": {
-        price: "1,20,000",
-        capacity: "250 Guests",
-        food: "Veg",
-        images: [v1, v2, v3, v4]
-      },
-      "Forest Resort": {
-        price: "1,90,000",
-        capacity: "400 Guests",
-        food: "Veg & Non-Veg",
-        images: [v2, v1, v3, v4]
-      },
-      "River Hall": {
-        price: "1,50,000",
-        capacity: "350 Guests",
-        food: "Veg",
-        images: [v3, v4, v1, v2]
-      },
-      "Nature Palace": {
-        price: "2,00,000",
-        capacity: "600 Guests",
-        food: "Veg & Non-Veg",
-        images: [v4, v3, v2, v1]
+    const nameParts = filename.split(".");
+    const fileBase = nameParts[0];
+    const extension = nameParts[1];
+
+    const prefixMatch = fileBase.match(/^(.*?)\d+$/);
+    let prefix = prefixMatch ? prefixMatch[1] : "image";
+
+    for (let i = 1; i <= 19; i++) {
+      const testImage = `${basePath}${prefix}${i}.${extension}`;
+      if (testImage !== stateVenue.image) {
+        allImages.push(testImage);
       }
     }
 
-  };
-
-  const venue = venueInfo[city]?.[name];
-
-  if (!venue) {
-    return <h2 style={{marginTop:"120px", textAlign:"center"}}>Venue not found</h2>;
+    while (allImages.length < 19) {
+      allImages.push(v1, v2, v3, v4);
+    }
+  } else {
+    while (allImages.length < 19) {
+      allImages.push(...venue.images);
+    }
   }
 
+  allImages.length = 19;
+
   return (
-    <div className="venue-detail-page">
-
-      <div className="venue-detail-hero">
-        <h1>{name}</h1>
-        <p>{city}</p>
-        <button className="check-btn">Check availability →</button>
+    <div className="venue-detail-page-modern">
+      {/* HERO SECTION */}
+      <div className="vd-hero-container">
+        <img src={heroImage} alt={decodedName} className="vd-hero-img" />
+        <div className="vd-hero-overlay"></div>
+        <div className="vd-hero-watermark">WedMeGood</div>
       </div>
 
-      <div className="venue-about">
-        <h2>About the Venue</h2>
-        <p>Description about the venue</p>
+      {/* MAIN CARD */}
+      <div className="vd-main-card">
+        <div className="vd-card-header">
+          <div className="vd-card-title-col">
+            <h1 className="vd-title">{decodedName}</h1>
+            <p className="vd-subtitle">
+              (Formerly known as {decodedName})
+            </p>
+          </div>
+          <div className="vd-rating-box">
+            <div className="vd-rating-score">⭐ 4.8</div>
+            <div className="vd-rating-reviews">11 reviews</div>
+          </div>
+        </div>
 
-        <div className="venue-info-box">
-          <div>Capacity: {venue.capacity}</div>
-          <div>Food: {venue.food}</div>
-          <div>Starting Price: ₹{venue.price}</div>
+        {/* Address */}
+        <div className="vd-address-section">
+          <div className="vd-address-line1">
+            <span>Main Road, India (View on Map)</span>
+          </div>
+          <div className="vd-address-line2">
+            Specific Area, India
+          </div>
         </div>
       </div>
 
-      <div className="venue-gallery">
-        <h2>Venue Image</h2>
-        <div className="gallery-grid">
-          {venue.images.map((img, i) => (
-            <img key={i} src={img} alt="venue" />
-          ))}
+      {/* PORTFOLIO */}
+      <div className="vd-portfolio-container">
+        <div className="vd-portfolio-tabs">
+          <div
+            className={`vd-ptab ${
+              activeTab === "portfolio" ? "active" : ""
+            }`}
+            onClick={() => setActiveTab("portfolio")}
+          >
+            PORTFOLIO (19)
+          </div>
         </div>
-      </div>
 
-      <div className="venue-location">
-        <h2>Location of the Venue 📍</h2>
-        <p>{city}</p>
-      </div>
+        {activeTab === "portfolio" && (
+          <div className="vd-photo-gallery-wrapper">
+            <div
+              className={
+                showAllPhotos ? "vd-photo-masonry" : "vd-photo-grid"
+              }
+            >
+              {allImages
+                .slice(0, showAllPhotos ? allImages.length : 12)
+                .map((img, i) => {
+                  const fallbacks = [v1, v2, v3, v4];
+                  return (
+                    <img
+                      key={i}
+                      src={img}
+                      alt={`${decodedName} ${i + 1}`}
+                      onError={(e) => {
+                        e.target.onerror = null;
+                        e.target.src = fallbacks[i % 4];
+                      }}
+                    />
+                  );
+                })}
+            </div>
 
+            {!showAllPhotos && (
+              <div className="vd-view-more-container">
+                <button
+                  className="vd-view-more-btn"
+                  onClick={() => setShowAllPhotos(true)}
+                >
+                  View 7 more
+                </button>
+              </div>
+            )}
+          </div>
+        )}
+      </div>
     </div>
   );
 };

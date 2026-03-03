@@ -1,17 +1,118 @@
-.custom-input-container { width: 100%; position: relative; font-family: inherit; }
-.custom-input-container label { display: block; margin-bottom: 8px; font-weight: 700; font-size: 12px; color: #475569; text-transform: uppercase; }
+.custom-input-container {
+  width: 100%;
+  position: relative;
+  font-family: inherit;
+}
+.custom-input-container label {
+  display: block;
+  margin-bottom: 8px;
+  font-weight: 700;
+  font-size: 12px;
+  color: #475569;
+  text-transform: uppercase;
+}
 
-.custom-select-box { width: 100%; padding: 12px 16px; border: 1.5px solid #e2e8f0; border-radius: 10px; font-size: 14px; background: #f8fafc; cursor: pointer; display: flex; justify-content: space-between; align-items: center; box-sizing: border-box; color: #1e293b; transition: border-color 0.2s, background 0.2s; }
-.custom-select-box:hover { border-color: #cbd5e1; }
+.custom-select-box {
+  width: 100%;
+  padding: 12px 16px;
+  border: 1.5px solid #e2e8f0;
+  border-radius: 10px;
+  font-size: 14px;
+  background: #f8fafc;
+  cursor: pointer;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  box-sizing: border-box;
+  color: #1e293b;
+  transition:
+    border-color 0.2s,
+    background 0.2s;
+}
+.custom-select-box:hover {
+  border-color: #cbd5e1;
+}
 
-.bd-calendar-popup { position: absolute; top: calc(100% + 5px); left: 0; background: white; border-radius: 12px; box-shadow: 0 10px 25px rgba(0,0,0,0.1); padding: 15px; width: 280px; z-index: 99999; border: 1px solid #e2e8f0; }
-.bd-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; font-weight: 700; font-size: 14px; color: #1e293b; }
-.bd-nav button { background: none; border: none; font-size: 18px; cursor: pointer; color: #64748b; padding: 0 5px; }
-.bd-nav button:hover { color: #6200EA; }
-.bd-grid-head { display: grid; grid-template-columns: repeat(7, 1fr); text-align: center; font-size: 12px; color: #94a3b8; margin-bottom: 5px; font-weight: 600; }
-.bd-grid-body { display: grid; grid-template-columns: repeat(7, 1fr); gap: 5px; }
-.bd-day { height: 32px; display: flex; align-items: center; justify-content: center; font-size: 13px; border-radius: 50%; cursor: pointer; color: #333; transition: background 0.2s; }
-.bd-day:hover { background: #f1f5f9; }
-.bd-day.selected { background: #6200EA; color: white; font-weight: 700; }
-.bd-day.empty { cursor: default; }
-.bd-day.empty:hover { background: transparent; }
+.bd-calendar-popup {
+  position: absolute;
+  top: calc(100% + 5px);
+  left: 0;
+  background: white;
+  border-radius: 12px;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+  padding: 15px;
+  width: 280px;
+  z-index: 99999;
+  border: 1px solid #e2e8f0;
+}
+.bd-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 10px;
+  font-weight: 700;
+  font-size: 14px;
+  color: #1e293b;
+  position: relative;
+  background: #ffffff; /* white background */
+  padding: 4px 8px;
+  border-radius: 8px;
+}
+
+.bd-header .month-title {
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+  pointer-events: none;
+}
+.bd-nav button {
+  background: transparent;
+  border: none;
+  font-size: inherit;
+  cursor: pointer;
+  color: inherit;
+  padding: 0;
+}
+.bd-nav button:hover {
+  /* no special hover styling */
+  color: inherit;
+}
+.bd-grid-head {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  text-align: center;
+  font-size: 12px;
+  color: #94a3b8;
+  margin-bottom: 5px;
+  font-weight: 600;
+}
+.bd-grid-body {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 5px;
+}
+.bd-day {
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 13px;
+  border-radius: 50%;
+  cursor: pointer;
+  color: #333;
+  transition: background 0.2s;
+}
+.bd-day:hover {
+  background: #f1f5f9;
+}
+.bd-day.selected {
+  background: #6200ea;
+  color: white;
+  font-weight: 700;
+}
+.bd-day.empty {
+  cursor: default;
+}
+.bd-day.empty:hover {
+  background: transparent;
+}

@@ -5,10 +5,20 @@ const CustomDatePicker = ({ label, value, onChange }) => {
   const [isOpen, setIsOpen] = useState(false);
   const [viewDate, setViewDate] = useState(new Date());
   const containerRef = useRef(null);
-  
+
   const monthNames = [
-    "January", "February", "March", "April", "May", "June",
-    "July", "August", "September", "October", "November", "December",
+    "January",
+    "February",
+    "March",
+    "April",
+    "May",
+    "June",
+    "July",
+    "August",
+    "September",
+    "October",
+    "November",
+    "December",
   ];
 
   useEffect(() => {
@@ -27,10 +37,10 @@ const CustomDatePicker = ({ label, value, onChange }) => {
     const daysInMonth = new Date(year, month + 1, 0).getDate();
     const firstDay = new Date(year, month, 1).getDay();
     const days = [];
-    
+
     for (let i = 0; i < firstDay; i++)
       days.push(<div key={`empty-${i}`} className="bd-day empty"></div>);
-      
+
     for (let d = 1; d <= daysInMonth; d++) {
       // Format to YYYY-MM-DD to match standard date inputs
       const dateStr = `${year}-${String(month + 1).padStart(2, "0")}-${String(d).padStart(2, "0")}`;
@@ -57,27 +67,37 @@ const CustomDatePicker = ({ label, value, onChange }) => {
         <span>{value || "dd - mm - yyyy"}</span>
         <span>📅</span>
       </div>
-      
+
       {isOpen && (
         <div className="bd-calendar-popup">
           <div className="bd-header">
-            <span>
+            <button
+              type="button"
+              className="nav-left"
+              onClick={() =>
+                setViewDate(
+                  new Date(viewDate.getFullYear(), viewDate.getMonth() - 1, 1),
+                )
+              }
+            >
+              &lt;
+            </button>
+
+            <span className="month-title">
               {monthNames[viewDate.getMonth()]} {viewDate.getFullYear()}
             </span>
-            <div className="bd-nav">
-              <button
-                type="button"
-                onClick={() => setViewDate(new Date(viewDate.getFullYear(), viewDate.getMonth() - 1, 1))}
-              >
-                &lt;
-              </button>
-              <button
-                type="button"
-                onClick={() => setViewDate(new Date(viewDate.getFullYear(), viewDate.getMonth() + 1, 1))}
-              >
-                &gt;
-              </button>
-            </div>
+
+            <button
+              type="button"
+              className="nav-right"
+              onClick={() =>
+                setViewDate(
+                  new Date(viewDate.getFullYear(), viewDate.getMonth() + 1, 1),
+                )
+              }
+            >
+              &gt;
+            </button>
           </div>
           <div className="bd-grid-head">
             {["Su", "Mo", "Tu", "We", "Th", "Fr", "Sa"].map((d) => (

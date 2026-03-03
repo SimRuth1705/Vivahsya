@@ -1,26 +1,73 @@
 import React, { useState, useEffect } from "react";
-import { Toaster, toast } from "sonner";
-import { 
-  HiOutlineClock, HiOutlineUsers, HiOutlineCurrencyDollar, 
-  HiOutlineAdjustments, HiOutlineChevronDown, HiOutlineLocationMarker,
-  HiOutlineX
+import { toast, Toaster } from "sonner";
+import {
+  HiOutlinePencilAlt,
+  HiOutlineSave,
+  HiOutlineClock,
+  HiOutlineUsers,
 } from "react-icons/hi";
 import "./CRM.css";
 
 const CRM = () => {
+  const [activeTab, setActiveTab] = useState("leads");
   const [leads, setLeads] = useState([]);
-  const [sortBy, setSortBy] = useState("newest");
-  const [filterStatus, setFilterStatus] = useState("All");
-  const [selectedLead, setSelectedLead] = useState(null); 
+  const [timelineEvents, setTimelineEvents] = useState([]);
+  const [editingIndex, setEditingIndex] = useState(null);
+  const [selectedBookingId, setSelectedBookingId] = useState(null);
 
-  // --- 1. FETCH REAL LEADS FROM MONGODB ---
-  const fetchLeads = async () => {
+  // Helper to get token for all requests
+  const getAuthHeaders = (contentType = "application/json") => {
+    const token = localStorage.getItem("token");
+    return {
+      "Content-Type": contentType,
+      "Authorization": `Bearer ${token}`, // Critical for adminOnly middleware
+    };
+  };
+
+  // ... inside your CRM component
+const fetchLeads = async () => {
+  const token = localStorage.getItem("token");
+
+  // GUARD: If no token exists, don't even call the server
+  if (!token) {
+    console.warn("No token found, redirecting to login...");
+    window.location.href = "/login";
+    return;
+  }
+
+  try {
+    const response = await fetch("http://localhost:5000/api/leads", {
+      headers: getAuthHeaders(),
+    });
+
+    if (!response.ok) {
+      // If unauthorized, clear the dead token and kick to login
+      if (response.status === 401 || response.status === 403) {
+        localStorage.clear();
+        window.location.href = "/login";
+        return;
+      }
+      throw new Error("Failed to fetch leads.");
+    }
+
+    const data = await response.json();
+    setLeads(data);
+  } catch (error) {
+    toast.error(error.message || "Database connection failed.");
+  }
+};
+
+  // --- 2. FETCH SPECIFIC TIMELINE ---
+  const fetchTimeline = async (id) => {
+    if (!id) return;
     try {
-      const response = await fetch("http://localhost:5000/api/leads");
-      const data = await response.json();
-      setLeads(data);
-    } catch (error) {
-      toast.error("Failed to sync CRM with database");
+      const res = await fetch(`http://localhost:5000/api/bookings/${id}`, {
+        headers: getAuthHeaders(),
+      });
+      const data = await res.json();
+      setTimelineEvents(data.timeline || []);
+    } catch (err) {
+      toast.error("Timeline sync failed. Check server connection.");
     }
   };
 
@@ -28,187 +75,135 @@ const CRM = () => {
     fetchLeads();
   }, []);
 
-  // --- 2. CONVERT LEAD TO BOOKING ---
-  const handleConfirmLead = async (lead) => {
-    try {
-      const loadingToast = toast.loading("Converting lead to booking...");
+  // --- 3. HANDLE UPDATE LOGIC ---
+  const handleUpdateEvent = async () => {
+    if (!selectedBookingId) {
+      toast.error("Please select a booking from the Lead Engine first.");
+      return;
+    }
 
-      const response = await fetch(`http://localhost:5000/api/crm/confirm/${lead._id}`, {
-        method: "POST", 
-        headers: { "Content-Type": "application/json" },
+    try {
+      // Sending the FULL timeline array as expected by the backend
+      const res = await fetch(`http://localhost:5000/api/bookings/timeline/${selectedBookingId}`, {
+        method: "PUT",
+        headers: getAuthHeaders(),
+        body: JSON.stringify({ timeline: timelineEvents }),
       });
 
-      if (response.ok) {
-        toast.dismiss(loadingToast);
-        toast.success(`${lead.name} has been moved to Bookings!`, {
-          description: "Client profile and Booking event created successfully.",
-        });
-        
-        fetchLeads(); // Instantly refresh the board
-        setSelectedLead(null); // Close the modal
+      if (res.ok) {
+        toast.success("Timeline synced successfully!");
+        setEditingIndex(null);
       } else {
-        const errData = await response.json();
-        toast.dismiss(loadingToast);
-        toast.error(`Conversion failed: ${errData.message}`);
+        const errorData = await res.json();
+        toast.error(`Sync Failed: ${errorData.message}`);
       }
     } catch (err) {
-      toast.error("Network error: Could not reach the server.");
+      toast.error("Connection Refused: Is your backend running on port 5000?");
     }
   };
 
-  // --- 3. BULLETPROOF SORTING & FILTERING ---
-  const processedLeads = leads
-    .filter(lead => filterStatus === "All" || lead.status === filterStatus)
-    .sort((a, b) => {
-      if (sortBy === "newest") return new Date(b.enquireDate || Date.now()) - new Date(a.enquireDate || Date.now());
-      if (sortBy === "eventDate") return new Date(a.date || Date.now()) - new Date(b.date || Date.now());
-      return 0;
-    });
+  const handleInputChange = (index, field, value) => {
+    const updated = [...timelineEvents];
+    updated[index][field] = value;
+    setTimelineEvents(updated);
+  };
+
+  const manageTimeline = (id) => {
+    setSelectedBookingId(id);
+    fetchTimeline(id);
+    setActiveTab("timeline");
+  };
 
   return (
-    <div className="crm-page">
+    <div className="crm-page admin-white-bg">
       <Toaster position="top-right" richColors />
-      
-      {/* TOOLBAR */}
-      <div className="crm-toolbar">
-        <div className="toolbar-left">
-          <HiOutlineAdjustments className="filter-icon" />
-          <span className="toolbar-label">CRM Lead Engine</span>
-        </div>
 
-        <div className="toolbar-right">
-          <div className="custom-select-wrapper">
-            <label>Status Filter</label>
-            <div className="select-container">
-              <select value={filterStatus} onChange={(e) => setFilterStatus(e.target.value)}>
-                <option value="All">All Status</option>
-                <option value="Confirm">Confirm</option>
-                <option value="On Talk">On Talk</option>
-                <option value="Follow Up">Follow Up</option>
-              </select>
-              <HiOutlineChevronDown className="chevron" />
-            </div>
-          </div>
-          <div className="custom-select-wrapper">
-            <label>Sort By</label>
-            <div className="select-container">
-              <select value={sortBy} onChange={(e) => setSortBy(e.target.value)}>
-                <option value="newest">Recent Enquiry</option>
-                <option value="eventDate">Event Date</option>
-              </select>
-              <HiOutlineChevronDown className="chevron" />
-            </div>
-          </div>
-        </div>
+      {/* HEADER NAVIGATION */}
+      <div className="crm-header-nav">
+        <button className={activeTab === "leads" ? "active" : ""} onClick={() => setActiveTab("leads")}>
+          Lead Engine
+        </button>
+        <button 
+          className={activeTab === "timeline" ? "active" : ""} 
+          onClick={() => setActiveTab("timeline")}
+          disabled={!selectedBookingId}
+        >
+          {selectedBookingId ? "Manage Timeline" : "Select a Lead first"}
+        </button>
       </div>
 
-      {/* LEADS GRID */}
-      <div className="leads-grid">
-        {processedLeads.length === 0 ? (
-          <div style={{ padding: "40px", color: "#64748b", gridColumn: "1 / -1", textAlign: "center" }}>
-            No leads found for this status.
-          </div>
-        ) : (
-          processedLeads.map((lead) => (
+      {/* LEAD ENGINE VIEW */}
+      {activeTab === "leads" && (
+        <div className="leads-grid">
+          {leads.map((lead) => (
             <div key={lead._id} className="lead-card">
-              <div className={`lead-status-dot ${(lead.status || 'on-talk').replace(/\s+/g, '-').toLowerCase()}`}></div>
-              <div className="lead-badge">{lead.status || 'On Talk'}</div>
-              
               <div className="lead-header">
                 <h3>{lead.name}</h3>
-                <span className="tradition-tag">{lead.tradition || 'Standard'}</span>
+                <span className="lead-badge">{lead.status}</span>
               </div>
-
               <div className="lead-body">
-                <div className="info-row"><HiOutlineClock /> <span>{lead.date || 'TBD'}</span></div>
-                <div className="info-row"><HiOutlineUsers /> <span>{lead.guestCount || 0} Guests</span></div>
-                <div className="info-row"><HiOutlineCurrencyDollar /> <span>₹{lead.budget || '0'}</span></div>
+                <div className="info-row"><HiOutlineClock /> <span>{lead.date}</span></div>
+                <div className="info-row"><HiOutlineUsers /> <span>{lead.guestCount} Guests</span></div>
               </div>
-
               <div className="lead-footer">
-                <button className="btn-view" onClick={() => setSelectedLead(lead)}>View Details</button>
-                {/* Hide confirm button if already confirmed */}
-                {lead.status !== 'Confirm' && (
-                  <button className="btn-convert" onClick={() => handleConfirmLead(lead)}>Confirm Lead</button>
-                )}
+                <button className="btn-primary" onClick={() => manageTimeline(lead._id)}>
+                  Manage Timeline
+                </button>
               </div>
             </div>
-          ))
-        )}
-      </div>
+          ))}
+        </div>
+      )}
 
-      {/* --- VIEW DETAILS MODAL --- */}
-      {selectedLead && (
-        <div className="modal-overlay" onClick={() => setSelectedLead(null)}>
-          <div className="details-modal" onClick={(e) => e.stopPropagation()}>
-            <div className="modal-header">
-              <div className="header-text">
-                <h2>{selectedLead.name}</h2>
-                <span className="sub-text">
-                  Enquired on {selectedLead.enquireDate ? new Date(selectedLead.enquireDate).toLocaleDateString() : 'Unknown Date'}
-                </span>
-              </div>
-              <button className="close-modal" onClick={() => setSelectedLead(null)}>
-                <HiOutlineX />
-              </button>
-            </div>
+      {/* TIMELINE EDITOR VIEW */}
+      {activeTab === "timeline" && (
+        <div className="timeline-editor-container">
+          <div className="editor-grid">
+            {timelineEvents.length === 0 ? (
+              <p className="no-data">No timeline events found for this booking.</p>
+            ) : (
+              timelineEvents.map((event, index) => (
+                <div key={index} className="editor-card">
+                  <div className="card-header">
+                    <h3>{event.title}</h3>
+                    <button onClick={() => setEditingIndex(editingIndex === index ? null : index)}>
+                      <HiOutlinePencilAlt /> {editingIndex === index ? "Cancel" : "Edit"}
+                    </button>
+                  </div>
 
-            <div className="modal-content-grid">
-              <div className="detail-item">
-                <label>Contact Number</label>
-                <p>{selectedLead.contact}</p>
-              </div>
-              <div className="detail-item">
-                <label>Event Type</label>
-                <p>{selectedLead.eventType || 'N/A'}</p>
-              </div>
-              <div className="detail-item">
-                <label>Event Date</label>
-                <p>{selectedLead.date || 'TBD'}</p>
-              </div>
-              <div className="detail-item">
-                <label>Duration</label>
-                <p>{selectedLead.duration || 'N/A'}</p>
-              </div>
-              <div className="detail-item">
-                <label>Preferred Location</label>
-                <p><HiOutlineLocationMarker /> {selectedLead.location || 'N/A'}</p>
-              </div>
-              <div className="detail-item">
-                <label>Tradition</label>
-                <p className="tradition-highlight">{selectedLead.tradition || 'N/A'}</p>
-              </div>
-              <div className="detail-item full-width">
-                <label>Requested Services</label>
-                <div className="services-tags">
-                  {/* Safely map over services, defaulting to empty array if missing */}
-                  {(selectedLead.services || []).length > 0 ? (
-                    selectedLead.services.map((s, i) => (
-                      <span key={i} className="service-tag">{s}</span>
-                    ))
+                  {editingIndex === index ? (
+                    <div className="edit-form">
+                      <label>Venue</label>
+                      <input type="text" value={event.venue} onChange={(e) => handleInputChange(index, "venue", e.target.value)} />
+                      <div className="form-row">
+                        <div>
+                          <label>Date</label>
+                          <input type="text" value={event.date} onChange={(e) => handleInputChange(index, "date", e.target.value)} />
+                        </div>
+                        <div>
+                          <label>Time</label>
+                          <input type="text" value={event.time} onChange={(e) => handleInputChange(index, "time", e.target.value)} />
+                        </div>
+                      </div>
+                      <label>Schedule (one per line)</label>
+                      <textarea
+                        rows="4"
+                        value={event.schedule.join("\n")}
+                        onChange={(e) => handleInputChange(index, "schedule", e.target.value.split("\n"))}
+                      />
+                      <button className="save-btn" onClick={handleUpdateEvent}>
+                        <HiOutlineSave /> Push Updates to Client
+                      </button>
+                    </div>
                   ) : (
-                    <span className="service-tag">None Specified</span>
+                    <div className="read-only-preview">
+                      <p><strong>Venue:</strong> {event.venue}</p>
+                      <p><strong>Date:</strong> {event.date} | {event.time}</p>
+                    </div>
                   )}
                 </div>
-              </div>
-              <div className="detail-item">
-                <label>Guest Count</label>
-                <p>{selectedLead.guestCount || 0} People</p>
-              </div>
-              <div className="detail-item">
-                <label>Estimated Budget</label>
-                <p className="budget-text">₹{selectedLead.budget || '0'}</p>
-              </div>
-            </div>
-
-            <div className="modal-actions">
-              <button className="btn-outline" onClick={() => setSelectedLead(null)}>Close</button>
-              {selectedLead.status !== 'Confirm' && (
-                <button className="btn-primary" onClick={() => handleConfirmLead(selectedLead)}>
-                  Confirm & Move to Bookings
-                </button>
-              )}
-            </div>
+              ))
+            )}
           </div>
         </div>
       )}
