@@ -1,135 +1,370 @@
-.venue-detail-page{
-    background:#f4ede4;
-    min-height:100vh;
-    padding-bottom:80px;
-    font-family: 'Playfair Display', serif;
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+
+.venue-detail-page-modern {
+    background: #f7f7f7;
+    min-height: 100vh;
+    padding-bottom: 80px;
+    font-family: 'Inter', sans-serif;
+    color: #333;
 }
 
-/* HERO */
-.venue-detail-hero{
-    padding:30px 20px;
-    text-align:center;
-    color:#d39d5f;
+/* ---------------- HERO ---------------- */
+.vd-hero-container {
+    width: 100%;
+    height: 60vh;
+    min-height: 400px;
+    max-height: 600px;
+    position: relative;
+    overflow: hidden;
 }
 
-.venue-detail-hero h1{
-    font-size:36px;
-    letter-spacing:2px;
+.vd-hero-img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
 }
 
-.venue-detail-hero p{
-    margin-top:10px;
-    font-size:18px;
+.vd-hero-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(to bottom, rgba(0, 0, 0, 0) 50%, rgba(0, 0, 0, 0.5) 100%);
 }
 
-.check-btn{
-    margin-top:20px;
-    padding:12px 30px;
-    border:none;
-    border-radius:30px;
-    background:#e6e6e6;
-    cursor:pointer;
-    font-weight:600;
+.vd-hero-watermark {
+    position: absolute;
+    bottom: 120px;
+    left: 40px;
+    color: rgba(255, 255, 255, 0.4);
+    font-weight: 500;
+    font-size: 24px;
+    letter-spacing: 1px;
 }
 
-.check-btn:hover{
-    background:#B87333;
-    color:white;
+/* ---------------- MAIN CARD ---------------- */
+.vd-main-card {
+    background: #fff;
+    max-width: 900px;
+    margin: -80px auto 0;
+    position: relative;
+    z-index: 10;
+    border-radius: 4px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+    display: flex;
+    flex-direction: column;
 }
 
-/* ABOUT */
-.venue-about{
-    text-align:center;
-    padding:20px 20px;
+.vd-card-header {
+    display: flex;
+    justify-content: space-between;
+    padding: 24px 24px 16px;
+    align-items: flex-start;
 }
 
-.venue-about h2{
-    color:#d39d5f;
-    font-size:28px;
+.vd-card-title-col {
+    display: flex;
+    flex-direction: column;
 }
 
-.venue-info-box{
-    display:flex;
-    justify-content:center;
-    gap:40px;
-    margin-top:30px;
-    flex-wrap:wrap;
+.vd-title {
+    font-size: 26px;
+    font-weight: 700;
+    color: #4a5468;
+    margin: 0;
 }
 
-.venue-info-box div{
-    background:#ddd;
-    padding:18px 28px;
-    border-radius:20px;
-    font-weight:600;
+.vd-subtitle {
+    font-size: 14px;
+    color: #666;
+    margin: 6px 0 0;
 }
 
-/* ================= GALLERY ================= */
-/* ================= GALLERY ================= */
-
-.venue-gallery{
-    text-align:center;
-    margin-top:60px;
+.vd-rating-box {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
 }
 
-.venue-gallery h2{
-    color:#d39d5f;
-    font-size:28px;
-    margin-bottom:40px;
+.vd-rating-score {
+    background: #ffb600;
+    color: #fff;
+    font-weight: 600;
+    padding: 6px 12px;
+    border-radius: 4px;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    font-size: 15px;
 }
 
-/* SIMPLE GRID LIKE VENUE PAGE */
-.gallery-grid{
-    width:80%;
-    margin:0 auto;
-    display:grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap:30px;
+.vd-rating-reviews {
+    font-size: 13px;
+    color: #666;
+    margin-top: 6px;
 }
 
-/* IMAGE SAME SIZE AS VENUE PAGE */
-.gallery-grid img{
-    width:100%;
-    height:220px;   /* same as venue cards */
-    object-fit:cover;
-    border-radius:16px;
-    box-shadow:0 10px 25px rgba(0,0,0,0.15);
-    transition:0.4s;
+/* ---------------- ADDRESS ---------------- */
+.vd-address-section {
+    padding: 0 24px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    margin-top: 8px;
 }
 
-/* HOVER */
-.gallery-grid img:hover{
-    transform:scale(1.05);
+.vd-address-line1 {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    color: #333;
+    font-weight: 500;
+    font-size: 15px;
 }
 
-/* LOCATION CENTER */
-.venue-location{
-    margin-top:80px;
-    display:flex;
-    flex-direction:column;
-    align-items:center;
-    justify-content:center;
-    text-align:center;
+.icon-map {
+    width: 16px;
+    height: 16px;
+    color: #666;
+    flex-shrink: 0;
 }
 
-.venue-location h2{
-    font-size:28px;
-    margin-bottom:10px;
-    color:#000;
+.view-map {
+    color: #aaa;
+    font-weight: 400;
+    font-size: 13px;
+    margin-left: 4px;
 }
 
-.venue-location p{
-    font-size:20px;
-    margin-top:5px;
+.vd-address-line2 {
+    font-size: 13.5px;
+    color: #888;
+    margin-left: 24px;
 }
 
-@media (max-width:900px){
-  .gallery-grid{
-    grid-template-columns: repeat(2,1fr);
-  }
+/* ---------------- PORTFOLIO CONTAINER ---------------- */
+.vd-portfolio-container {
+    background: #fff;
+    max-width: 900px;
+    margin: 16px auto;
+    border-radius: 4px;
+    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.05);
+    display: flex;
+    flex-direction: column;
+    padding: 24px;
 }
 
-@media (max-width:500px){
-  .gallery-grid{
-    grid-template-columns:1fr;
-  }
+.vd-portfolio-tabs {
+    display: flex;
+    gap: 32px;
+    border-bottom: 1px solid #f0f0f0;
+    margin-bottom: 24px;
+}
+
+.vd-ptab {
+    padding-bottom: 12px;
+    font-size: 15px;
+    font-weight: 600;
+    color: #aaa;
+    cursor: pointer;
+    position: relative;
+}
+
+.vd-ptab.active {
+    color: #e72e77;
+}
+
+.vd-ptab.active::after {
+    content: '';
+    position: absolute;
+    bottom: -1px;
+    left: 0;
+    width: 100%;
+    height: 3px;
+    background: #e72e77;
+}
+
+/* ---------------- PHOTO GRID ---------------- */
+.vd-photo-gallery-wrapper {
+    display: flex;
+    flex-direction: column;
+}
+
+.vd-photo-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 8px;
+    /* Tighter gap matching UI */
+}
+
+.vd-photo-grid img {
+    width: 100%;
+    aspect-ratio: 1 / 1;
+    /* Perfectly square */
+    height: auto;
+    object-fit: cover;
+    border-radius: 0;
+    /* Sharp corners */
+    cursor: pointer;
+    transition: transform 0.2s;
+}
+
+.vd-photo-grid img:hover {
+    transform: scale(1.02);
+}
+
+.vd-photo-masonry {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    grid-auto-rows: 150px;
+    gap: 8px;
+}
+
+.vd-photo-masonry img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+    cursor: pointer;
+    transition: transform 0.2s;
+    border-radius: 0;
+}
+
+/* Replicating the specific masonry spans from the screenshot */
+.vd-masonry-item-0 {
+    grid-column: span 1;
+    grid-row: span 3;
+}
+
+/* Tall */
+.vd-masonry-item-1 {
+    grid-column: span 1;
+    grid-row: span 1;
+}
+
+/* Short square */
+.vd-masonry-item-2 {
+    grid-column: span 2;
+    grid-row: span 2;
+}
+
+/* Wide */
+.vd-masonry-item-3 {
+    grid-column: span 2;
+    grid-row: span 2;
+}
+
+/* Big Box */
+.vd-masonry-item-4 {
+    grid-column: span 1;
+    grid-row: span 2;
+}
+
+/* Tallish */
+.vd-masonry-item-5 {
+    grid-column: span 1;
+    grid-row: span 2;
+}
+
+/* Tallish */
+.vd-masonry-item-6 {
+    grid-column: span 1;
+    grid-row: span 2;
+}
+
+/* Tallish */
+.vd-masonry-item-7 {
+    grid-column: span 1;
+    grid-row: span 2;
+}
+
+/* Tallish */
+.vd-masonry-item-8 {
+    grid-column: span 1;
+    grid-row: span 2;
+}
+
+/* Tallish */
+.vd-masonry-item-9 {
+    grid-column: span 2;
+    grid-row: span 3;
+}
+
+/* Large Block */
+.vd-masonry-item-10 {
+    grid-column: span 1;
+    grid-row: span 2;
+}
+
+/* Tallish */
+.vd-masonry-item-11 {
+    grid-column: span 1;
+    grid-row: span 2;
+}
+
+/* Tallish */
+.vd-masonry-item-12 {
+    grid-column: span 1;
+    grid-row: span 2;
+}
+
+/* Tallish */
+.vd-masonry-item-13 {
+    grid-column: span 1;
+    grid-row: span 2;
+}
+
+/* Tallish */
+.vd-masonry-item-default {
+    grid-column: span 1;
+    grid-row: span 1;
+}
+
+.vd-photo-masonry img:hover {
+    transform: scale(1.02);
+}
+
+.vd-view-more-container {
+    display: flex;
+    justify-content: center;
+    margin-top: 24px;
+}
+
+.vd-view-more-btn {
+    background: transparent;
+    border: 1px solid #e72e77;
+    color: #e72e77;
+    padding: 8px 32px;
+    border-radius: 20px;
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s;
+    font-family: inherit;
+}
+
+.vd-view-more-btn:hover {
+    background: #e72e77;
+    color: #fff;
+}
+
+@media (max-width: 768px) {
+    .vd-main-card {
+        margin: -40px 16px 0;
+    }
+
+    .vd-portfolio-container {
+        margin: 16px;
+    }
+
+
+    .vd-photo-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+
+    .vd-photo-masonry {
+        grid-template-columns: repeat(2, 1fr);
+        grid-auto-rows: 150px;
+    }
 }
