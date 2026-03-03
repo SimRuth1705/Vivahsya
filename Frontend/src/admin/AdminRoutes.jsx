@@ -19,12 +19,14 @@ const AdminRoutes = ({ setIsAuthenticated, onLogout }) => {
   return (
     // AdminRoutes.jsx
 <Routes>
+  {/* Public Admin Login */}
   <Route path="login" element={<Login setIsAuthenticated={setIsAuthenticated} />} />
   
+  {/* 🔒 Protected Admin Area */}
   <Route element={
-    <ProtectedRoute> 
-      <AdminLayout onLogout={onLogout} />
-    </ProtectedRoute>
+      <ProtectedRoute requiredRole="admin"> 
+        <AdminLayout onLogout={onLogout} />
+      </ProtectedRoute>
   }>
     <Route path="/" element={<Navigate to="/admin/dashboard" replace />} />
     <Route path="dashboard" element={<Dashboard />} />
@@ -33,7 +35,7 @@ const AdminRoutes = ({ setIsAuthenticated, onLogout }) => {
     <Route path="events" element={<Events />} />
     <Route path="vendors" element={<Vendors />} />
 
-    {/* Protected for Owner only */}
+    {/* 👑 Owner Only Area */}
     <Route path="leads" element={<ProtectedRoute requiredRole="owner"><Leads /></ProtectedRoute>} />
     <Route path="users" element={<ProtectedRoute requiredRole="owner"><Users /></ProtectedRoute>} />
   </Route>

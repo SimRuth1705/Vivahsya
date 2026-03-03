@@ -20,29 +20,38 @@ const Login = ({ setIsAuthenticated }) => {
         body: JSON.stringify({ email, password }),
       });
 
+      // 1. Guard against non-JSON responses (prevents the SyntaxError)
+      const contentType = response.headers.get("content-type");
+      if (!contentType || !contentType.includes("application/json")) {
+        const text = await response.text(); // See what the server actually sent
+        console.error("Server returned non-JSON:", text);
+        throw new Error("Server configuration error: Expected JSON but received HTML.");
+      }
+
       const data = await response.json();
 
       if (response.ok) {
+        // 2. Successful Login Logic
         localStorage.setItem('token', data.token);
         localStorage.setItem('user', JSON.stringify(data.user));
         localStorage.setItem('role', data.user.role);
-        
+
+        if (setIsAuthenticated) setIsAuthenticated(true);
         toast.success(`Welcome back, ${data.user.name}`);
-        if(setIsAuthenticated) setIsAuthenticated(true);
 
         setTimeout(() => {
-          switch (data.user.role) {
-            case 'owner':
-            case 'admin': navigate('/admin/dashboard'); break;
-            case 'client': navigate(`/timeline/${data.user.leadId}`); break;
-            default: navigate('/feed'); break;
+          if (data.user.role === 'owner' || data.user.role === 'admin') {
+            navigate('/admin/dashboard');
+          } else {
+            navigate(`/client/timeline/${data.user.leadId}`);
           }
         }, 800);
       } else {
         toast.error(data.message || "Invalid credentials");
       }
     } catch (error) {
-      toast.error("Connection failed. Is the server running?");
+      console.error("Login Error:", error.message);
+      toast.error(error.message || "Connection failed. Is the server running?");
     } finally {
       setLoading(false);
     }
@@ -51,7 +60,6 @@ const Login = ({ setIsAuthenticated }) => {
   return (
     <div className="neat-login-wrapper">
       <Toaster position="top-right" richColors />
-      
       <div className="login-box">
         <div className="login-header">
           <div className="v-logo">V</div>
@@ -61,10 +69,10 @@ const Login = ({ setIsAuthenticated }) => {
 
         <form onSubmit={handleLogin} className="neat-form">
           <div className="input-group">
-            <label>Email</label>
+            <label>Email Address</label>
             <input 
               type="email" 
-              placeholder="name@example.com" 
+              placeholder="admin@vivahasya.com" 
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               required 
@@ -83,12 +91,12 @@ const Login = ({ setIsAuthenticated }) => {
           </div>
 
           <button type="submit" className="prime-btn" disabled={loading}>
-            {loading ? 'Authenticating...' : 'Sign In'}
+            {loading ? 'Verifying...' : 'Sign In'}
           </button>
         </form>
 
         <div className="login-footer">
-          <p>New here? <span onClick={() => navigate('/register')}>Join our community</span></p>
+          <p>Need help? Contact system administrator</p>
         </div>
       </div>
     </div>
