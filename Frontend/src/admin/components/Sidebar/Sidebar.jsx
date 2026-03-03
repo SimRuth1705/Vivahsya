@@ -1,68 +1,78 @@
-import React, { useState } from 'react';
-import { NavLink } from 'react-router-dom';
-import './Sidebar.css';
-import { 
-  HiOutlineViewGrid, HiOutlineUserGroup, HiOutlineCalendar, 
-  HiOutlineClipboardList, HiOutlineBadgeCheck, HiOutlineChartPie, 
-  HiOutlineCurrencyDollar, HiOutlineLogout 
-} from 'react-icons/hi';
+import React, { useState } from "react";
+import { NavLink } from "react-router-dom";
+import { toast } from "sonner"; // Ensure toast is imported
+import "./Sidebar.css";
+import {
+  HiOutlineViewGrid,
+  HiOutlineUserGroup,
+  HiOutlineCalendar,
+  HiOutlineClipboardList,
+  HiOutlineBadgeCheck,
+  HiOutlineChartPie,
+  HiOutlineLogout,
+} from "react-icons/hi";
 
 const Sidebar = ({ onLogout }) => {
   const [isHovered, setIsHovered] = useState(false);
-  
-  // Get current user from localStorage
+
   const user = JSON.parse(localStorage.getItem("user"));
-  const userRole = user?.role || 'employee';
+  const userRole = user?.role || "employee";
+
+  // Use the logic provided by the parent or fallback to hard-reset
+  const executeLogout = () => {
+    if (onLogout) {
+      onLogout();
+    } else {
+      localStorage.clear();
+      window.location.href = "/login";
+    }
+  };
 
   const menuItems = [
-    { name: "Dashboard", path: "/admin/dashboard", icon: <HiOutlineViewGrid />, role: 'all' },
-    { name: "Leads", path: "/admin/leads", icon: <HiOutlineUserGroup />, role: 'owner' }, // Protected
-    { name: "Bookings", path: "/admin/bookings", icon: <HiOutlineBadgeCheck />, role: 'all' },
-    { name: "Events", path: "/admin/events", icon: <HiOutlineCalendar />, role: 'all' },
-    { name: "Vendors", path: "/admin/vendors", icon: <HiOutlineClipboardList />, role: 'all' },
-    { name: "CRM", path: "/admin/crm", icon: <HiOutlineChartPie />, role: 'all' },
-    { name: "Users", path: "/admin/users", icon: <HiOutlineUserGroup />, role: 'owner' }, // Protected
+    { name: "Dashboard", path: "/admin/dashboard", icon: <HiOutlineViewGrid />, role: "all" },
+    { name: "Leads", path: "/admin/leads", icon: <HiOutlineUserGroup />, role: "owner" },
+    { name: "Bookings", path: "/admin/bookings", icon: <HiOutlineBadgeCheck />, role: "all" },
+    { name: "Events", path: "/admin/events", icon: <HiOutlineCalendar />, role: "all" },
+    { name: "Vendors", path: "/admin/vendors", icon: <HiOutlineClipboardList />, role: "all" },
+    { name: "CRM", path: "/admin/crm", icon: <HiOutlineChartPie />, role: "all" },
+    { name: "Users", path: "/admin/users", icon: <HiOutlineUserGroup />, role: "owner" },
   ];
 
   return (
-    <aside 
-      className={`sidebar ${isHovered ? 'open' : 'closed'}`}
+    <aside
+      className={`sidebar ${isHovered ? "open" : "closed"}`}
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
     >
       <div className="sidebar-header">
         <div className="logo-section">
           <div className="logo-icon">V</div>
-          <span className={`logo-text ${isHovered ? 'visible' : 'hidden'}`}>Vivahasya</span>
+          <span className={`logo-text ${isHovered ? "visible" : "hidden"}`}>Vivahasya</span>
         </div>
       </div>
 
       <nav className="sidebar-nav">
         {menuItems.map((item) => {
-          // If the item is owner-only and user is an employee, skip it
-          if (item.role === 'owner' && userRole !== 'owner') return null;
-
+          if (item.role === "owner" && userRole !== "owner") return null;
           return (
-            <NavLink 
+            <NavLink
               key={item.name}
-              to={item.path} 
-              className={({ isActive }) => `nav-item ${isActive ? "active" : ""}`}
+              to={item.path}
+              className={({ isActive }) => `sidebar-item ${isActive ? "active" : ""}`}
             >
               <span className="icon-wrapper">{item.icon}</span>
-              <span className={`label ${isHovered ? 'visible' : 'hidden'}`}>{item.name}</span>
+              <span className={`label ${isHovered ? "visible" : "hidden"}`}>{item.name}</span>
             </NavLink>
           );
         })}
       </nav>
 
-<div className="sidebar-footer">
-  <button onClick={onLogout} className="logout-btn">
-    <span className="icon-wrapper"><HiOutlineLogout size={22} /></span>
-    <span className={`label ${isHovered ? 'visible' : 'hidden'}`}>
-      Logout
-    </span>
-  </button>
-</div>
+      <div className="sidebar-footer">
+        <button onClick={executeLogout} className="logout-btn">
+          <span className="icon-wrapper"><HiOutlineLogout size={22} /></span>
+          <span className={`label ${isHovered ? "visible" : "hidden"}`}>Logout</span>
+        </button>
+      </div>
     </aside>
   );
 };

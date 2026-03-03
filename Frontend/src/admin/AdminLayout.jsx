@@ -5,16 +5,14 @@ import './AdminLayout.css';
 
 const AdminLayout = ({ onLogout }) => {
   return (
-    <div className="admin-layout-wrapper">
-      {/* Sidebar gets the logout function */}
+    <div className="admin-container">
+      {/* Sidebar - Ensure its internal CSS still works with the 85px/260px logic */}
       <Sidebar onLogout={onLogout} />
       
-      <div className="admin-main-content">
-        {/* This renders the actual pages like Dashboard, Sales, etc. */}
-        <div className="page-container">
-          <Outlet />
-        </div>
-      </div>
+      <main className="admin-main-content">
+        {/* The child pages (Dashboard, Bookings, etc.) render here directly */}
+        <Outlet />
+      </main>
     </div>
   );
 };

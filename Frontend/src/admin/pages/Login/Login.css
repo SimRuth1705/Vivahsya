@@ -1,112 +1,114 @@
-/* src/admin/pages/Login/Login.css */
-
-.login-container {
-  height: 100vh;
-  width: 100vw;
+/* Login.css - Minimalist & Neat */
+.neat-login-wrapper {
+  min-height: 100vh;
   display: flex;
-  justify-content: center;
   align-items: center;
-  background-color: #f4f6f9; /* Light grey background */
-  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  justify-content: center;
+  background-color: #ffffff; /* Pure White Background */
+  font-family: "Inter", sans-serif;
 }
 
-.login-card {
-  background: white;
-  padding: 40px;
-  border-radius: 16px;
-  box-shadow: 0 10px 40px rgba(0,0,0,0.08);
+.login-box {
   width: 100%;
-  max-width: 400px;
-  animation: fadeIn 0.5s ease-out;
-}
-
-@keyframes fadeIn {
-  from { opacity: 0; transform: translateY(20px); }
-  to { opacity: 1; transform: translateY(0); }
+  max-width: 380px;
+  padding: 2.5rem;
+  background: #ffffff;
+  border: 1px solid #e5e5e5;
+  border-radius: 12px;
 }
 
 .login-header {
   text-align: center;
-  margin-bottom: 30px;
+  margin-bottom: 2.5rem;
+}
+
+.v-logo {
+  width: 50px;
+  height: 50px;
+  background: #eab308; /* Solid Gold Accent */
+  color: white;
+  font-size: 1.5rem;
+  font-weight: 800;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 12px;
+  margin: 0 auto 1rem;
 }
 
 .login-header h1 {
-  margin: 0;
-  color: #6200EA;
-  font-size: 28px;
+  font-size: 1.75rem;
   font-weight: 700;
+  color: #1a1a1a;
+  margin: 0;
 }
 
 .login-header p {
   color: #666;
-  font-size: 14px;
-  margin-top: 8px;
+  font-size: 0.95rem;
+  margin-top: 0.25rem;
 }
 
-/* Inputs */
 .input-group {
-  margin-bottom: 20px;
+  margin-bottom: 1.25rem;
 }
 
 .input-group label {
   display: block;
-  margin-bottom: 8px;
+  font-size: 0.85rem;
   font-weight: 600;
-  font-size: 13px;
   color: #333;
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
+  margin-bottom: 0.4rem;
 }
 
 .input-group input {
   width: 100%;
-  padding: 14px;
-  border: 1px solid #e0e0e0;
+  padding: 0.75rem;
+  border: 1.5px solid #e5e5e5;
   border-radius: 8px;
-  font-size: 15px;
-  background-color: #f9f9f9;
-  box-sizing: border-box;
-  transition: 0.2s;
+  font-size: 1rem;
+  transition: all 0.2s;
 }
 
+/* Subtle gold focus border */
 .input-group input:focus {
-  border-color: #6200EA;
-  background-color: white;
   outline: none;
-  box-shadow: 0 0 0 3px rgba(98, 0, 234, 0.1);
+  border-color: #eab308;
+  box-shadow: 0 0 0 3px rgba(234, 179, 8, 0.1);
 }
 
-/* Button */
-.login-btn {
+.prime-btn {
   width: 100%;
-  padding: 14px;
-  background-color: #6200EA;
+  padding: 0.85rem;
+  background-color: #eab308; /* Gold Accent */
   color: white;
   border: none;
   border-radius: 8px;
-  font-size: 16px;
+  font-size: 1rem;
   font-weight: 600;
   cursor: pointer;
-  transition: 0.2s;
-  margin-top: 10px;
+  transition: background 0.2s;
+  margin-top: 1rem;
 }
 
-.login-btn:hover {
-  background-color: #5000ca;
-  transform: translateY(-1px);
+.prime-btn:hover {
+  background-color: #ca8a04; /* Slightly darker gold on hover */
 }
 
-.login-btn:disabled {
-  background-color: #b0b0b0;
+.prime-btn:disabled {
+  background-color: #e5e5e5;
   cursor: not-allowed;
 }
 
 .login-footer {
+  margin-top: 2rem;
   text-align: center;
-  margin-top: 25px;
+  font-size: 0.85rem;
+  color: #666;
 }
 
-.login-footer p {
-  font-size: 13px;
-  color: #999;
+.login-footer span {
+  color: #eab308;
+  font-weight: 700;
+  cursor: pointer;
 }

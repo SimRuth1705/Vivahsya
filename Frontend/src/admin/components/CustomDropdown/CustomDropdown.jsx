@@ -1,26 +1,25 @@
 import React, { useState } from 'react';
-import './CustomDropdown.css'; // Make sure this path matches where you saved the CSS
+import './CustomDropdown.css'; 
 
 const CustomDropdown = ({ label, options, selected, onSelect }) => {
   const [isOpen, setIsOpen] = useState(false);
 
+  // Helper to find the label for the current selection
+  const currentLabel = options.find(opt => opt.value === selected)?.label;
+
   return (
     <div className="dropdown-container">
-      {/* Label */}
-      {label && <label className="dropdown-label">{label}</label>}
-      
-      {/* The Clickable Box */}
       <div
         className="dropdown-header"
         onClick={() => setIsOpen(!isOpen)}
-        tabIndex={0} // Makes it accessible via keyboard
-        onBlur={() => setTimeout(() => setIsOpen(false), 150)} // Closes if user clicks away
+        tabIndex={0}
+        onBlur={() => setTimeout(() => setIsOpen(false), 150)} 
       >
         <span className={`dropdown-text ${selected ? 'selected' : 'placeholder'}`}>
-          {selected || `Select ${label}`}
+          {/* ✅ Displays the readable label (e.g., "Bangalore") or the placeholder */}
+          {currentLabel || `Select ${label || 'Option'}`}
         </span>
         
-        {/* Dropdown Arrow Icon */}
         <svg 
           className={`dropdown-arrow ${isOpen ? 'open' : ''}`} 
           fill="none" 
@@ -31,7 +30,6 @@ const CustomDropdown = ({ label, options, selected, onSelect }) => {
         </svg>
       </div>
 
-      {/* The Dropdown Menu */}
       {isOpen && (
         <ul className="dropdown-list">
           {options.map((option, index) => (
@@ -39,12 +37,13 @@ const CustomDropdown = ({ label, options, selected, onSelect }) => {
               key={index}
               className="dropdown-item"
               onClick={(e) => {
-                e.stopPropagation(); // Prevents the click from immediately reopening the menu
-                onSelect(option);
+                e.stopPropagation();
+                // ✅ This matches the prop name in the function signature at the top
+                if (onSelect) onSelect(option.value); 
                 setIsOpen(false);
               }}
             >
-              {option}
+              {option.label} 
             </li>
           ))}
         </ul>

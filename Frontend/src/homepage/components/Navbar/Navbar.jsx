@@ -42,7 +42,7 @@ function NavBar() {
             LOG OUT
           </button>
         ) : (
-          <Link to="/admin/login" className="nav-btn">
+          <Link to="/login" className="nav-btn">
             LOG IN
           </Link>
         )}
