@@ -5,53 +5,31 @@ const cors = require("cors");
 const path = require("path");
 const bcrypt = require("bcryptjs");
 
-// 1. Load Env & Models
+// 1. Load Configurations
 dotenv.config();
-const User = require("./models/User");
 
-// 2. Import Route Files
+// 2. Import Sub-Routers
 const authRoutes = require("./routes/auth");
 const bookingRoutes = require("./routes/bookings");
 const leadRoutes = require("./routes/leads");
 const vendorRoutes = require("./routes/vendors");
-const venueRoutes = require("./routes/venues");
 const crmRoutes = require("./routes/crm");
-const clientRoutes = require("./routes/clients");
+const venueRoutes = require("./routes/venues");
+
+// Import Model for Seeding
+const User = require("./models/User");
 
 const app = express();
 
 // --- 3. MIDDLEWARE ---
-app.use(
-  cors({
-    origin: [
-      "http://localhost:5173",
-      "http://localhost:5174",
-      "http://localhost:5175",
-      "http://localhost:3000",
-    ],
-    credentials: true,
-  }),
-);
+app.use(cors({
+  origin: ["http://localhost:5173", "http://localhost:5174", "http://localhost:5175", "http://localhost:3000"],
+  credentials: true
+}));
 app.use(express.json());
 app.use("/uploads", express.static(path.join(__dirname, "uploads")));
 
-// --- 4. HEALTH CHECK ---
-app.get("/api/health", (req, res) => {
-  res.json({ status: "ok", message: "Vivahasya API is LIVE!" });
-});
-
-// --- 5. MOUNT API ROUTES ---
-// IMPORTANT: This prefix is added to EVERY route in auth.js
-app.use("/api/auth", authRoutes);
-
-app.use("/api/bookings", bookingRoutes);
-app.use("/api/vendors", vendorRoutes);
-app.use("/api/venues", venueRoutes);
-app.use("/api/crm", crmRoutes);
-app.use("/api/leads", leadRoutes);
-app.use("/api/clients", clientRoutes);
-
-// --- 6. ADMIN SEEDING LOGIC ---
+// --- 4. CLOUD DATABASE CONNECTION (Atlas) ---
 const seedAdmin = async () => {
   try {
     const adminExists = await User.findOne({ email: "admin@vivahasya.com" });
@@ -62,7 +40,7 @@ const seedAdmin = async () => {
         email: "admin@vivahasya.com",
         password: hashedPassword,
         role: "owner",
-        status: "Active",
+        status: "Active"
       });
       console.log("🚀 Admin account seeded: admin@vivahasya.com / admin123");
     }
@@ -71,14 +49,25 @@ const seedAdmin = async () => {
   }
 };
 
-// --- 7. DATABASE & SERVER START ---
-mongoose
-  .connect(process.env.MONGO_URI)
+mongoose.connect(process.env.MONGO_URI)
   .then(() => {
-    console.log("✅ MongoDB Connected to Atlas");
-    seedAdmin();
+    console.log("✅ MongoDB Atlas Connected Successfully");
+    seedAdmin(); // Run seed after connection
   })
-  .catch((err) => console.log("❌ DB Error:", err));
+  .catch(err => console.error("❌ MongoDB Atlas Connection Error:", err));
+
+// --- 5. ROUTES MOUNTING ---
+app.use("/api/auth", authRoutes);
+app.use("/api/bookings", bookingRoutes);
+app.use("/api/leads", leadRoutes);
+app.use("/api/vendors", vendorRoutes);
+app.use("/api/venues", venueRoutes);
+app.use("/api/crm", crmRoutes);
+
+// --- 6. HEALTH CHECK ---
+app.get("/api/health", (req, res) => {
+  res.json({ status: "ok", message: "Vivahasya API is active and connected to Atlas!" });
+});
 
 const PORT = process.env.PORT || 5000;
-app.listen(PORT, () => console.log(`🚀 Server on port ${PORT}`));
+app.listen(PORT, () => console.log(`🚀 Server running on port ${PORT}`));

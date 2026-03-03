@@ -12,28 +12,21 @@ const TimelineEventSchema = new mongoose.Schema({
 
 const BookingSchema = new mongoose.Schema({
   title: { type: String, required: true },
-  type: { type: String, required: true }, 
-  date: { type: String, required: true },
-  startTime: { type: String }, 
-  endTime: { type: String },
-  amount: { type: String, required: true },
-  
-  clientId: { type: mongoose.Schema.Types.ObjectId, ref: 'Client', required: true },
-  vendorId: { type: mongoose.Schema.Types.ObjectId, ref: 'Vendor' },
-  leadId: { type: mongoose.Schema.Types.ObjectId, ref: 'Lead' },
-  user: { type: mongoose.Schema.Types.ObjectId, ref: 'User' },
-
-  // 👇 LINK TO THE NEW VENUE MODEL
-  venueId: { type: mongoose.Schema.Types.ObjectId, ref: 'Venue' }, 
-
-  timeline: [TimelineEventSchema], 
-  source: { type: String, default: 'Website' },
+  amount: { type: Number, default: 0 }, // Used for Revenue calculation
+  type: { 
+    type: String, 
+    enum: ['Wedding', 'Haldi', 'Engagement', 'Reception'], 
+    default: 'Wedding' 
+  },
   status: { 
     type: String, 
-    required: true, 
-    enum: ['Pending', 'Confirmed', 'Completed', 'Cancelled'],
-    default: 'Pending'
-  }
+    enum: ['Confirmed', 'Completed', 'Pending', 'Cancelled'], 
+    default: 'Pending' 
+  },
+  date: { type: String },
+  clientId: { type: mongoose.Schema.Types.ObjectId, ref: 'User' },
 }, { timestamps: true });
+
+
 
 module.exports = mongoose.models.Booking || mongoose.model('Booking', BookingSchema);
