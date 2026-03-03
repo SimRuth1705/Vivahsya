@@ -16,6 +16,7 @@ import ClientApp from "./client/ClientRoutes";
 // Homepage Pages
 import Home from "./homepage/pages/Home";
 import Portfolio from "./homepage/pages/Portfolio";
+import Servicess from "./homepage/pages/Servicess";
 import LoginPage from "./homepage/pages/LoginPage";
 
 gsap.registerPlugin(ScrollTrigger);
@@ -68,6 +69,7 @@ function AppContent({ loading }) {
         {/* Public Pages */}
         <Route path="/" element={<Home introReady={!loading} />} />
         <Route path="/portfolio" element={<Portfolio />} />
+        <Route path="/services" element={<Servicess />} />
         <Route path="/login" element={<LoginPage />} />
 
         {/* Admin Portal */}
