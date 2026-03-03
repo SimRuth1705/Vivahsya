@@ -58,6 +58,12 @@ const Bookings = () => {
       setClients(clientsFromBookings);
     } catch (error) {
       console.error("Fetch error:", error);
+      toast.error("Failed to sync database components");
+    }
+  };
+
+  useEffect(() => {
+    fetchData();
   }, []);
 
   const handleEdit = (booking) => {
