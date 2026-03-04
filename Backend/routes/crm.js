@@ -1,79 +1,87 @@
 const express = require("express");
 const router = express.Router();
-const bcrypt = require("bcryptjs");
-const nodemailer = require("nodemailer");
+const User = require("../models/User");
 const Lead = require("../models/Lead");
 const Booking = require("../models/Booking");
-const Client = require("../models/Client");
-const User = require("../models/User");
-const { adminOnly, protect } = require("../middleware/authMiddleware");
+const bcrypt = require("bcryptjs");
+const nodemailer = require("nodemailer");
+const { protect, adminOnly } = require("../middleware/authMiddleware");
 
-// Confirm Lead & Onboard Client
+// 1. Email Config
+const transporter = nodemailer.createTransport({
+  host: "smtp.gmail.com",
+  port: 465,
+  secure: true,
+  auth: {
+    user: process.env.ADMIN_EMAIL,
+    pass: process.env.ADMIN_APP_PASSWORD,
+  },
+  tls: { rejectUnauthorized: false },
+});
+
+// 2. The Confirmation Route
+// ... (imports and transporter config same as before)
+
 router.post("/confirm/:id", protect, adminOnly, async (req, res) => {
   try {
     const lead = await Lead.findById(req.params.id);
-    if (!lead) return res.status(404).json({ message: "Lead not found." });
+    if (!lead) return res.status(404).json({ message: "Lead not found" });
 
-    // 1. Generate Credentials
-    const cleanName = lead.name.replace(/\s/g, "").toLowerCase();
-    const tempPassword = `${cleanName.slice(0, 4)}@26`;
+    const existingBooking = await Booking.findOne({ leadId: lead._id });
+    if (existingBooking) return res.status(400).json({ message: "Lead already confirmed." });
 
-    // 2. Create Client & Booking
-    const newClient = await Client.create({
-      name: lead.name,
-      phone: lead.contact,
-      email: lead.email,
-      location: lead.location,
-      totalSpent: lead.budget || 0,
-    });
+    const rawPassword = Math.floor(100000 + Math.random() * 900000).toString();
+    const hashedPassword = await bcrypt.hash(rawPassword, 10);
 
-    await Booking.create({
-      title: `${lead.name}'s Wedding`,
-      clientId: newClient._id,
-      leadId: lead._id,
-      status: "Confirmed",
-    });
-
-    // 3. Create Login Account
-    let user = await User.findOne({ email: lead.email });
+    // B. Create/Update Client User Account
+    let user = await User.findOne({ username: lead.email });
+    
     if (!user) {
-      const hashedPassword = await bcrypt.hash(tempPassword, 10);
+      console.log("🛠️ Creating new client user...");
       user = await User.create({
         name: lead.name,
-        email: lead.email,
+        username: lead.email, // Using email as the login username
         password: hashedPassword,
-        role: "client",
+        role: "client", // ✅ This now works because of the model update
+        status: "Active",
         leadId: lead._id,
       });
+    } else {
+      console.log("🔄 Updating existing client credentials...");
+      user.password = hashedPassword;
+      user.leadId = lead._id;
+      await user.save();
     }
 
-    // 4. Send Cloud Notification (Nodemailer)
-    const transporter = nodemailer.createTransport({
-      service: "gmail",
-      auth: { user: process.env.EMAIL_USER, pass: process.env.EMAIL_PASS }
-    });
-
-    const mailOptions = {
-      from: `"Vivahasya" <${process.env.EMAIL_USER}>`,
-      to: lead.email,
-      subject: "Welcome to Vivahasya! 💍",
-      html: `<h3>Congrats ${lead.name}!</h3><p>Your booking is confirmed.</p>
-             <p><b>Password:</b> ${tempPassword}</p>`
-    };
-
-    try {
-      await transporter.sendMail(mailOptions);
-    } catch (mailErr) {
-      console.log("Email failed, but client created.");
-    }
-
-    // 5. Finalize Lead Status
-    lead.status = "Converted";
+    // C. Lead & Booking Sync
+    lead.status = "Confirm";
     await lead.save();
 
-    res.json({ message: "Client onboarded successfully", credentials: { email: lead.email, password: tempPassword } });
-  } catch (err) {
-    res.status(500).json({ error: err.message });
+    const newBooking = await Booking.create({
+      title: `${lead.name}'s Event`,
+      leadId: lead._id,
+      clientId: user._id,
+      date: lead.date, 
+      status: "Confirmed",
+      amount: lead.budget || "0",
+      type: lead.eventType || "Wedding",
+    });
+
+    // D. Email Delivery
+    await transporter.sendMail({
+      from: `"Vivahasya" <${process.env.ADMIN_EMAIL}>`,
+      to: lead.email,
+      subject: "Welcome to Vivahasya - Portal Access",
+      html: `<h3>Wedding Portal Activated</h3>
+             <p>Log in with Username: <b>${lead.email}</b> and Password: <b>${rawPassword}</b></p>`
+    });
+
+    console.log(`✅ Success: Booking & User created for ${lead.name}`);
+    res.json({ message: "Success!", booking: newBooking });
+
+  } catch (error) {
+    console.error("❌ CRM Error:", error);
+    res.status(500).json({ message: error.message });
   }
 });
 

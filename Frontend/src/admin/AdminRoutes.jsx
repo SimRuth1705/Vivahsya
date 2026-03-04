@@ -12,6 +12,9 @@ import Bookings from "./pages/Bookings/Bookings";
 import Events from "./pages/Events/Events";
 import Vendors from "./pages/Vendors/Vendors";
 import Users from "./pages/Users/Users";
+import AdminVenues from "./pages/AdminVenues/AdminVenues";
+import AdminPortfolio from "./pages/AdminPortfolio/AdminPortfolio"; // Adjust path if needed
+
 
 // AdminRoutes.jsx
 
@@ -34,6 +37,8 @@ const AdminRoutes = ({ setIsAuthenticated, onLogout }) => {
     <Route path="bookings" element={<Bookings />} />
     <Route path="events" element={<Events />} />
     <Route path="vendors" element={<Vendors />} />
+    <Route path="venues" element={<AdminVenues />} />
+    <Route path="/portfolio" element={<AdminPortfolio />} />
 
     {/* 👑 Owner Only Area */}
     <Route path="leads" element={<ProtectedRoute requiredRole="owner"><Leads /></ProtectedRoute>} />

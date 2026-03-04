@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from "react";
-import { useParams } from "react-router-dom";
 import { HiOutlineClock, HiOutlineLocationMarker, HiOutlineCalendar } from "react-icons/hi";
 import "./Timeline.css";
 
@@ -11,12 +10,11 @@ import weddingImg from "../../assets/wedding.png";
 import receptionImg from "../../assets/reception.png";
 
 const Timeline = () => {
-  const { id } = useParams(); // Grabs the Booking ID from the URL
   const [openIndex, setOpenIndex] = useState(null);
   const [bookingData, setBookingData] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
 
-  // Mapping local assets to event titles
   const imageMap = {
     "Engagement Ceremony": engagementImg,
     "Haldi Function": haldiImg,
@@ -26,75 +24,113 @@ const Timeline = () => {
   };
 
   useEffect(() => {
-    // Fetch the specific booking using the ID from the URL
-    fetch(`http://localhost:5000/api/bookings/${id}`)
-      .then((res) => {
-        if (!res.ok) throw new Error("Booking not found");
-        return res.json();
-      })
-      .then((data) => {
-        setBookingData(data);
+    const fetchTimelineData = async () => {
+      const token = localStorage.getItem("token");
+      
+      if (!token) {
+        window.location.href = "/login";
+        return;
+      }
+
+      try {
+        const response = await fetch("http://localhost:5000/api/bookings/my-booking", {
+          headers: {
+            "Authorization": `Bearer ${token}`,
+            "Content-Type": "application/json"
+          }
+        });
+
+        if (response.ok) {
+          const data = await response.json();
+          setBookingData(data);
+        } else {
+          const errData = await response.json();
+          setError(errData.message || "Could not load timeline.");
+        }
+      } catch (err) {
+        setError("Connection failed. Please check your internet or server.");
+      } finally {
         setLoading(false);
-      })
-      .catch((err) => {
-        console.error("Error fetching timeline:", err);
-        setLoading(false);
-      });
-  }, [id]);
+      }
+    };
+
+    fetchTimelineData();
+  }, []);
 
   const toggleEvent = (index) => {
     setOpenIndex(openIndex === index ? null : index);
   };
 
-  if (loading) return <div className="loading-screen">Loading Wedding Schedule...</div>;
-  if (!bookingData) return <div className="error-screen">Wedding Schedule Not Found.</div>;
+  // --- SAFE RENDER GUARDS ---
+  if (loading) {
+    return <div className="timeline-message-container"><p className="timeline-message">Syncing your beautiful moments...</p></div>;
+  }
 
-  return (
-    <div className="timeline-page-wrapper">
-      <header className="timeline-hero">
-        <h1>{bookingData.title}</h1>
-        <p>A celebration of love and togetherness</p>
-      </header>
+  if (error) {
+    return (
+      <div className="timeline-message-container">
+        <div className="timeline-message error">
+          <p>{error}</p>
+          <button onClick={() => { localStorage.clear(); window.location.href='/login'; }}>
+            Log Out & Try Again
+          </button>
+        </div>
+      </div>
+    );
+  }
 
+  if (!bookingData || !bookingData.timeline || bookingData.timeline.length === 0) {
+    return (
       <div className="timeline-container">
-        <div className="vertical-line"></div>
+        <h2>{bookingData?.title || "Your Wedding"} Timeline</h2>
+        <div className="timeline-message-container">
+          <div className="timeline-message empty">
+            <p>Your timeline is currently being crafted by your planner. Check back soon!</p>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
-        {bookingData.timeline && bookingData.timeline.map((event, index) => (
-          <div 
-            key={index} 
-            className={`timeline-item ${index % 2 === 0 ? "left" : "right"}`}
-          >
-            <div className="timeline-dot"></div>
-            
-            <div className="content-card">
-              <div className="event-main">
+  // --- MAIN TIMELINE RENDER ---
+  return (
+    <div className="timeline-container">
+      <h2>{bookingData.title} Timeline</h2>
+
+      <div className="timeline">
+        <div className="line"></div>
+
+        {bookingData.timeline.map((event, index) => (
+          <div key={index} className={`timeline-item ${index % 2 === 0 ? "left" : "right"}`}>
+            <div className="content">
+              <div className="event-header">
                 <img 
                   src={imageMap[event.title] || weddingImg} 
                   alt={event.title} 
-                  className="event-image" 
+                  className="event-icon" 
                 />
-                <div className="event-info">
-                  <span className="event-type-tag">{event.title}</span>
-                  <h3>{event.venue}</h3>
-                  
-                  <div className="meta-info">
-                    <span><HiOutlineCalendar /> {event.date}</span>
-                    <span><HiOutlineClock /> {event.time}</span>
-                  </div>
-                </div>
+                <h3>{event.title}</h3>
+                <span className="status confirmed">Confirmed</span>
+              </div>
+              
+              <div className="event-details-text">
+                <p><HiOutlineLocationMarker className="icon"/> <strong>Venue:</strong> {event.venue}</p>
+                <p><HiOutlineCalendar className="icon"/> <strong>Date:</strong> {event.date}</p>
+                <p><HiOutlineClock className="icon"/> <strong>Time:</strong> {event.time}</p>
               </div>
 
-              <button className="expand-btn" onClick={() => toggleEvent(index)}>
+              <button className="view-btn" onClick={() => toggleEvent(index)}>
                 {openIndex === index ? "Close Details" : "View Full Schedule"}
               </button>
 
               {openIndex === index && (
-                <div className="expanded-details">
-                  <h4>Event Schedule</h4>
+                <div className="event-schedule-list">
                   <ul>
-                    {event.schedule.map((item, i) => (
-                      <li key={i}>{item}</li>
-                    ))}
+                    {event.schedule && event.schedule.length > 0 ? (
+                      event.schedule.map((item, i) => <li key={i}>{item}</li>)
+                    ) : (
+                      <li>Specific times to be decided.</li>
+                    )}
                   </ul>
                 </div>
               )}

@@ -1,149 +1,139 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useParams, useLocation } from "react-router-dom";
+import { 
+  HiStar, 
+  HiOutlineLocationMarker, 
+  HiOutlineUserGroup, 
+  HiOutlineHome 
+} from "react-icons/hi";
 import "./VenueDetail.css";
-
-import v1 from "../../assets/wedding-hero-1.jpg";
-import v2 from "../../assets/wedding-hero-2.jpg";
-import v3 from "../../assets/wedding-hero-3.jpg";
-import v4 from "../../assets/wedding-hero-4.jpg";
 
 const VenueDetails = () => {
   const { name } = useParams();
   const location = useLocation();
-  const stateVenue = location.state?.venue;
+  const [venue, setVenue] = useState(location.state?.venue || null);
+  const [loading, setLoading] = useState(!venue);
 
-  const [activeTab, setActiveTab] = useState("portfolio");
   const [showAllPhotos, setShowAllPhotos] = useState(false);
 
-  const venue = {
-    images: stateVenue?.image
-      ? [stateVenue.image, v2, v3, v4]
-      : [v1, v2, v3, v4],
-  };
-
-  const heroImage = venue.images[0];
-  const decodedName = decodeURIComponent(name).replace(/-/g, " ");
-
-  // Build gallery (max 19 images)
-  const allImages = [];
-  if (stateVenue?.image) {
-    allImages.push(stateVenue.image);
-
-    const pathParts = stateVenue.image.split("/");
-    const filename = pathParts.pop();
-    const basePath = pathParts.join("/") + "/";
-
-    const nameParts = filename.split(".");
-    const fileBase = nameParts[0];
-    const extension = nameParts[1];
-
-    const prefixMatch = fileBase.match(/^(.*?)\d+$/);
-    let prefix = prefixMatch ? prefixMatch[1] : "image";
-
-    for (let i = 1; i <= 19; i++) {
-      const testImage = `${basePath}${prefix}${i}.${extension}`;
-      if (testImage !== stateVenue.image) {
-        allImages.push(testImage);
-      }
+  useEffect(() => {
+    if (!venue) {
+      const fetchVenueDetails = async () => {
+        try {
+          const response = await fetch(`http://localhost:5000/api/venues`);
+          const allVenues = await response.json();
+          const decodedName = decodeURIComponent(name).replace(/-/g, " ");
+          const found = allVenues.find(v => v.name.toLowerCase() === decodedName.toLowerCase());
+          setVenue(found);
+        } catch (err) {
+          console.error("Error fetching venue:", err);
+        } finally {
+          setLoading(false);
+        }
+      };
+      fetchVenueDetails();
     }
+  }, [name, venue]);
 
-    while (allImages.length < 19) {
-      allImages.push(v1, v2, v3, v4);
-    }
-  } else {
-    while (allImages.length < 19) {
-      allImages.push(...venue.images);
-    }
-  }
+  if (loading) return <div className="vd-loading-screen">Loading Premium Venue...</div>;
+  if (!venue) return <div className="vd-error-screen">Venue not found in our collection.</div>;
 
-  allImages.length = 19;
+  // Safely merge cover photo and gallery
+  const dynamicGallery = [
+    venue.image, 
+    ...(Array.isArray(venue.gallery) ? venue.gallery : [])
+  ].filter(Boolean);
 
   return (
     <div className="venue-detail-page-modern">
-      {/* HERO SECTION */}
+      {/* 1. CINEMATIC HERO SECTION */}
       <div className="vd-hero-container">
-        <img src={heroImage} alt={decodedName} className="vd-hero-img" />
+        <img src={venue.image} alt={venue.name} className="vd-hero-img" />
         <div className="vd-hero-overlay"></div>
-        <div className="vd-hero-watermark">WedMeGood</div>
+        <div className="vd-hero-watermark">VIVAHASYA COLLECTION</div>
       </div>
 
-      {/* MAIN CARD */}
+      {/* 2. OVERLAPPING INFO CARD */}
       <div className="vd-main-card">
         <div className="vd-card-header">
           <div className="vd-card-title-col">
-            <h1 className="vd-title">{decodedName}</h1>
+            <h1 className="vd-title">{venue.name}</h1>
             <p className="vd-subtitle">
-              (Formerly known as {decodedName})
+              <HiOutlineLocationMarker className="vd-inline-icon" /> {venue.location} &nbsp;•&nbsp; {venue.type}
             </p>
           </div>
           <div className="vd-rating-box">
-            <div className="vd-rating-score">⭐ 4.8</div>
-            <div className="vd-rating-reviews">11 reviews</div>
+            <div className="vd-rating-score"><HiStar size={18} /> {venue.rating || "5.0"}</div>
+            <div className="vd-rating-reviews">{venue.reviews || "0"} verified reviews</div>
           </div>
         </div>
 
-        {/* Address */}
         <div className="vd-address-section">
           <div className="vd-address-line1">
-            <span>Main Road, India (View on Map)</span>
+            {venue.address || "Complete location details provided upon inquiry."}
           </div>
-          <div className="vd-address-line2">
-            Specific Area, India
+          <div className="vd-stats-grid">
+            {venue.pax && (
+              <div className="vd-stat-item">
+                <div className="vd-stat-icon-wrapper">
+                  <HiOutlineUserGroup size={22} />
+                </div>
+                <div className="vd-stat-text">
+                  <small>Guest Capacity</small>
+                  <p>{venue.pax}</p>
+                </div>
+              </div>
+            )}
+            {venue.rooms && (
+              <div className="vd-stat-item">
+                <div className="vd-stat-icon-wrapper">
+                  <HiOutlineHome size={22} />
+                </div>
+                <div className="vd-stat-text">
+                  <small>Accommodation</small>
+                  <p>{venue.rooms}</p>
+                </div>
+              </div>
+            )}
           </div>
         </div>
       </div>
 
-      {/* PORTFOLIO */}
-      <div className="vd-portfolio-container">
-        <div className="vd-portfolio-tabs">
-          <div
-            className={`vd-ptab ${
-              activeTab === "portfolio" ? "active" : ""
-            }`}
-            onClick={() => setActiveTab("portfolio")}
-          >
-            PORTFOLIO (19)
+      {/* 3. PREMIUM MASONRY PORTFOLIO */}
+      {dynamicGallery.length > 1 && (
+        <div className="vd-portfolio-container">
+          <div className="vd-portfolio-header">
+            <h3 className="vd-section-title">Visual Portfolio</h3>
+            <span className="vd-photo-count">{dynamicGallery.length} High-Res Images</span>
           </div>
-        </div>
 
-        {activeTab === "portfolio" && (
-          <div className="vd-photo-gallery-wrapper">
-            <div
-              className={
-                showAllPhotos ? "vd-photo-masonry" : "vd-photo-grid"
-              }
-            >
-              {allImages
-                .slice(0, showAllPhotos ? allImages.length : 12)
-                .map((img, i) => {
-                  const fallbacks = [v1, v2, v3, v4];
-                  return (
+          <div className="vd-gallery-content">
+            {/* Pure CSS Masonry handles the layout beautifully */}
+            <div className={showAllPhotos ? "vd-photo-masonry" : "vd-photo-grid"}>
+              {dynamicGallery
+                .slice(0, showAllPhotos ? dynamicGallery.length : 8)
+                .map((img, i) => (
+                  <div className="vd-photo-item" key={i}>
                     <img
-                      key={i}
                       src={img}
-                      alt={`${decodedName} ${i + 1}`}
-                      onError={(e) => {
-                        e.target.onerror = null;
-                        e.target.src = fallbacks[i % 4];
-                      }}
+                      alt={`${venue.name} gallery ${i + 1}`}
+                      loading="lazy"
+                      onError={(e) => { e.target.src = "https://placehold.co/600x400?text=Image+Unavailable"; }}
                     />
-                  );
-                })}
+                  </div>
+                ))}
             </div>
 
-            {!showAllPhotos && (
-              <div className="vd-view-more-container">
-                <button
-                  className="vd-view-more-btn"
-                  onClick={() => setShowAllPhotos(true)}
-                >
-                  View 7 more
+            {!showAllPhotos && dynamicGallery.length > 8 && (
+              <div className="vd-view-more-wrapper">
+                <button className="vd-view-more-btn" onClick={() => setShowAllPhotos(true)}>
+                  Explore All {dynamicGallery.length} Photos
                 </button>
               </div>
             )}
           </div>
-        )}
-      </div>
+        </div>
+      )}
     </div>
   );
 };

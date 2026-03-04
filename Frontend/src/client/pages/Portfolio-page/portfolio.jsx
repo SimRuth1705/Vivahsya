@@ -1,67 +1,76 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import "./portfolio.css";
 
-// correct path from assets
-import img1 from "../../assets/wedding-hero-1.jpg";
-import img2 from "../../assets/wedding-hero-2.jpg";
-import img3 from "../../assets/wedding-hero-3.jpg";
-import img4 from "../../assets/wedding-hero-4.jpg";
-import img5 from "../../assets/wedding-hero-5.jpg";
-import img6 from "../../assets/wedding-hero-6.jpg";
+const fallbackHero = "https://images.unsplash.com/photo-1519225421980-715cb0215aed?q=80&w=2070&auto=format&fit=crop";
 
 const Portfolio = () => {
+  const navigate = useNavigate();
+  const [portfolioItems, setPortfolioItems] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchPortfolio = async () => {
+      try {
+        const res = await fetch("http://localhost:5000/api/portfolio");
+        const data = await res.json();
+        setPortfolioItems(data);
+      } catch (err) {
+        console.error("Failed to fetch portfolio:", err);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchPortfolio();
+  }, []);
+
+  const heroImage = portfolioItems.length > 0 ? portfolioItems[0].coverImage : fallbackHero;
+
   return (
-    <div className="portfolio-page">
-
-      {/* HERO */}
-      <div 
-        className="hero-section"
-        style={{ backgroundImage: `url(${img1})` }}
+    <div className="vp-portfolio-wrapper">
+      {/* 1. UNIQUE CINEMATIC HERO */}
+      <header 
+        className="vp-hero-section"
+        style={{ backgroundImage: `linear-gradient(rgba(0,0,0,0.4), rgba(0,0,0,0.4)), url(${heroImage})` }}
       >
-        <div className="hero-content">
-          <h3>OUR PORTFOLIO</h3>
-          <h1>TIMELSS WEDDING STORIES</h1>
-          <button className="explore-btn">EXPLORE COLLECTION</button>
+        <div className="vp-hero-content">
+          <span className="vp-hero-tag">VIVAHASYA GALLERY</span>
+          <h1 className="vp-hero-main-title">Timeless Wedding Stories</h1>
+          <div className="vp-hero-divider"></div>
         </div>
-      </div>
+      </header>
 
-      {/* BUTTONS */}
-      <div className="category-buttons">
-        <button>ALL WORK</button>
-        <button>WEDDINGS</button>
-        <button>DECOR</button>
-        <button>PHOTOGRAPHY</button>
-      </div>
+      {/* 2. UNIQUE CATEGORY NAV */}
+      <nav className="vp-category-navbar">
+        <button className="vp-nav-link" onClick={() => navigate("/client/portfolio/weddings")}>Weddings</button>
+        <button className="vp-nav-link" onClick={() => navigate("/client/portfolio/decor")}>Decor</button>
+        <button className="vp-nav-link" onClick={() => navigate("/client/portfolio/photography")}>Photography</button>
+      </nav>
 
-      {/* GALLERY */}
-      <div className="gallery">
-
-        <div className="gallery-item tall">
-          <img src={img1} alt="" />
-        </div>
-
-        <div className="gallery-item">
-          <img src={img2} alt="" />
-        </div>
-
-        <div className="gallery-item">
-          <img src={img3} alt="" />
-        </div>
-
-        <div className="gallery-item">
-          <img src={img4} alt="" />
-        </div>
-
-        <div className="gallery-item">
-          <img src={img5} alt="" />
-        </div>
-
-        <div className="gallery-item tall">
-          <img src={img6} alt="" />
-        </div>
-
-      </div>
-
+      {/* 3. UNIQUE DYNAMIC GRID */}
+      <main className="vp-content-container">
+        {loading ? (
+          <div className="vp-loader-status">Curating Collection...</div>
+        ) : (
+          <div className="vp-editorial-grid">
+            {portfolioItems.slice(0, 6).map((item, index) => (
+              <div 
+                className={`vp-portfolio-card ${index % 3 === 0 ? "vp-featured" : ""}`} 
+                key={item._id}
+                onClick={() => navigate(`/client/portfolio/${item.category.toLowerCase()}`)}
+              >
+                <div className="vp-image-reveal-box">
+                  <img src={item.coverImage} alt={item.title} className="vp-card-img" />
+                  <div className="vp-card-info-overlay">
+                    <span className="vp-card-type-label">{item.category}</span>
+                    <h3 className="vp-card-main-title">{item.title}</h3>
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+        )}
+      </main>
     </div>
   );
 };

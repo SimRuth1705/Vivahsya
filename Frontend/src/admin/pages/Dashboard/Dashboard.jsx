@@ -3,40 +3,63 @@ import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContai
 import { 
   HiOutlineUsers, HiOutlineCurrencyDollar, HiOutlineCalendar, 
   HiOutlineDownload, HiOutlineReceiptTax, HiOutlineTrendingUp,
-  HiOutlineBadgeCheck // New icon for Closed Deals
+  HiOutlineBadgeCheck 
 } from "react-icons/hi";
 import { Toaster, toast } from "sonner";
 import "./Dashboard.css";
 
 const Dashboard = () => {
+  // ✅ Combined state for data management
   const [data, setData] = useState({ leads: [], bookings: [], chart: [] });
   const [loading, setLoading] = useState(true);
   
-  const user = JSON.parse(localStorage.getItem("user"));
+  const user = JSON.parse(localStorage.getItem("user")) || { name: "Admin", role: "owner" };
   const isOwner = user?.role === 'owner';
 
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const headers = { "Authorization": `Bearer ${localStorage.getItem("token")}` };
-        const [lRes, bRes] = await Promise.all([
-          fetch("http://localhost:5000/api/leads", { headers }),
-          fetch("http://localhost:5000/api/bookings", { headers })
+        const token = localStorage.getItem("token");
+
+        // ✅ Using 127.0.0.1 for stability over 'localhost'
+        const [leadsRes, bookingsRes] = await Promise.all([
+          fetch("http://127.0.0.1:5000/api/leads", {
+            headers: { Authorization: `Bearer ${token}` },
+          }),
+          fetch("http://127.0.0.1:5000/api/bookings", {
+            headers: { Authorization: `Bearer ${token}` },
+          }),
         ]);
 
-        const leads = await lRes.json();
-        const bookings = await bRes.json();
+        if (leadsRes.status === 401 || bookingsRes.status === 401) {
+          toast.error("Session expired. Please login again.");
+          return;
+        }
 
-        const months = ["Oct", "Nov", "Dec", "Jan", "Feb"];
-        const chart = months.map(m => ({
-          name: m,
-          val: isOwner ? Math.floor(Math.random() * 400000) + 100000 : Math.floor(Math.random() * 15) + 5
-        }));
+        const leadsData = await leadsRes.json();
+        const bookingsData = await bookingsRes.json();
 
-        setData({ leads, bookings, chart });
-        setLoading(false);
-      } catch (err) {
-        toast.error("Database connection failed.");
+        // --- CHART DATA GENERATION ---
+        // Groups bookings by date to create the revenue trend line
+        const chartMap = bookingsData.reduce((acc, curr) => {
+          const date = curr.date || "TBD";
+          acc[date] = (acc[date] || 0) + (parseInt(curr.amount) || 0);
+          return acc;
+        }, {});
+
+        const chartData = Object.entries(chartMap).map(([name, val]) => ({ name, val }));
+
+        // ✅ THE FIX: Use setData to update the entire object at once
+        setData({
+          leads: Array.isArray(leadsData) ? leadsData : [],
+          bookings: Array.isArray(bookingsData) ? bookingsData : [],
+          chart: chartData.sort((a, b) => new Date(a.name) - new Date(b.name))
+        });
+
+      } catch (error) {
+        console.error("Dashboard Fetch Error:", error);
+        toast.error("Failed to load dashboard data");
+      } finally {
         setLoading(false);
       }
     };
@@ -45,22 +68,24 @@ const Dashboard = () => {
 
   const parseVal = (v) => parseInt(v?.toString().replace(/[^0-9]/g, "")) || 0;
 
-  // --- CALCULATIONS ---
-  const sourceTotals = data.bookings.reduce((acc, b) => {
+  // --- SAFE CALCULATIONS ---
+  const safeBookings = data.bookings;
+
+  const sourceTotals = safeBookings.reduce((acc, b) => {
     const type = b.type || 'Wedding';
     const amount = parseVal(b.amount);
-    if (acc[type] !== undefined) {
+    if (acc[type]) {
       acc[type].count += 1;
       acc[type].total += amount;
     }
     return acc;
   }, { Wedding: {count:0, total:0}, Haldi: {count:0, total:0}, Engagement: {count:0, total:0}, Reception: {count:0, total:0} });
 
-  const totalRevenue = data.bookings
+  const totalRevenue = safeBookings
     .filter(b => b.status === "Confirmed" || b.status === "Completed")
     .reduce((s, b) => s + parseVal(b.amount), 0);
 
-  const closedDeals = data.bookings
+  const closedDeals = safeBookings
     .filter(b => b.status === "Confirmed" || b.status === "Completed").length;
 
   if (loading) return <div className="loading-state">Syncing Dashboard...</div>;
@@ -81,7 +106,6 @@ const Dashboard = () => {
         )}
       </header>
 
-      {/* KPI GRID */}
       <div className="kpi-grid">
         <div className="kpi-card">
           <div className="kpi-icon purple"><HiOutlineUsers /></div>
@@ -109,9 +133,7 @@ const Dashboard = () => {
 
       <div className="dashboard-main-grid">
         <div className="glass-card graph-area">
-          <div className="card-header-flex">
-            <h3><HiOutlineTrendingUp /> {isOwner ? "Revenue Trend" : "Booking Growth"}</h3>
-          </div>
+          <h3><HiOutlineTrendingUp /> {isOwner ? "Revenue Trend" : "Booking Growth"}</h3>
           <ResponsiveContainer width="100%" height={280}>
             <AreaChart data={data.chart}>
               <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#f1f5f9" />
@@ -162,9 +184,9 @@ const Dashboard = () => {
               </tr>
             </thead>
             <tbody>
-              {data.bookings.map((b) => (
+              {safeBookings.map((b) => (
                 <tr key={b._id}>
-                  <td className="mono">#VX-{b._id.slice(-5).toUpperCase()}</td>
+                  <td className="mono">#VX-{b._id.toString().slice(-5).toUpperCase()}</td>
                   <td className="client-cell">{b.title}</td>
                   <td>{b.date || 'TBD'}</td>
                   {isOwner && <td className="price-cell">₹{parseVal(b.amount).toLocaleString()}</td>}

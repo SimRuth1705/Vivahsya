@@ -1,19 +1,18 @@
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
 
 .venue-detail-page-modern {
-    background: #f7f7f7;
+    background: #fdfdfd;
     min-height: 100vh;
-    padding-bottom: 80px;
+    padding-bottom: 100px;
     font-family: 'Inter', sans-serif;
-    color: #333;
+    color: #2d3748;
 }
 
 /* ---------------- HERO ---------------- */
 .vd-hero-container {
     width: 100%;
-    height: 60vh;
+    height: 55vh;
     min-height: 400px;
-    max-height: 600px;
     position: relative;
     overflow: hidden;
 }
@@ -22,63 +21,69 @@
     width: 100%;
     height: 100%;
     object-fit: cover;
+    transform: scale(1.05); /* Slight scale to prevent edge bleed */
 }
 
 .vd-hero-overlay {
     position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background: linear-gradient(to bottom, rgba(0, 0, 0, 0) 50%, rgba(0, 0, 0, 0.5) 100%);
+    inset: 0;
+    background: linear-gradient(180deg, rgba(0,0,0,0.1) 0%, rgba(0,0,0,0.6) 100%);
 }
 
 .vd-hero-watermark {
     position: absolute;
-    bottom: 120px;
-    left: 40px;
-    color: rgba(255, 255, 255, 0.4);
-    font-weight: 500;
-    font-size: 24px;
-    letter-spacing: 1px;
+    bottom: 110px;
+    left: 5%;
+    color: rgba(255, 255, 255, 0.85);
+    font-weight: 600;
+    font-size: 13px;
+    letter-spacing: 3px;
+    text-transform: uppercase;
 }
 
-/* ---------------- MAIN CARD ---------------- */
+/* ---------------- MAIN INFO CARD ---------------- */
 .vd-main-card {
-    background: #fff;
-    max-width: 900px;
+    background: #ffffff;
+    max-width: 1000px;
     margin: -80px auto 0;
+    width: 90%;
     position: relative;
     z-index: 10;
-    border-radius: 4px;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+    border-radius: 12px;
+    box-shadow: 0 12px 40px rgba(0, 0, 0, 0.06);
     display: flex;
     flex-direction: column;
+    padding-bottom: 32px;
 }
 
 .vd-card-header {
     display: flex;
     justify-content: space-between;
-    padding: 24px 24px 16px;
+    padding: 32px 40px 24px;
     align-items: flex-start;
-}
-
-.vd-card-title-col {
-    display: flex;
-    flex-direction: column;
+    border-bottom: 1px solid #f0f0f0;
 }
 
 .vd-title {
-    font-size: 26px;
+    font-size: 32px;
     font-weight: 700;
-    color: #4a5468;
-    margin: 0;
+    color: #1a202c;
+    margin: 0 0 8px 0;
+    line-height: 1.2;
 }
 
 .vd-subtitle {
-    font-size: 14px;
-    color: #666;
-    margin: 6px 0 0;
+    font-size: 15px;
+    color: #718096;
+    margin: 0;
+    display: flex;
+    align-items: center;
+    font-weight: 400;
+}
+
+.vd-inline-icon {
+    margin-right: 6px;
+    color: #e72e77;
 }
 
 .vd-rating-box {
@@ -88,283 +93,233 @@
 }
 
 .vd-rating-score {
-    background: #ffb600;
+    background: #2d3748;
     color: #fff;
     font-weight: 600;
-    padding: 6px 12px;
-    border-radius: 4px;
+    padding: 8px 16px;
+    border-radius: 30px;
     display: flex;
     align-items: center;
-    gap: 4px;
-    font-size: 15px;
+    gap: 6px;
+    font-size: 16px;
+    box-shadow: 0 4px 12px rgba(45, 55, 72, 0.2);
 }
 
 .vd-rating-reviews {
     font-size: 13px;
-    color: #666;
-    margin-top: 6px;
+    color: #a0aec0;
+    margin-top: 8px;
+    font-weight: 500;
 }
 
-/* ---------------- ADDRESS ---------------- */
+/* ---------------- STATS & ADDRESS ---------------- */
 .vd-address-section {
-    padding: 0 24px;
-    display: flex;
-    flex-direction: column;
-    gap: 8px;
-    margin-top: 8px;
+    padding: 24px 40px 0;
 }
 
 .vd-address-line1 {
+    color: #4a5568;
+    font-weight: 400;
+    font-size: 16px;
+    margin-bottom: 24px;
+    line-height: 1.6;
+}
+
+.vd-stats-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 20px;
+}
+
+.vd-stat-item {
     display: flex;
     align-items: center;
-    gap: 8px;
-    color: #333;
-    font-weight: 500;
-    font-size: 15px;
+    gap: 16px;
+    background: #f8fafc;
+    padding: 16px 20px;
+    border-radius: 8px;
+    border: 1px solid #edf2f7;
 }
 
-.icon-map {
-    width: 16px;
-    height: 16px;
-    color: #666;
-    flex-shrink: 0;
-}
-
-.view-map {
-    color: #aaa;
-    font-weight: 400;
-    font-size: 13px;
-    margin-left: 4px;
-}
-
-.vd-address-line2 {
-    font-size: 13.5px;
-    color: #888;
-    margin-left: 24px;
-}
-
-/* ---------------- PORTFOLIO CONTAINER ---------------- */
-.vd-portfolio-container {
+.vd-stat-icon-wrapper {
     background: #fff;
-    max-width: 900px;
-    margin: 16px auto;
-    border-radius: 4px;
-    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.05);
+    color: #e72e77;
+    width: 44px;
+    height: 44px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+}
+
+.vd-stat-text small {
+    display: block;
+    font-size: 12px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    color: #a0aec0;
+    font-weight: 600;
+    margin-bottom: 4px;
+}
+
+.vd-stat-text p {
+    margin: 0;
+    font-size: 16px;
+    font-weight: 600;
+    color: #2d3748;
+}
+
+/* ---------------- PORTFOLIO SECTION ---------------- */
+.vd-portfolio-container {
+    max-width: 1000px;
+    margin: 40px auto;
+    width: 90%;
     display: flex;
     flex-direction: column;
-    padding: 24px;
 }
 
-.vd-portfolio-tabs {
+.vd-portfolio-header {
     display: flex;
-    gap: 32px;
-    border-bottom: 1px solid #f0f0f0;
+    justify-content: space-between;
+    align-items: center;
     margin-bottom: 24px;
 }
 
-.vd-ptab {
-    padding-bottom: 12px;
-    font-size: 15px;
-    font-weight: 600;
-    color: #aaa;
-    cursor: pointer;
-    position: relative;
+.vd-section-title {
+    font-size: 22px;
+    font-weight: 700;
+    color: #1a202c;
+    margin: 0;
 }
 
-.vd-ptab.active {
-    color: #e72e77;
+.vd-photo-count {
+    font-size: 14px;
+    color: #718096;
+    background: #edf2f7;
+    padding: 6px 12px;
+    border-radius: 20px;
+    font-weight: 500;
 }
 
-.vd-ptab.active::after {
-    content: '';
-    position: absolute;
-    bottom: -1px;
-    left: 0;
-    width: 100%;
-    height: 3px;
-    background: #e72e77;
-}
-
-/* ---------------- PHOTO GRID ---------------- */
-.vd-photo-gallery-wrapper {
-    display: flex;
-    flex-direction: column;
-}
-
+/* --- THE GALLERY MAGIC --- */
+/* Standard grid for the preview (first 8 images) */
 .vd-photo-grid {
     display: grid;
     grid-template-columns: repeat(4, 1fr);
-    gap: 8px;
-    /* Tighter gap matching UI */
+    gap: 12px;
+}
+
+.vd-photo-grid .vd-photo-item {
+    aspect-ratio: 1;
+    overflow: hidden;
+    border-radius: 8px;
 }
 
 .vd-photo-grid img {
     width: 100%;
-    aspect-ratio: 1 / 1;
-    /* Perfectly square */
-    height: auto;
+    height: 100%;
     object-fit: cover;
-    border-radius: 0;
-    /* Sharp corners */
-    cursor: pointer;
-    transition: transform 0.2s;
+    transition: transform 0.4s ease;
 }
 
-.vd-photo-grid img:hover {
-    transform: scale(1.02);
-}
-
+/* Pure CSS Masonry for the "View All" expanded view */
 .vd-photo-masonry {
-    display: grid;
-    grid-template-columns: repeat(4, 1fr);
-    grid-auto-rows: 150px;
-    gap: 8px;
+    column-count: 3;
+    column-gap: 16px;
+}
+
+.vd-photo-masonry .vd-photo-item {
+    break-inside: avoid;
+    margin-bottom: 16px;
+    border-radius: 8px;
+    overflow: hidden;
 }
 
 .vd-photo-masonry img {
     width: 100%;
-    height: 100%;
-    object-fit: cover;
+    height: auto;
     display: block;
-    cursor: pointer;
-    transition: transform 0.2s;
-    border-radius: 0;
+    transition: transform 0.4s ease;
 }
 
-/* Replicating the specific masonry spans from the screenshot */
-.vd-masonry-item-0 {
-    grid-column: span 1;
-    grid-row: span 3;
+/* Hover Effect for both grids */
+.vd-photo-item:hover img {
+    transform: scale(1.05);
 }
 
-/* Tall */
-.vd-masonry-item-1 {
-    grid-column: span 1;
-    grid-row: span 1;
-}
-
-/* Short square */
-.vd-masonry-item-2 {
-    grid-column: span 2;
-    grid-row: span 2;
-}
-
-/* Wide */
-.vd-masonry-item-3 {
-    grid-column: span 2;
-    grid-row: span 2;
-}
-
-/* Big Box */
-.vd-masonry-item-4 {
-    grid-column: span 1;
-    grid-row: span 2;
-}
-
-/* Tallish */
-.vd-masonry-item-5 {
-    grid-column: span 1;
-    grid-row: span 2;
-}
-
-/* Tallish */
-.vd-masonry-item-6 {
-    grid-column: span 1;
-    grid-row: span 2;
-}
-
-/* Tallish */
-.vd-masonry-item-7 {
-    grid-column: span 1;
-    grid-row: span 2;
-}
-
-/* Tallish */
-.vd-masonry-item-8 {
-    grid-column: span 1;
-    grid-row: span 2;
-}
-
-/* Tallish */
-.vd-masonry-item-9 {
-    grid-column: span 2;
-    grid-row: span 3;
-}
-
-/* Large Block */
-.vd-masonry-item-10 {
-    grid-column: span 1;
-    grid-row: span 2;
-}
-
-/* Tallish */
-.vd-masonry-item-11 {
-    grid-column: span 1;
-    grid-row: span 2;
-}
-
-/* Tallish */
-.vd-masonry-item-12 {
-    grid-column: span 1;
-    grid-row: span 2;
-}
-
-/* Tallish */
-.vd-masonry-item-13 {
-    grid-column: span 1;
-    grid-row: span 2;
-}
-
-/* Tallish */
-.vd-masonry-item-default {
-    grid-column: span 1;
-    grid-row: span 1;
-}
-
-.vd-photo-masonry img:hover {
-    transform: scale(1.02);
-}
-
-.vd-view-more-container {
+/* ---------------- BUTTONS & LOADING ---------------- */
+.vd-view-more-wrapper {
     display: flex;
     justify-content: center;
-    margin-top: 24px;
+    margin-top: 32px;
 }
 
 .vd-view-more-btn {
-    background: transparent;
-    border: 1px solid #e72e77;
+    background: #fff;
+    border: 2px solid #e72e77;
     color: #e72e77;
-    padding: 8px 32px;
-    border-radius: 20px;
-    font-size: 13px;
+    padding: 12px 40px;
+    border-radius: 30px;
+    font-size: 14px;
     font-weight: 600;
     cursor: pointer;
-    transition: all 0.2s;
-    font-family: inherit;
+    transition: all 0.3s ease;
 }
 
 .vd-view-more-btn:hover {
     background: #e72e77;
     color: #fff;
+    box-shadow: 0 4px 15px rgba(231, 46, 119, 0.3);
+    transform: translateY(-2px);
 }
 
+.vd-loading-screen, .vd-error-screen {
+    height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 18px;
+    color: #718096;
+    font-weight: 500;
+}
+
+/* ---------------- RESPONSIVE MOBILE ---------------- */
 @media (max-width: 768px) {
+    .vd-hero-container {
+        height: 40vh;
+        min-height: 300px;
+    }
+
     .vd-main-card {
-        margin: -40px 16px 0;
+        margin: -40px auto 0;
+        width: 92%;
+        padding-bottom: 24px;
     }
 
-    .vd-portfolio-container {
-        margin: 16px;
+    .vd-card-header {
+        flex-direction: column;
+        gap: 16px;
+        padding: 24px;
     }
 
+    .vd-rating-box {
+        align-items: flex-start;
+    }
+
+    .vd-address-section {
+        padding: 16px 24px 0;
+    }
+
+    .vd-title {
+        font-size: 24px;
+    }
 
     .vd-photo-grid {
         grid-template-columns: repeat(2, 1fr);
     }
 
     .vd-photo-masonry {
-        grid-template-columns: repeat(2, 1fr);
-        grid-auto-rows: 150px;
+        column-count: 2;
     }
 }

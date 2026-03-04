@@ -10,6 +10,7 @@ import {
   HiOutlineBadgeCheck,
   HiOutlineChartPie,
   HiOutlineLogout,
+  HiOutlinePhotograph,
 } from "react-icons/hi";
 
 const Sidebar = ({ onLogout }) => {
@@ -36,6 +37,8 @@ const Sidebar = ({ onLogout }) => {
     { name: "Vendors", path: "/admin/vendors", icon: <HiOutlineClipboardList />, role: "all" },
     { name: "CRM", path: "/admin/crm", icon: <HiOutlineChartPie />, role: "all" },
     { name: "Users", path: "/admin/users", icon: <HiOutlineUserGroup />, role: "owner" },
+    { name: "Venues", path: "/admin/venues", icon: <HiOutlinePhotograph />, role: "all" },
+    { name: "Portfolio", path: "/admin/portfolio", icon: <HiOutlinePhotograph />, role: "all" },
   ];
 
   return (

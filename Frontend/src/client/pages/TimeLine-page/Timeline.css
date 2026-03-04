@@ -234,3 +234,235 @@
     left: -2px;
   }
 }
+/* ============================= */
+/* TIMELINE PAGE          */
+/* ============================= */
+
+.timeline-container {
+  padding: 80px 20px;
+  background: #f9f6f2;
+  font-family: "Segoe UI", sans-serif;
+  min-height: 80vh; /* Ensures the page is never totally flat */
+}
+
+.timeline-container h2 {
+  text-align: center;
+  font-size: 36px;
+  margin-bottom: 60px;
+  color: #5a3e2b;
+  letter-spacing: 1px;
+}
+
+/* ============================= */
+/* MESSAGES & ERRORS       */
+/* ============================= */
+.timeline-message {
+  text-align: center;
+  padding: 100px 20px;
+  font-size: 1.2rem;
+  color: #5a3e2b;
+}
+
+.timeline-message.error p {
+  color: #d32f2f;
+  margin-bottom: 20px;
+}
+
+.timeline-message button {
+  padding: 10px 20px;
+  background: #5a3e2b;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+.timeline-message.empty p {
+  background: white;
+  display: inline-block;
+  padding: 20px 40px;
+  border-radius: 10px;
+  box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+  border: 1px dashed #c9974d;
+}
+
+/* ============================= */
+/* MAIN TIMELINE          */
+/* ============================= */
+
+.timeline {
+  position: relative;
+  max-width: 1100px;
+  margin: auto;
+}
+
+.line {
+  position: absolute;
+  left: 50%;
+  width: 4px;
+  background: linear-gradient(to bottom, #c9974d, #b8863b);
+  top: 0;
+  bottom: 0;
+  transform: translateX(-50%);
+  border-radius: 10px;
+}
+
+/* ============================= */
+/* TIMELINE ITEMS         */
+/* ============================= */
+
+.timeline-item {
+  padding: 20px 40px;
+  position: relative;
+  width: 50%;
+  box-sizing: border-box;
+}
+
+.timeline-item.left { left: 0; text-align: right; }
+.timeline-item.right { left: 50%; }
+
+.timeline-item::after {
+  content: "";
+  position: absolute;
+  width: 18px;
+  height: 18px;
+  background: #c9974d;
+  border: 3px solid #fff;
+  top: 35px;
+  border-radius: 50%;
+  z-index: 1;
+}
+
+.timeline-item.left::after { right: -9px; }
+.timeline-item.right::after { left: -9px; }
+
+/* ============================= */
+/* EVENT CARD           */
+/* ============================= */
+
+.content {
+  background: #ffffff;
+  padding: 25px;
+  border-radius: 14px;
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.05);
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  text-align: left; /* Forces text to always align properly */
+}
+
+.content:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 12px 35px rgba(0, 0, 0, 0.08);
+}
+
+.event-header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 15px;
+}
+
+.event-header h3 {
+  font-size: 20px;
+  color: #5a3e2b;
+  margin: 0;
+}
+
+.event-icon {
+  width: 42px;
+  height: 42px;
+  object-fit: contain;
+}
+
+.status.confirmed {
+  background: #d4edda;
+  color: #2e7d32;
+  padding: 5px 12px;
+  border-radius: 20px;
+  font-size: 12px;
+  font-weight: 600;
+  margin-left: auto;
+}
+
+.event-details-text p {
+  margin: 8px 0;
+  color: #444;
+  font-size: 14.5px;
+}
+
+.icon {
+  vertical-align: middle;
+  margin-right: 6px;
+  color: #c9974d;
+}
+
+/* ============================= */
+/* VIEW BUTTON           */
+/* ============================= */
+
+.view-btn {
+  margin-top: 15px;
+  padding: 10px 20px;
+  background: linear-gradient(135deg, #c9974d, #b8863b);
+  border: none;
+  border-radius: 8px;
+  color: #ffffff;
+  cursor: pointer;
+  font-weight: 600;
+  font-size: 14px;
+  transition: all 0.3s ease;
+}
+
+.view-btn:hover {
+  transform: scale(1.05);
+  box-shadow: 0 6px 15px rgba(200, 150, 70, 0.3);
+}
+
+/* ============================= */
+/* EXPANDED SCHEDULE        */
+/* ============================= */
+
+.event-schedule-list {
+  margin-top: 15px;
+  background: #f3ede6;
+  padding: 15px 20px;
+  border-radius: 8px;
+  animation: fadeIn 0.3s ease-in-out;
+}
+
+.event-schedule-list ul {
+  padding-left: 20px;
+  margin: 0;
+}
+
+.event-schedule-list li {
+  margin-bottom: 8px;
+  font-size: 14px;
+  color: #5a3e2b;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(8px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* ============================= */
+/* RESPONSIVE DESIGN        */
+/* ============================= */
+
+@media screen and (max-width: 768px) {
+  .line { left: 20px; }
+  
+  .timeline-item {
+    width: 100%;
+    padding-left: 50px;
+    padding-right: 15px;
+    margin-bottom: 30px;
+  }
+
+  .timeline-item.left, .timeline-item.right {
+    left: 0;
+    text-align: left;
+  }
+
+  .timeline-item::after { left: 11px; }
+}

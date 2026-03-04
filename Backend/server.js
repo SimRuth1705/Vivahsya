@@ -3,71 +3,82 @@ const mongoose = require("mongoose");
 const dotenv = require("dotenv");
 const cors = require("cors");
 const path = require("path");
-const bcrypt = require("bcryptjs");
+const bcrypt = require("bcryptjs"); // ✅ Added Missing Import
 
-// 1. Load Configurations
+// Load Environment Variables
 dotenv.config();
 
-// 2. Import Sub-Routers
+// --- MODEL & ROUTE IMPORTS ---
+const User = require("./models/User"); // ✅ Added Missing Import
 const authRoutes = require("./routes/auth");
 const bookingRoutes = require("./routes/bookings");
 const leadRoutes = require("./routes/leads");
 const vendorRoutes = require("./routes/vendors");
 const crmRoutes = require("./routes/crm");
 const venueRoutes = require("./routes/venues");
-
-// Import Model for Seeding
-const User = require("./models/User");
+const portfolioRoutes = require("./routes/portfolio");
 
 const app = express();
 
-// --- 3. MIDDLEWARE ---
+// --- MIDDLEWARE ---
 app.use(cors({
-  origin: ["http://localhost:5173", "http://localhost:5174", "http://localhost:5175", "http://localhost:3000"],
+  origin: [
+    "http://localhost:5173", 
+    "http://localhost:5174", 
+    "http://localhost:5175", 
+    "http://localhost:3000",
+    "http://127.0.0.1:5173" 
+  ],
   credentials: true
 }));
-app.use(express.json());
+
+// ✅ Support high-resolution image uploads
+app.use(express.json({ limit: '100mb' })); 
+app.use(express.urlencoded({ limit: '100mb', extended: true }));
+
+// Static folder for local uploads
 app.use("/uploads", express.static(path.join(__dirname, "uploads")));
 
-// --- 4. CLOUD DATABASE CONNECTION (Atlas) ---
+// --- SEEDING LOGIC ---
+// Updated to use 'username' for the new auth system
 const seedAdmin = async () => {
   try {
-    const adminExists = await User.findOne({ email: "admin@vivahasya.com" });
+    const adminExists = await User.findOne({ username: "admin" }); 
     if (!adminExists) {
       const hashedPassword = await bcrypt.hash("admin123", 10);
       await User.create({
         name: "Vivahasya Admin",
-        email: "admin@vivahasya.com",
+        username: "admin", 
         password: hashedPassword,
         role: "owner",
         status: "Active"
       });
-      console.log("🚀 Admin account seeded: admin@vivahasya.com / admin123");
+      console.log("🚀 Admin account seeded: username: admin / pass: admin123");
     }
   } catch (err) {
     console.error("❌ Seeding error:", err.message);
   }
 };
 
+// --- DATABASE CONNECTION ---
 mongoose.connect(process.env.MONGO_URI)
   .then(() => {
-    console.log("✅ MongoDB Atlas Connected Successfully");
-    seedAdmin(); // Run seed after connection
+    console.log("✅ MongoDB Atlas Connected");
+    seedAdmin(); // ✅ MUST CALL HERE to ensure DB is ready before seeding
   })
-  .catch(err => console.error("❌ MongoDB Atlas Connection Error:", err));
+  .catch(err => console.error("❌ DB Connection Error:", err));
 
-// --- 5. ROUTES MOUNTING ---
-app.use("/api/auth", authRoutes);
+// --- ROUTE MOUNTING ---
+app.use("/api/auth", authRoutes); 
 app.use("/api/bookings", bookingRoutes);
 app.use("/api/leads", leadRoutes);
 app.use("/api/vendors", vendorRoutes);
 app.use("/api/venues", venueRoutes);
 app.use("/api/crm", crmRoutes);
+app.use("/api/portfolio", portfolioRoutes);
 
-// --- 6. HEALTH CHECK ---
-app.get("/api/health", (req, res) => {
-  res.json({ status: "ok", message: "Vivahasya API is active and connected to Atlas!" });
-});
+// Health Check
+app.get("/api/health", (req, res) => res.json({ status: "ok" }));
 
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => console.log(`🚀 Server running on port ${PORT}`));

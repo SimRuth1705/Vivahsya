@@ -2,15 +2,14 @@ import React, { useEffect, useState } from "react";
 import { toast, Toaster } from "sonner";
 import "./book.css";
 
-const Booking = () => {
-  const [client, setClient] = useState(null);
+const ClientBooking = () => {
+  const [bookingData, setBookingData] = useState(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const fetchBookingData = async () => {
       const token = localStorage.getItem("token");
 
-      // Guard: Redirect to login if no token is found
       if (!token) {
         window.location.href = "/login";
         return;
@@ -27,23 +26,21 @@ const Booking = () => {
         if (response.ok) {
           const data = await response.json();
           
-          // Map MongoDB data (from populate) to your UI fields
-          setClient({
-            name: data.clientId?.name || "Valued Client",
-            eventType: data.title || "Wedding Ceremony",
-            eventDate: data.leadId?.date || "TBD",
-            venue: data.timeline[0]?.venue || "Venue Details Pending",
-            paymentStatus: data.status === 'Confirmed' ? "Partial Paid" : "Pending",
-            amountPaid: `₹${data.leadId?.budget || '0'}`,
-            paymentMode: "Online Transfer",
-            transactionId: data._id.slice(-10).toUpperCase(),
-            receiptNumber: `VH-${data._id.slice(-5)}`,
+          setBookingData({
+            clientName: data.clientId?.name || "Valued Client",
+            eventType: data.type || data.title || "Wedding Ceremony",
+            eventDate: data.leadId?.date || data.date || "TBD",
+            venueName: data.venueId?.name || "Venue Details Pending",
+            status: data.status || "Pending",
+            budget: data.leadId?.budget || data.amount || "0",
+            bookingId: data._id.slice(-8).toUpperCase(),
+            receiptNo: `VH-${data._id.slice(-5)}`,
           });
         } else {
-          toast.error("Could not retrieve your booking details.");
+          toast.error("Booking details are not available yet.");
         }
       } catch (error) {
-        toast.error("Network error: Is the Vivahasya server running?");
+        toast.error("Network error: Could not connect to Vivahasya server.");
       } finally {
         setLoading(false);
       }
@@ -59,67 +56,63 @@ const Booking = () => {
       <Toaster position="top-right" richColors />
       <div className="overlay">
         <div className="booking-container">
-
-          {/* Welcome Section */}
           <center> 
             <h1 className="welcome-text">
-              Welcome {client ? client.name : "Guest"}
+              Welcome {bookingData ? bookingData.clientName : "Guest"}
             </h1> 
           </center>
 
-          {client ? (
+          {bookingData ? (
             <>
-              {/* Booking Details */}
               <div className="booking-card">
                 <div className="detail">
                   <span>Event Type:</span>
-                  <p>{client.eventType}</p>
+                  <p>{bookingData.eventType}</p>
                 </div>
-
                 <div className="detail">
                   <span>Event Date:</span>
-                  <p>{client.eventDate}</p>
+                  <p>{bookingData.eventDate}</p>
                 </div>
-
                 <div className="detail">
                   <span>Venue:</span>
-                  <p>{client.venue}</p>
+                  <p>{bookingData.venueName}</p>
                 </div>
               </div>
 
-              {/* Payment Details */}
               <div className="payment-card">
-                <h3>Payment Details</h3>
+                <h3>Booking Status</h3>
                 <div className="detail">
                   <span>Status:</span>
-                  <p className="status-highlight">{client.paymentStatus}</p>
+                  <p className={`status-highlight ${bookingData.status.toLowerCase()}`}>
+                    {bookingData.status}
+                  </p>
                 </div>
                 <div className="detail">
-                  <span>Amount Paid:</span>
-                  <p>{client.amountPaid}</p>
+                  <span>Total Budget:</span>
+                  <p>₹{bookingData.budget}</p>
                 </div>
                 <div className="detail">
-                  <span>Transaction ID:</span>
-                  <p>{client.transactionId}</p>
+                  <span>Booking ID:</span>
+                  <p>#{bookingData.bookingId}</p>
                 </div>
               </div>
 
-              {/* Receipt Section */}
               <div className="receipt-card">
                 <h3>Payment Receipt</h3>
-                <p>Receipt Number: {client.receiptNumber}</p>
-                <button className="download-btn">Download Receipt</button>
+                <p>Receipt Number: {bookingData.receiptNo}</p>
+                <button className="download-btn" onClick={() => toast.success("Downloading...")}>
+                  Download Receipt
+                </button>
               </div>
             </>
           ) : (
             <div className="no-data-msg">
-              <h3>No Active Booking</h3>
-              <p>Your details will appear once the admin confirms your inquiry.</p>
+              <h3>Inquiry Pending</h3>
+              <p>Your details will appear once the admin confirms your event assignment.</p>
             </div>
           )}
         </div>
 
-        {/* Footer Section */}
         <footer className="footer">
           <div className="footer-content">
             <div>
@@ -127,27 +120,21 @@ const Booking = () => {
               <p>Email: vivahasya@weddingplanner.com</p>
               <p>Phone: +91 9876543210</p>
             </div>
-
             <div>
               <h3>Policies</h3>
               <p>Privacy Policy</p>
               <p>Terms & Conditions</p>
             </div>
-
             <div>
               <h3>Location</h3>
-              <p>Royal Wedding Planners</p>
-              <p>Bangalore, India</p>
+              <p>Royal Wedding Planners, Bangalore, India</p>
             </div>
           </div>
-
-          <p className="copyright">
-            © 2026 Royal Wedding Planners. All Rights Reserved.
-          </p>
+          <p className="copyright">© 2026 Vivahasya. All Rights Reserved.</p>
         </footer>
       </div>
     </div>
   );
 };
 
-export default Booking;
+export default ClientBooking;

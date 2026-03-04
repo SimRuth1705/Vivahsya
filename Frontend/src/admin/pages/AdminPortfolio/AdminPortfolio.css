@@ -1,0 +1,358 @@
+/* --- LAYOUT WRAPPER --- */
+.av-page-wrapper {
+    padding: 2rem;
+    background-color: #f4f7f6;
+    min-height: 100vh;
+    font-family: 'Inter', -apple-system, sans-serif;
+}
+
+/* --- HEADER --- */
+.av-main-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 2.5rem;
+    background: white;
+    padding: 1.5rem 2rem;
+    border-radius: 12px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.03);
+}
+
+.av-title-area h1 {
+    font-size: 1.8rem;
+    color: #1a1a1a;
+    margin: 0;
+    font-weight: 800;
+}
+
+.av-primary-cta {
+    background: linear-gradient(135deg, #e72e77 0%, #c11a5e 100%);
+    color: white;
+    border: none;
+    padding: 12px 24px;
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+/* --- GRID --- */
+.av-grid-container {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+    gap: 2rem;
+}
+
+.av-pro-card {
+    background: white;
+    border-radius: 16px;
+    overflow: hidden;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.04);
+    transition: all 0.3s ease;
+}
+
+.av-pro-card:hover { transform: translateY(-8px); }
+
+.av-card-visual { height: 220px; position: relative; }
+.av-card-visual img { width: 100%; height: 100%; object-fit: cover; }
+.av-card-visual::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(to bottom, rgba(0,0,0,0.15) 0%, transparent 40%);
+    pointer-events: none;
+}
+
+
+
+.av-category-tag {
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    color: #e72e77;
+    background: #fff0f6;
+    padding: 4px 10px;
+    border-radius: 6px;
+    display: inline-block;
+    margin-top: 10px;
+}
+
+/* --- FORM OVERLAY --- */
+.av-form-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.6);
+    backdrop-filter: blur(10px);
+    z-index: 1000;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 1.5rem;
+}
+
+.av-glass-card {
+    background: white;
+    width: 100%;
+    max-width: 850px;
+    border-radius: 24px;
+    padding: 2.5rem;
+    max-height: 90vh;
+    overflow-y: auto;
+    box-shadow: 0 25px 50px rgba(0, 0, 0, 0.2);
+}
+
+.av-close-circle {
+    position: absolute;
+    top: 20px;
+    right: 20px;
+    background: #f1f3f5;
+    border: none;
+    width: 35px;
+    height: 35px;
+    border-radius: 50%;
+    cursor: pointer;
+}
+
+/* --- UPLOADER --- */
+.av-upload-grid {
+    display: grid;
+    grid-template-columns: 1fr 1.5fr;
+    gap: 1.5rem;
+    margin-bottom: 2rem;
+}
+
+.av-uploader-box {
+    border: 2px dashed #e0e0e0;
+    border-radius: 16px;
+    background: #fafafa;
+    min-height: 240px;
+    display: flex;
+    flex-direction: column;
+    padding: 1.2rem;
+    transition: all 0.2s ease;
+}
+
+.av-uploader-box:hover { border-color: #e72e77; background: #fff5f8; }
+
+.av-mini-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(80px, 1fr));
+    gap: 10px;
+    width: 100%;
+}
+
+.av-mini-preview-item {
+    aspect-ratio: 1/1;
+    border-radius: 8px;
+    overflow: hidden;
+    position: relative;
+    border: 3px solid transparent;
+}
+
+.av-mini-preview-item.selected {
+    border-color: #e72e77;
+    transform: scale(0.92);
+}
+
+.selection-check {
+    position: absolute;
+    top: 4px;
+    right: 4px;
+    background: #e72e77;
+    color: white;
+    width: 18px;
+    height: 18px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 10px;
+}
+
+/* --- STYLED INPUTS --- */
+.av-input-styled, .av-select-styled {
+    width: 100%;
+    padding: 14px 18px;
+    margin-bottom: 1.2rem;
+    border: 1px solid #e0e0e0;
+    border-radius: 10px;
+    font-size: 1rem;
+    outline: none;
+    transition: all 0.3s;
+}
+
+.av-input-styled:focus, .av-select-styled:focus {
+    border-color: #e72e77;
+    box-shadow: 0 0 0 4px rgba(231, 46, 119, 0.1);
+}
+
+.av-submit-btn {
+    width: 100%;
+    background: #1a1a1a;
+    color: white;
+    padding: 16px;
+    border: none;
+    border-radius: 12px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: 0.3s;
+}
+
+.av-submit-btn:hover { background: #e72e77; }
+.av-submit-btn:disabled { background: #ccc; cursor: not-allowed; }
+
+.bulk-del-btn {
+    background: #ff4d4f;
+    color: white;
+    border: none;
+    padding: 6px 12px;
+    border-radius: 6px;
+    font-size: 0.8rem;
+    font-weight: 700;
+    cursor: pointer;
+}
+
+.av-image-preview { width: 100%; height: 180px; object-fit: cover; border-radius: 10px; }
+
+/* --- EDIT & DELETE BUTTON STYLING --- */
+.av-card-footer {
+    margin-top: 1.2rem;
+    display: flex;
+    gap: 12px;
+    align-items: center;
+}
+
+/* The Edit Button */
+.av-edit-btn {
+    flex: 2; /* Makes the edit button wider than the delete button */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    background-color: #ffffff;
+    color: #495057;
+    border: 1px solid #dee2e6;
+    padding: 10px 16px;
+    border-radius: 8px;
+    font-size: 0.9rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.av-edit-btn:hover {
+    background-color: #fff0f6;
+    border-color: #e72e77;
+    color: #e72e77;
+}
+
+.av-edit-btn svg {
+    font-size: 1.1rem;
+}
+
+/* The Delete Button */
+.av-del-btn {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: #fff5f5;
+    color: #fa5252;
+    border: 1px solid #ffc9c9;
+    padding: 10px;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.av-del-btn:hover {
+    background-color: #fa5252;
+    color: #ffffff;
+    border-color: #fa5252;
+    box-shadow: 0 4px 12px rgba(250, 82, 82, 0.2);
+}
+
+.av-del-btn svg {
+    font-size: 1.1rem;
+}
+
+/* --- OPTIONAL: CATEGORY TAG STYLING --- */
+.av-card-body h4 {
+    margin: 0;
+    font-size: 1.1rem;
+    color: #212529;
+    font-weight: 700;
+}
+
+.av-category-tag {
+    display: inline-block;
+    margin-top: 6px;
+    font-size: 0.7rem;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    font-weight: 800;
+    color: #e72e77;
+    background: #fff0f6;
+    padding: 3px 10px;
+    border-radius: 4px;
+}
+
+/* Card Footer Layout */
+.av-card-footer {
+    display: flex;
+    gap: 10px;
+    margin-top: 1.5rem;
+}
+
+/* Edit Button Style */
+.av-edit-btn {
+    flex: 2; /* Makes the edit button wider */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    background-color: #ffffff;
+    color: #495057;
+    border: 1px solid #dee2e6;
+    padding: 10px 16px;
+    border-radius: 8px;
+    font-size: 0.9rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.av-edit-btn:hover {
+    background-color: #fff0f6; /* Light pink background */
+    border-color: #e72e77;     /* Vivahasya Pink */
+    color: #e72e77;
+}
+
+/* Delete Button Style */
+.av-del-btn {
+    flex: 1; /* More compact delete button */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: #fff5f5; /* Light red background */
+    color: #fa5252;             /* Danger Red */
+    border: 1px solid #ffc9c9;
+    padding: 10px;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.av-del-btn:hover {
+    background-color: #fa5252;
+    color: #ffffff;
+    border-color: #fa5252;
+}
+
+/* Ensure icons align correctly */
+.av-edit-btn svg, .av-del-btn svg {
+    font-size: 1.1rem;
+}

@@ -1,12 +1,13 @@
 import React, { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { toast, Toaster } from "sonner";
-// Ensure these paths match your folder structure exactly
-import CustomDatePicker from "../../../admin/components/CustomDatePicker/CustomDatePicker"; 
+import CustomDatePicker from "../../../admin/components/CustomDatePicker/CustomDatePicker";
 import CustomDropdown from "../../../admin/components/CustomDropdown/CustomDropdown";
 import "./Inquiry.css";
 import video from "../../assets/baos.mp4";
 
 function Inquiry() {
+  const navigate = useNavigate();
   const [formData, setFormData] = useState({
     name: "",
     email: "",
@@ -14,19 +15,9 @@ function Inquiry() {
     location: "",
     date: "",
     eventType: "",
-    tradition: "",
     budget: "",
     duration: "1 Day",
-    guestCount: "",
-    message: "",
   });
-
-  const locationOptions = [
-    { value: "bangalore", label: "Bangalore" },
-    { value: "mysore", label: "Mysore" },
-    { value: "chennai", label: "Chennai" },
-    { value: "hyderabad", label: "Hyderabad" },
-  ];
 
   const eventTypeOptions = [
     { value: "Wedding", label: "Wedding" },
@@ -34,54 +25,55 @@ function Inquiry() {
     { value: "Reception", label: "Reception" },
   ];
 
+  // 👇 THIS WAS MISSING: It handles the typing in the input fields
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
+  // 👇 The updated PUBLIC submit function (No login required)
   const handleSubmit = async (e) => {
-  e.preventDefault();
-  
-  // 1. Get the token from storage
-  const token = localStorage.getItem("token");
+    e.preventDefault();
 
-  if (!token) {
-    toast.error("Please login to submit an inquiry.");
-    navigate("/login");
-    return;
-  }
+    const leadData = {
+      ...formData,
+      status: "New",
+    };
 
-  const leadData = {
-    ...formData,
-    guestCount: Number(formData.guestCount),
-    status: 'New'
-  };
+    try {
+      // Notice: No token/Authorization header needed here!
+      const response = await fetch("http://localhost:5000/api/leads", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(leadData),
+      });
 
-  try {
-    const response = await fetch("http://localhost:5000/api/leads", {
-      method: "POST",
-      headers: { 
-        "Content-Type": "application/json",
-        "Authorization": `Bearer ${token}` // 👈 This fixes the 401 error
-      },
-      body: JSON.stringify(leadData),
-    });
-
-    if (response.ok) {
-      toast.success("Inquiry submitted! You can view it in your dashboard.");
-      // Optional: Redirect to their "Leads" view to see it shown there
-    } else if (response.status === 401) {
-      toast.error("Session expired. Please login again.");
-      navigate("/login");
+      if (response.ok) {
+        toast.success("Inquiry submitted! Our team will contact you soon.");
+        // Clear the form after success
+        setFormData({
+          name: "",
+          email: "",
+          contact: "",
+          location: "",
+          date: "",
+          eventType: "",
+          budget: "",
+          duration: "1 Day",
+        });
+      } else {
+        toast.error("Could not submit inquiry. Please try again.");
+      }
+    } catch (err) {
+      toast.error("Connection failed. Is the backend running?");
     }
-  } catch (err) {
-    toast.error("Connection failed.");
-  }
-};
+  };
 
   return (
     <section className="inquiry-wrapper">
       <Toaster position="top-right" richColors />
-      
+
       <div className="video-wrapper">
         <video src={video} autoPlay muted loop playsInline />
       </div>
@@ -94,79 +86,45 @@ function Inquiry() {
           <h3>Get in touch</h3>
 
           <form onSubmit={handleSubmit}>
-            <input 
-              type="text" 
-              name="name" 
-              placeholder="Full Name" 
-              value={formData.name} 
-              onChange={handleChange} 
-              required 
-            />
-            <input 
-              type="email" 
-              name="email" 
-              placeholder="Email Address" 
-              value={formData.email} 
-              onChange={handleChange} 
-              required 
-            />
-            <input 
-              type="tel" 
-              name="contact" 
-              placeholder="Phone Number" 
-              value={formData.contact} 
-              onChange={handleChange} 
-              required 
-            />
-
-            <div className="form-row">
-              {/* Custom Date Picker */}
-              <CustomDatePicker 
-                value={formData.date} 
-                onChange={(val) => setFormData({ ...formData, date: val })} 
-              />
-              
-              {/* Custom Dropdown - FIXED prop from onChange to onSelect */}
-              <CustomDropdown 
-                label="Event"
-                options={eventTypeOptions}
-                selected={formData.eventType}
-                onSelect={(val) => setFormData({ ...formData, eventType: val })}
-              />
-            </div>
-
-            {/* Custom Dropdown - FIXED prop from onChange to onSelect */}
-            <CustomDropdown 
-              label="Location"
-              options={locationOptions}
-              selected={formData.location}
-              onSelect={(val) => setFormData({ ...formData, location: val })}
-            />
-
-            <div className="form-row">
-                <input 
-                  type="text" 
-                  name="tradition" 
-                  placeholder="Tradition" 
-                  value={formData.tradition} 
-                  onChange={handleChange} 
-                />
-                <input 
-                  type="number" 
-                  name="guestCount" 
-                  placeholder="Guests" 
-                  value={formData.guestCount} 
-                  onChange={handleChange} 
-                />
-            </div>
-
-            <textarea 
-              name="message" 
-              placeholder="Tell us more..." 
-              value={formData.message} 
+            <input
+              type="text"
+              name="name"
+              placeholder="Full Name"
+              value={formData.name}
               onChange={handleChange}
-            ></textarea>
+              required
+            />
+            <input
+              type="email"
+              name="email"
+              placeholder="Email Address"
+              value={formData.email}
+              onChange={handleChange}
+              required
+            />
+            <input
+              type="tel"
+              name="contact"
+              placeholder="Phone Number"
+              value={formData.contact}
+              onChange={handleChange}
+              required
+            />
             
+            <CustomDatePicker
+              value={formData.date}
+              onChange={(val) => setFormData({ ...formData, date: val })}
+            />
+
+            <input
+              type="text"
+              name="location"
+              placeholder="Event Location (City)"
+              value={formData.location}
+              onChange={handleChange}
+              required
+            />
+
             <button type="submit">Submit Request</button>
           </form>
         </div>

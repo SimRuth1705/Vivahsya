@@ -69,28 +69,28 @@ const Leads = () => {
 // --- Inside Leads.jsx ---
 
 const handleSendMail = async () => {
-  const toastId = toast.loading(`Sending credentials to ${currentLead.email}...`);
+  const toastId = toast.loading(`Activating portal for ${currentLead.name}...`);
   
   try {
-    // ✅ CHANGE 'leads' TO 'crm' TO MATCH YOUR server.js ROUTE
     const response = await fetch(`http://localhost:5000/api/crm/confirm/${currentLead._id}`, {
       method: "POST",
       headers: { 
-        "Authorization": `Bearer ${localStorage.getItem("token")}` 
+        "Authorization": `Bearer ${localStorage.getItem("token")}`,
+        "Content-Type": "application/json"
       }
     });
 
     const data = await response.json();
 
     if (response.ok) {
-      toast.success("Mail Sent! Client can now login.", { id: toastId });
-      fetchLeads();
+      toast.success("Credentials sent to client!", { id: toastId });
+      fetchLeads(); // Refresh the table to show updated status
       setShowEditModal(false);
     } else {
-      toast.error(data.message || "Mail failed to send.", { id: toastId });
+      toast.error(data.message || "Failed to activate portal.", { id: toastId });
     }
   } catch (err) {
-    toast.error("Server connection error.", { id: toastId });
+    toast.error("Network error. Is the server running?", { id: toastId });
   }
 };
 
