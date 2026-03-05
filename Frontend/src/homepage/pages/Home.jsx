@@ -5,7 +5,7 @@ import Services from "../components/Services/Services";
 import Testimonials from "../components/Testimonials/Testimonials";
 import Inquiry from "../components/Inquiry/Inquiry";
 import ContactFooter from "../components/ContactFooter/ContactFooter";
-import Faq from "../components/Faq/faq.jsx";
+import Faq from "../components/Faq/Faq.jsx";
 
 // Home.jsx
 function Home({ introReady }) {

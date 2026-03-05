@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import './Home.css';
+import './home.css';
 import hero1 from '../../assets/wedding-hero-1.jpg';
 import hero2 from '../../assets/wedding-hero-2.jpg';
 import hero3 from '../../assets/wedding-hero-3.jpg';

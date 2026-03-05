@@ -1,9 +1,9 @@
-import "./NavBar.css";
+import "./Navbar.css";
 import { Link, useNavigate } from "react-router-dom";
 import { useContext } from "react";
 import { AuthContext } from "../AuthContext/AuthContext";
 import logo from "../../assets/vlogo.png";
-import vivahasya_logo from "../../assets/vivahasya-logo.png";
+import vivahasya_logo from "../../assets/Vivahasya-logo.png";
 
 function NavBar() {
   const { user, logout } = useContext(AuthContext);
@@ -21,18 +21,32 @@ function NavBar() {
       </div>
 
       <ul className="nav-links">
-        <li><Link to="/">Home</Link></li>
-        <li><Link to="/about">About</Link></li>
-        <li><Link to="/services">Services</Link></li>
-        <li><Link to="/PortfolioGallery">Our Portfolio</Link></li>
-        <li><Link to="/contact">Contact</Link></li>
+        <li>
+          <Link to="/">Home</Link>
+        </li>
+        <li>
+          <Link to="/about">About</Link>
+        </li>
+        <li>
+          <Link to="/services">Services</Link>
+        </li>
+        <li>
+          <Link to="/PortfolioGallery">Our Portfolio</Link>
+        </li>
+        <li>
+          <Link to="/contact">Contact</Link>
+        </li>
 
         {user?.role === "admin" && (
-          <li><Link to="/admin">Admin Panel</Link></li>
+          <li>
+            <Link to="/admin">Admin Panel</Link>
+          </li>
         )}
 
         {user?.role === "client" && (
-          <li><Link to="/client-home">Dashboard</Link></li>
+          <li>
+            <Link to="/client-home">Dashboard</Link>
+          </li>
         )}
       </ul>
 
