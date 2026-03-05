@@ -11,7 +11,7 @@ import { gsap } from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 
 // Layout / Global
-import NavBar from "./homepage/components/NavBar/Navbar";
+import NavBar from "./homepage/components/Navbar/Navbar";
 import Loader from "./homepage/components/Loader/Loader";
 import { AuthProvider } from "./homepage/components/AuthContext/AuthContext";
 
