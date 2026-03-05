@@ -2,7 +2,7 @@ import React, { useState } from "react";
   import { useNavigate } from "react-router-dom";
   import { toast, Toaster } from "sonner";
   import API_BASE_URL from "../../../../config"; // 👈 1. Import your live config URL
-  import "./login.css"
+  import "./Login.css"
 
   const Login = () => {
     const [creds, setCreds] = useState({ username: "", password: "" });
