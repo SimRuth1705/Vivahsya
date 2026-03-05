@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef } from "react";
 import { Toaster, toast } from "sonner";
 import { HiOutlineCalendar, HiOutlineChevronLeft, HiOutlineChevronRight, HiOutlinePlus } from "react-icons/hi";
+import API_BASE_URL from "../../../../config"; // 👈 1. Import your live config
 import "./Events.css";
 
 // --- 1. CUSTOM DROPDOWN ---
@@ -50,14 +51,14 @@ const Events = () => {
   const fetchEvents = async () => {
     try {
       const token = localStorage.getItem("token");
-      // ✅ Using 127.0.0.1 for stability
-      const res = await fetch("http://127.0.0.1:5000/api/bookings", {
+      // 👈 2. Updated to API_BASE_URL
+      const res = await fetch(`${API_BASE_URL}/api/bookings`, {
         headers: { "Authorization": `Bearer ${token}` }
       });
       const data = await res.json();
 
       if (res.ok && Array.isArray(data)) {
-        // ✅ MAPPER: Standardizes ISO dates to YYYY-MM-DD for the calendar grid
+        // MAPPER: Standardizes ISO dates to YYYY-MM-DD for the calendar grid
         const mapped = data.map(evt => ({
           ...evt,
           startTime: evt.startTime || "10:00", // Default for CRM leads
@@ -82,7 +83,11 @@ const Events = () => {
     e.preventDefault();
     const token = localStorage.getItem("token");
     const method = isEditing ? "PUT" : "POST";
-    const url = isEditing ? `http://127.0.0.1:5000/api/bookings/${editEventId}` : "http://127.0.0.1:5000/api/bookings";
+    
+    // 👈 3. Updated both URLs to use API_BASE_URL
+    const url = isEditing 
+      ? `${API_BASE_URL}/api/bookings/${editEventId}` 
+      : `${API_BASE_URL}/api/bookings`;
 
     try {
       const res = await fetch(url, {

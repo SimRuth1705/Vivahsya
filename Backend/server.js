@@ -3,15 +3,14 @@ const mongoose = require("mongoose");
 const dotenv = require("dotenv");
 const cors = require("cors");
 const path = require("path");
-const bcrypt = require("bcryptjs"); // ✅ Added Missing Import
+const bcrypt = require("bcryptjs");
 
-// Load Environment Variables
 dotenv.config();
 
 // --- MODEL & ROUTE IMPORTS ---
-const User = require("./models/User"); // ✅ Added Missing Import
+const User = require("./models/User");
 const authRoutes = require("./routes/auth");
-const bookingRoutes = require("./routes/bookings");
+const bookingRoutes = require("./routes/bookings"); 
 const leadRoutes = require("./routes/leads");
 const vendorRoutes = require("./routes/vendors");
 const crmRoutes = require("./routes/crm");
@@ -22,25 +21,21 @@ const app = express();
 
 // --- MIDDLEWARE ---
 app.use(cors({
-  origin: [
-    "http://localhost:5173", 
-    "http://localhost:5174", 
-    "http://localhost:5175", 
-    "http://localhost:3000",
-    "http://127.0.0.1:5173" 
-  ],
+  origin: ["http://localhost:5173", "http://localhost:5174", "http://127.0.0.1:5173"],
   credentials: true
 }));
 
-// ✅ Support high-resolution image uploads
 app.use(express.json({ limit: '100mb' })); 
 app.use(express.urlencoded({ limit: '100mb', extended: true }));
-
-// Static folder for local uploads
 app.use("/uploads", express.static(path.join(__dirname, "uploads")));
 
-// --- SEEDING LOGIC ---
-// Updated to use 'username' for the new auth system
+// ✅ NEW: Request Logger (Helps find 404s)
+app.use((req, res, next) => {
+  console.log(`${req.method} ${req.originalUrl}`);
+  next();
+});
+
+// --- SEEDING ---
 const seedAdmin = async () => {
   try {
     const adminExists = await User.findOne({ username: "admin" }); 
@@ -53,31 +48,28 @@ const seedAdmin = async () => {
         role: "owner",
         status: "Active"
       });
-      console.log("🚀 Admin account seeded: username: admin / pass: admin123");
+      console.log("🚀 Admin account seeded");
     }
-  } catch (err) {
-    console.error("❌ Seeding error:", err.message);
-  }
+  } catch (err) { console.error("❌ Seeding error:", err.message); }
 };
 
-// --- DATABASE CONNECTION ---
+// --- DATABASE ---
 mongoose.connect(process.env.MONGO_URI)
   .then(() => {
     console.log("✅ MongoDB Atlas Connected");
-    seedAdmin(); // ✅ MUST CALL HERE to ensure DB is ready before seeding
+    seedAdmin();
   })
   .catch(err => console.error("❌ DB Connection Error:", err));
 
 // --- ROUTE MOUNTING ---
 app.use("/api/auth", authRoutes); 
-app.use("/api/bookings", bookingRoutes);
+app.use("/api/bookings", bookingRoutes); 
 app.use("/api/leads", leadRoutes);
 app.use("/api/vendors", vendorRoutes);
 app.use("/api/venues", venueRoutes);
 app.use("/api/crm", crmRoutes);
 app.use("/api/portfolio", portfolioRoutes);
 
-// Health Check
 app.get("/api/health", (req, res) => res.json({ status: "ok" }));
 
 const PORT = process.env.PORT || 5000;

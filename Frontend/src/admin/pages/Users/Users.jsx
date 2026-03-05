@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import { Toaster, toast } from "sonner";
 import CustomDropdown from "../../components/CustomDropdown/CustomDropdown";
 import { HiOutlineTrash, HiOutlineUserAdd } from "react-icons/hi";
+import API_BASE_URL from "../../../../config"; // 👈 1. Import your live config URL
 import "./Users.css";
 
 const Users = () => {
@@ -17,7 +18,8 @@ const Users = () => {
     role: "employee" 
   });
 
-  const API_URL = "http://127.0.0.1:5000/api/auth";
+  // 👈 2. Replaced hardcoded URL with API_BASE_URL
+  const API_URL = `${API_BASE_URL}/api/auth`;
 
   const fetchUsers = async () => {
     try {

@@ -1,117 +1,116 @@
-/* --- Root Variables & Reset --- */
+/* --- Variables --- */
 :root {
-  --primary: #6366f1; /* Indigo */
-  --primary-hover: #4f46e5;
-  --bg-gradient: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  --primary-gold: #d4af37;
+  --gold-hover: #b8952e;
+  --indigo-dark: #1e1b4b;
+  --text-main: #334155;
+  --bg-gradient: linear-gradient(135deg, #fdfcfb 0%, #e2d1c3 100%);
   --glass: rgba(255, 255, 255, 0.95);
-  --text-dark: #1e293b;
-  --text-muted: #64748b;
 }
 
+/* --- Container --- */
 .login-container {
   display: flex;
   justify-content: center;
   align-items: center;
   min-height: 100vh;
   background: var(--bg-gradient);
-  font-family: 'Inter', system-ui, -apple-system, sans-serif;
+  font-family: 'Outfit', 'Inter', sans-serif;
   padding: 20px;
 }
 
-/* --- Login Card --- */
+/* --- Glass Card Form --- */
 .login-container form {
   background: var(--glass);
-  padding: 40px;
+  padding: 3rem;
   border-radius: 24px;
-  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
   width: 100%;
-  max-width: 400px;
+  max-width: 420px;
   backdrop-filter: blur(10px);
-  border: 1px solid rgba(255, 255, 255, 0.2);
+  border: 1px solid rgba(255, 255, 255, 0.3);
   text-align: center;
+  animation: fadeIn 0.6s ease-out;
 }
 
 /* --- Typography --- */
 .login-container h2 {
-  font-size: 1.8rem;
-  font-weight: 800;
-  color: var(--text-dark);
-  margin-bottom: 10px;
-  letter-spacing: -0.025em;
+  color: var(--indigo-dark);
+  font-size: 2rem;
+  margin-bottom: 2rem;
+  font-weight: 700;
+  letter-spacing: -0.5px;
 }
 
 .login-container h2::after {
-  content: "Welcome Back";
+  content: "Portal Access";
   display: block;
   font-size: 0.9rem;
   font-weight: 400;
-  color: var(--text-muted);
-  margin-top: 5px;
+  color: #94a3b8;
+  margin-top: 4px;
 }
 
-/* --- Input Styling --- */
+/* --- Inputs --- */
 .login-container input {
   width: 100%;
-  padding: 14px 16px;
-  margin: 12px 0;
-  border: 2px solid #e2e8f0;
+  padding: 14px 18px;
+  margin: 10px 0;
+  border: 1.5px solid #e2e8f0;
   border-radius: 12px;
   font-size: 1rem;
-  transition: all 0.2s ease;
-  box-sizing: border-box; /* Ensures padding doesn't break width */
+  transition: all 0.3s ease;
   outline: none;
+  background: #f8fafc;
+  box-sizing: border-box; /* Crucial for width alignment */
 }
 
 .login-container input:focus {
-  border-color: var(--primary);
-  box-shadow: 0 0 0 4px rgba(99, 102, 241, 0.1);
-  background: #fff;
+  border-color: var(--primary-gold);
+  background: #ffffff;
+  box-shadow: 0 0 0 4px rgba(212, 175, 55, 0.1);
 }
 
 .login-container input::placeholder {
-  color: #94a3b8;
+  color: #cbd5e1;
 }
 
-/* --- Button Styling --- */
+/* --- Button --- */
 .login-container button {
   width: 100%;
   padding: 14px;
-  margin-top: 20px;
-  background: var(--primary);
+  margin-top: 25px;
+  background: var(--primary-gold);
   color: white;
   border: none;
   border-radius: 12px;
-  font-size: 1rem;
+  font-size: 1.1rem;
   font-weight: 600;
   cursor: pointer;
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-  box-shadow: 0 4px 6px -1px rgba(99, 102, 241, 0.4);
+  box-shadow: 0 4px 6px rgba(212, 175, 55, 0.2);
 }
 
 .login-container button:hover {
-  background: var(--primary-hover);
+  background: var(--gold-hover);
   transform: translateY(-2px);
-  box-shadow: 0 10px 15px -3px rgba(99, 102, 241, 0.4);
+  box-shadow: 0 10px 15px rgba(212, 175, 55, 0.3);
 }
 
 .login-container button:active {
   transform: translateY(0);
 }
 
-/* --- Animation --- */
+/* --- Animations --- */
 @keyframes fadeIn {
   from { opacity: 0; transform: translateY(20px); }
   to { opacity: 1; transform: translateY(0); }
 }
 
-.login-container form {
-  animation: fadeIn 0.6s ease-out;
-}
-
-/* --- Mobile Responsiveness --- */
+/* --- Mobile Fixes --- */
 @media (max-width: 480px) {
   .login-container form {
-    padding: 30px 20px;
+    padding: 2.5rem 1.5rem;
     border-radius: 20px;
   }
 }

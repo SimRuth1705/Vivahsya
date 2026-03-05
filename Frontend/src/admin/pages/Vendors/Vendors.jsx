@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { Toaster, toast } from "sonner";
+import API_BASE_URL from "../../../../config"; // 👈 1. Import your live config URL
 import "./Vendors.css";
 
 // --- RATING STARS COMPONENT ---
@@ -87,7 +88,8 @@ const Vendors = () => {
 
   const fetchVendors = async () => {
     try {
-      const res = await fetch("http://localhost:5000/api/vendors");
+      // 👈 2. Updated to API_BASE_URL
+      const res = await fetch(`${API_BASE_URL}/api/vendors`);
       const data = await res.json();
       setVendors(data);
       setLoading(false);
@@ -114,9 +116,11 @@ const Vendors = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     const method = isEditing ? "PUT" : "POST";
+    
+    // 👈 3. Updated both URLs to use API_BASE_URL
     const url = isEditing
-      ? `http://localhost:5000/api/vendors/${currentId}`
-      : "http://localhost:5000/api/vendors";
+      ? `${API_BASE_URL}/api/vendors/${currentId}`
+      : `${API_BASE_URL}/api/vendors`;
 
     try {
       const res = await fetch(url, {
@@ -138,7 +142,6 @@ const Vendors = () => {
   };
 
   const handleDelete = (id) => {
-  // This creates a custom toast pop-up on the right
   toast.custom((t) => (
     <div className="delete-confirm-popup">
       <div className="popup-content">
@@ -153,7 +156,8 @@ const Vendors = () => {
           className="btn-delete-toast" 
           onClick={async () => {
             try {
-              const res = await fetch(`http://localhost:5000/api/vendors/${id}`, {
+              // 👈 4. Updated to API_BASE_URL
+              const res = await fetch(`${API_BASE_URL}/api/vendors/${id}`, {
                 method: "DELETE",
               });
               if (res.ok) {
@@ -172,7 +176,6 @@ const Vendors = () => {
     </div>
   ), { position: 'top-right', duration: Infinity });
 };
-
 
   const openEditModal = (vendor) => {
     setFormData(vendor);

@@ -4,6 +4,7 @@ import {
   HiOutlineSearch, HiOutlinePencilAlt, 
   HiOutlineX 
 } from "react-icons/hi";
+import API_BASE_URL from "../../../../config"; // 👈 1. Imported live config URL
 import "./Leads.css";
 import CustomDropdown from "../../components/CustomDropdown/CustomDropdown";
 import CustomDatePicker from "../../components/CustomDatePicker/CustomDatePicker"; 
@@ -19,7 +20,8 @@ const Leads = () => {
 
   const fetchLeads = async () => {
     try {
-      const response = await fetch("http://localhost:5000/api/leads", {
+      // 👈 2. Updated to API_BASE_URL
+      const response = await fetch(`${API_BASE_URL}/api/leads`, {
         headers: {
           "Authorization": `Bearer ${localStorage.getItem("token")}`
         }
@@ -42,7 +44,8 @@ const Leads = () => {
   const handleUpdate = async (e) => {
     e.preventDefault();
     try {
-      const response = await fetch(`http://localhost:5000/api/leads/${currentLead._id}`, {
+      // 👈 3. Updated to API_BASE_URL
+      const response = await fetch(`${API_BASE_URL}/api/leads/${currentLead._id}`, {
         method: "PUT",
         headers: { 
           "Content-Type": "application/json",
@@ -64,35 +67,32 @@ const Leads = () => {
     }
   };
 
-  // --- Inside your Leads component ---
+  const handleSendMail = async () => {
+    const toastId = toast.loading(`Activating portal for ${currentLead.name}...`);
+    
+    try {
+      // 👈 4. Updated to API_BASE_URL
+      const response = await fetch(`${API_BASE_URL}/api/crm/confirm/${currentLead._id}`, {
+        method: "POST",
+        headers: { 
+          "Authorization": `Bearer ${localStorage.getItem("token")}`,
+          "Content-Type": "application/json"
+        }
+      });
 
-// --- Inside Leads.jsx ---
+      const data = await response.json();
 
-const handleSendMail = async () => {
-  const toastId = toast.loading(`Activating portal for ${currentLead.name}...`);
-  
-  try {
-    const response = await fetch(`http://localhost:5000/api/crm/confirm/${currentLead._id}`, {
-      method: "POST",
-      headers: { 
-        "Authorization": `Bearer ${localStorage.getItem("token")}`,
-        "Content-Type": "application/json"
+      if (response.ok) {
+        toast.success("Credentials sent to client!", { id: toastId });
+        fetchLeads(); 
+        setShowEditModal(false);
+      } else {
+        toast.error(data.message || "Failed to activate portal.", { id: toastId });
       }
-    });
-
-    const data = await response.json();
-
-    if (response.ok) {
-      toast.success("Credentials sent to client!", { id: toastId });
-      fetchLeads(); // Refresh the table to show updated status
-      setShowEditModal(false);
-    } else {
-      toast.error(data.message || "Failed to activate portal.", { id: toastId });
+    } catch (err) {
+      toast.error("Network error. Is the server running?", { id: toastId });
     }
-  } catch (err) {
-    toast.error("Network error. Is the server running?", { id: toastId });
-  }
-};
+  };
 
   const handleEditClick = (lead) => {
     setCurrentLead({ ...lead });
@@ -265,7 +265,6 @@ const handleSendMail = async () => {
                 </div>
               </div>
 
-              {/* UPDATED MODAL FOOTER WITH 3 BUTTONS */}
               <div className="modal-footer-refined">
                 <button type="button" className="btn-discard" onClick={() => setShowEditModal(false)}>Cancel</button>
                 

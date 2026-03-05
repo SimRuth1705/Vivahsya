@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
+import API_BASE_URL from "../../../../config"; // 👈 1. Import your live config URL
 import "./portfolio.css";
 
 const fallbackHero = "https://images.unsplash.com/photo-1519225421980-715cb0215aed?q=80&w=2070&auto=format&fit=crop";
@@ -12,7 +13,8 @@ const Portfolio = () => {
   useEffect(() => {
     const fetchPortfolio = async () => {
       try {
-        const res = await fetch("http://localhost:5000/api/portfolio");
+        // 👈 2. Replaced hardcoded URL with API_BASE_URL
+        const res = await fetch(`${API_BASE_URL}/api/portfolio`);
         const data = await res.json();
         setPortfolioItems(data);
       } catch (err) {

@@ -6,10 +6,10 @@ import {
   HiOutlineBadgeCheck 
 } from "react-icons/hi";
 import { Toaster, toast } from "sonner";
+import API_BASE_URL from "../../../../config"; // 👈 1. Import your live config
 import "./Dashboard.css";
 
 const Dashboard = () => {
-  // ✅ Combined state for data management
   const [data, setData] = useState({ leads: [], bookings: [], chart: [] });
   const [loading, setLoading] = useState(true);
   
@@ -21,54 +21,49 @@ const Dashboard = () => {
       try {
         const token = localStorage.getItem("token");
 
-        // ✅ Using 127.0.0.1 for stability over 'localhost'
+        // 👈 2. Updated both fetch calls to use API_BASE_URL
         const [leadsRes, bookingsRes] = await Promise.all([
-          fetch("http://127.0.0.1:5000/api/leads", {
+          fetch(`${API_BASE_URL}/api/leads`, {
             headers: { Authorization: `Bearer ${token}` },
           }),
-          fetch("http://127.0.0.1:5000/api/bookings", {
+          fetch(`${API_BASE_URL}/api/bookings`, {
             headers: { Authorization: `Bearer ${token}` },
           }),
         ]);
 
-        if (leadsRes.status === 401 || bookingsRes.status === 401) {
-          toast.error("Session expired. Please login again.");
-          return;
+        // Status Check
+        if (!leadsRes.ok || !bookingsRes.ok) {
+          throw new Error(`API Error: Leads(${leadsRes.status}) Bookings(${bookingsRes.status})`);
         }
 
         const leadsData = await leadsRes.json();
         const bookingsData = await bookingsRes.json();
 
-        // --- CHART DATA GENERATION ---
-        // Groups bookings by date to create the revenue trend line
+        // Process Chart
         const chartMap = bookingsData.reduce((acc, curr) => {
           const date = curr.date || "TBD";
-          acc[date] = (acc[date] || 0) + (parseInt(curr.amount) || 0);
+          const val = parseInt(curr.amount?.toString().replace(/[^0-9]/g, "")) || 0;
+          acc[date] = (acc[date] || 0) + val;
           return acc;
         }, {});
 
-        const chartData = Object.entries(chartMap).map(([name, val]) => ({ name, val }));
-
-        // ✅ THE FIX: Use setData to update the entire object at once
         setData({
           leads: Array.isArray(leadsData) ? leadsData : [],
           bookings: Array.isArray(bookingsData) ? bookingsData : [],
-          chart: chartData.sort((a, b) => new Date(a.name) - new Date(b.name))
+          chart: Object.entries(chartMap).map(([name, val]) => ({ name, val }))
         });
 
       } catch (error) {
-        console.error("Dashboard Fetch Error:", error);
-        toast.error("Failed to load dashboard data");
+        console.error("Dashboard Sync Error:", error.message);
+        toast.error(error.message);
       } finally {
         setLoading(false);
       }
     };
     fetchData();
-  }, [isOwner]);
+  }, []);
 
   const parseVal = (v) => parseInt(v?.toString().replace(/[^0-9]/g, "")) || 0;
-
-  // --- SAFE CALCULATIONS ---
   const safeBookings = data.bookings;
 
   const sourceTotals = safeBookings.reduce((acc, b) => {

@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import API_BASE_URL from "../../../../config"; // 👈 1. Import your live config URL
 import "./portfolio.css";
 
 const Decor = () => {
@@ -9,8 +10,10 @@ const Decor = () => {
   useEffect(() => {
     const fetchItems = async () => {
       try {
-        const res = await fetch("http://localhost:5000/api/portfolio");
+        // 👈 2. Replaced hardcoded URL with API_BASE_URL
+        const res = await fetch(`${API_BASE_URL}/api/portfolio`);
         const data = await res.json();
+        
         // Filters only for Decor category
         setItems(data.filter(item => item.category === "Decor"));
       } catch (err) {

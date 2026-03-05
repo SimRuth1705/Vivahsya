@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { HiOutlineClock, HiOutlineLocationMarker, HiOutlineCalendar } from "react-icons/hi";
+import API_BASE_URL from "../../../../config"; // 👈 1. Import your live config URL
 import "./Timeline.css";
 
 // Import your local assets
@@ -33,7 +34,8 @@ const Timeline = () => {
       }
 
       try {
-        const response = await fetch("http://localhost:5000/api/bookings/my-booking", {
+        // 👈 2. Replaced hardcoded URL with API_BASE_URL
+        const response = await fetch(`${API_BASE_URL}/api/bookings/my-booking`, {
           headers: {
             "Authorization": `Bearer ${token}`,
             "Content-Type": "application/json"

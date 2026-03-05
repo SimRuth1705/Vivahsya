@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { Toaster, toast } from "sonner";
 import { HiOutlineCalendar, HiOutlineLocationMarker, HiOutlineUserGroup } from "react-icons/hi";
+import API_BASE_URL from "../../../../config"; // 👈 1. Import your live config
 import "./Bookings.css";
 
 // --- STATUS PILL COMPONENT ---
@@ -25,8 +26,9 @@ const Bookings = () => {
     setLoading(true);
     try {
       const token = localStorage.getItem("token");
-      // ✅ Using 127.0.0.1 for browser stability over 'localhost'
-      const bookRes = await fetch("http://127.0.0.1:5000/api/bookings", {
+      
+      // 👈 2. Replaced 127.0.0.1 with API_BASE_URL using backticks
+      const bookRes = await fetch(`${API_BASE_URL}/api/bookings`, {
         headers: {
           Authorization: `Bearer ${token}`,
           "Content-Type": "application/json",
@@ -120,7 +122,6 @@ const Bookings = () => {
                   <td className="client-info">
                     <div className="user-flex">
                       <HiOutlineUserGroup className="row-icon" />
-                      {/* ✅ Handles data from both manual creation and CRM confirm */}
                       <span>{b.clientId?.name || b.title.split("'s")[0] || "Client"}</span>
                     </div>
                   </td>

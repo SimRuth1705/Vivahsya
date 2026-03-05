@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { toast, Toaster } from "sonner";
+import API_BASE_URL from "../../../../config"; // 👈 1. Import your live config URL
 import "./book.css";
 
 const ClientBooking = () => {
@@ -16,7 +17,8 @@ const ClientBooking = () => {
       }
 
       try {
-        const response = await fetch("http://localhost:5000/api/bookings/my-booking", {
+        // 👈 2. Replaced hardcoded URL with API_BASE_URL
+        const response = await fetch(`${API_BASE_URL}/api/bookings/my-booking`, {
           headers: {
             "Authorization": `Bearer ${token}`,
             "Content-Type": "application/json"
@@ -137,4 +139,4 @@ const ClientBooking = () => {
   );
 };
 
-export default ClientBooking;
+export default ClientBooking;   

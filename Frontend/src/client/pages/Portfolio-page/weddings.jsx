@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import API_BASE_URL from "../../../../config"; // 👈 1. Import your live config URL
 import "./portfolio.css";
 
 const Weddings = () => {
@@ -9,12 +10,14 @@ const Weddings = () => {
   useEffect(() => {
     const fetchItems = async () => {
       try {
-        const res = await fetch("http://localhost:5000/api/portfolio");
+        // 👈 2. Replaced hardcoded URL with API_BASE_URL
+        const res = await fetch(`${API_BASE_URL}/api/portfolio`);
         const data = await res.json();
-        // Change "Weddings" to "Decor" or "Photography" for the other files
+        
+        // Filters only for Weddings category
         setItems(data.filter(item => item.category === "Weddings"));
       } catch (err) {
-        console.error(err);
+        console.error("Weddings Fetch Error:", err);
       } finally {
         setLoading(false);
       }
@@ -22,7 +25,11 @@ const Weddings = () => {
     fetchItems();
   }, []);
 
-  if (loading) return <div className="vp-portfolio-wrapper"><div className="vp-loader-status">Curating Collection...</div></div>;
+  if (loading) return (
+    <div className="vp-portfolio-wrapper">
+      <div className="vp-loader-status">Curating Collection...</div>
+    </div>
+  );
 
   return (
     <div className="vp-portfolio-wrapper">

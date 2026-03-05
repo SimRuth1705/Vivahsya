@@ -21,16 +21,32 @@ const transporter = nodemailer.createTransport({
   },
 });
 
+// =====================================================
+// 0️⃣ ADMIN: GET ALL BOOKINGS (Dashboard List)
+// =====================================================
+router.get("/", protect, adminOnly, async (req, res) => {
+  try {
+    const bookings = await Booking.find()
+      .populate("leadId", "name email status")
+      .sort({ createdAt: -1 });
+    
+    res.status(200).json(bookings); 
+  } catch (err) {
+    res.status(500).json({ error: "Failed to fetch bookings." });
+  }
+});
+
+// =====================================================
+// 1️⃣ ADMIN: CONFIRM LEAD & CREATE ACCOUNT
+// =====================================================
 router.post("/confirm/:id", protect, adminOnly, async (req, res) => {
   try {
     const lead = await Lead.findById(req.params.id);
     if (!lead) return res.status(404).json({ message: "Lead not found" });
 
-    // 1. Create Credentials
     const rawPassword = Math.floor(100000 + Math.random() * 900000).toString();
     const hashedPassword = await bcrypt.hash(rawPassword, 10);
 
-    // 2. Create Client User
     const user = await User.create({
       name: lead.name,
       username: lead.email,
@@ -39,7 +55,6 @@ router.post("/confirm/:id", protect, adminOnly, async (req, res) => {
       leadId: lead._id
     });
 
-    // 3. Create Booking (For Calendar/Booking Page)
     const booking = await Booking.create({
       title: `${lead.name}'s Event`,
       leadId: lead._id,
@@ -48,7 +63,6 @@ router.post("/confirm/:id", protect, adminOnly, async (req, res) => {
       status: "Confirmed"
     });
 
-    // 4. Update Lead & Send Email
     lead.status = "Confirm";
     await lead.save();
 
@@ -56,52 +70,53 @@ router.post("/confirm/:id", protect, adminOnly, async (req, res) => {
       from: process.env.ADMIN_EMAIL,
       to: lead.email,
       subject: "Vivahasya Portal Active",
-      html: `<p>Login: ${lead.email} | Pass: ${rawPassword}</p>`
+      html: `<h3>Welcome to Vivahasya!</h3>
+             <p>Your wedding portal is active. Use the credentials below to log in:</p>
+             <p><strong>Login:</strong> ${lead.email}</p>
+             <p><strong>Password:</strong> ${rawPassword}</p>`
     });
 
     res.json({ message: "Sync Complete", booking });
-  } catch (err) { res.status(500).json({ error: err.message }); }
+  } catch (err) { 
+    res.status(500).json({ error: err.message }); 
+  }
 });
 
 // =====================================================
-// 3️⃣ CLIENT: GET THEIR OWN BOOKING
+// 2️⃣ CLIENT: GET THEIR OWN BOOKING
 // =====================================================
+// Note: This must stay ABOVE the "/:id" route!
 router.get("/my-booking", protect, async (req, res) => {
   try {
-    const booking = await Booking.findOne({
-      leadId: req.user.leadId,
-    })
+    const booking = await Booking.findOne({ leadId: req.user.leadId })
       .populate("venueId")
       .populate("leadId")
       .populate("clientId", "name username");
 
     if (!booking) {
-      return res.status(404).json({
-        message: "No active wedding found for this account.",
-      });
+      return res.status(404).json({ message: "No active wedding found." });
     }
-
     res.json(booking);
-  } catch (err) {
-    res.status(500).json({ error: err.message });
+  } catch (err) { 
+    res.status(500).json({ error: err.message }); 
   }
 });
 
 // =====================================================
-// 4️⃣ GET SPECIFIC BOOKING BY LEAD ID
+// 3️⃣ ADMIN: GET SPECIFIC BOOKING BY LEAD ID
 // =====================================================
 router.get("/:id", protect, adminOnly, async (req, res) => {
   try {
     const booking = await Booking.findOne({ leadId: req.params.id });
     if (!booking) return res.status(404).json({ message: "Booking not found." });
     res.json(booking);
-  } catch (err) {
-    res.status(500).json({ error: "Failed to fetch booking." });
+  } catch (err) { 
+    res.status(500).json({ error: "Failed to fetch booking." }); 
   }
 });
 
 // =====================================================
-// 5️⃣ UPDATE BOOKING (ADMIN)
+// 4️⃣ ADMIN: UPDATE BOOKING
 // =====================================================
 router.put("/:id", protect, adminOnly, async (req, res) => {
   try {
@@ -111,13 +126,13 @@ router.put("/:id", protect, adminOnly, async (req, res) => {
       { new: true }
     );
     res.json(updatedBooking);
-  } catch (err) {
-    res.status(500).json({ error: err.message });
+  } catch (err) { 
+    res.status(500).json({ error: err.message }); 
   }
 });
 
 // =====================================================
-// 6️⃣ UPDATE TIMELINE (ADMIN)
+// 5️⃣ ADMIN: UPDATE TIMELINE
 // =====================================================
 router.put('/timeline/:id', protect, adminOnly, async (req, res) => {
   try {
@@ -129,8 +144,8 @@ router.put('/timeline/:id', protect, adminOnly, async (req, res) => {
     );
     if (!updatedBooking) return res.status(404).json({ message: "Booking not found." });
     res.json(updatedBooking);
-  } catch (err) {
-    res.status(500).json({ error: "Failed to save timeline." });
+  } catch (err) { 
+    res.status(500).json({ error: "Failed to save timeline." }); 
   }
 });
 

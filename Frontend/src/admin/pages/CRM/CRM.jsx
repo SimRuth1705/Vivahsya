@@ -7,6 +7,7 @@ import {
   HiOutlineUsers,
   HiOutlinePlus
 } from "react-icons/hi";
+import API_BASE_URL from "../../../../config"; // 👈 1. Imported live config URL
 import "./CRM.css";
 
 const CRM = () => {
@@ -43,7 +44,8 @@ const CRM = () => {
     }
 
     try {
-      const response = await fetch("http://localhost:5000/api/leads", {
+      // 👈 2. Updated to API_BASE_URL
+      const response = await fetch(`${API_BASE_URL}/api/leads`, {
         headers: getAuthHeaders(),
       });
 
@@ -66,8 +68,8 @@ const CRM = () => {
   const fetchTimeline = async (id) => {
     if (!id) return;
     try {
-      // Assuming your backend route handles finding the booking by lead ID or booking ID
-      const res = await fetch(`http://localhost:5000/api/bookings/${id}`, {
+      // 👈 3. Updated to API_BASE_URL
+      const res = await fetch(`${API_BASE_URL}/api/bookings/${id}`, {
         headers: getAuthHeaders(),
       });
       const data = await res.json();
@@ -86,7 +88,8 @@ const CRM = () => {
     if (!selectedBookingId) return;
 
     try {
-      const res = await fetch(`http://localhost:5000/api/bookings/timeline/${selectedBookingId}`, {
+      // 👈 4. Updated to API_BASE_URL
+      const res = await fetch(`${API_BASE_URL}/api/bookings/timeline/${selectedBookingId}`, {
         method: "PUT",
         headers: getAuthHeaders(),
         body: JSON.stringify({ timeline: timelineEvents }),
@@ -114,7 +117,8 @@ const CRM = () => {
     const updatedTimeline = [...timelineEvents, newEvent];
 
     try {
-      const res = await fetch(`http://localhost:5000/api/bookings/timeline/${selectedBookingId}`, {
+      // 👈 5. Updated to API_BASE_URL
+      const res = await fetch(`${API_BASE_URL}/api/bookings/timeline/${selectedBookingId}`, {
         method: "PUT",
         headers: getAuthHeaders(),
         body: JSON.stringify({ timeline: updatedTimeline }),

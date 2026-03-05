@@ -5,6 +5,7 @@ import {
   HiOutlinePhotograph, HiOutlineX, HiOutlineCollection,
   HiOutlineLocationMarker, HiOutlineUserGroup, HiOutlineHome
 } from "react-icons/hi";
+import API_BASE_URL from "../../../../config"; // 👈 1. Imported your live config
 import "./AdminVenues.css";
 
 const AdminVenues = () => {
@@ -26,7 +27,8 @@ const AdminVenues = () => {
   const fetchVenues = async () => {
     setLoading(true);
     try {
-      const res = await fetch("http://localhost:5000/api/venues");
+      // 👈 2. Updated to API_BASE_URL
+      const res = await fetch(`${API_BASE_URL}/api/venues`);
       const data = await res.json();
       setVenues(data);
     } catch (err) {
@@ -38,7 +40,6 @@ const AdminVenues = () => {
 
   useEffect(() => { fetchVenues(); }, []);
 
-  // ✅ ADDED: 10MB Safety Check for Main Image
   const handleMainImageChange = (e) => {
     const file = e.target.files[0];
     if (file) {
@@ -50,7 +51,6 @@ const AdminVenues = () => {
     }
   };
 
-  // ✅ ADDED: 10MB Safety Check for Gallery Images
   const handleGalleryChange = (e) => {
     const files = Array.from(e.target.files);
     
@@ -66,15 +66,14 @@ const AdminVenues = () => {
 
   const removeGalleryItem = async (url) => {
     if (!editingId) {
-       // Just UI cleanup for new venue
        setGalleryPreviews(prev => prev.filter(item => item !== url));
        return;
     }
     
-    // Server cleanup for existing venue
     if (!window.confirm("Delete photo from Cloud permanently?")) return;
     try {
-      const res = await fetch(`http://localhost:5000/api/venues/${editingId}/remove-photo`, {
+      // 👈 3. Updated to API_BASE_URL
+      const res = await fetch(`${API_BASE_URL}/api/venues/${editingId}/remove-photo`, {
         method: 'PATCH',
         headers: { 
             'Content-Type': 'application/json',
@@ -92,7 +91,8 @@ const AdminVenues = () => {
   const handleDelete = async (id) => {
     if(!window.confirm("Are you sure? This will remove all cloud assets.")) return;
     try {
-        await fetch(`http://localhost:5000/api/venues/${id}`, { 
+        // 👈 4. Updated to API_BASE_URL
+        await fetch(`${API_BASE_URL}/api/venues/${id}`, { 
             method: 'DELETE',
             headers: { "Authorization": `Bearer ${localStorage.getItem("token")}` }
         });
@@ -108,7 +108,6 @@ const AdminVenues = () => {
 
     const submitData = new FormData();
 
-    // 1. SAFE APPEND: Only send actual text data.
     const ignoredFields = ["image", "gallery", "_id", "createdAt", "updatedAt", "__v"];
     
     Object.keys(formData).forEach((key) => {
@@ -117,28 +116,19 @@ const AdminVenues = () => {
       }
     });
 
-    // 2. FILE APPEND: Add the actual File objects chosen by the user.
-    if (mainImage) {
-      submitData.append("image", mainImage);
-    }
-    
-    galleryFiles.forEach((file) => {
-      submitData.append("gallery", file);
-    });
+    if (mainImage) submitData.append("image", mainImage);
+    galleryFiles.forEach((file) => submitData.append("gallery", file));
 
-    // 3. API ROUTING
+    // 👈 5. Updated to API_BASE_URL
     const url = editingId 
-      ? `http://localhost:5000/api/venues/${editingId}` 
-      : "http://localhost:5000/api/venues";
+      ? `${API_BASE_URL}/api/venues/${editingId}` 
+      : `${API_BASE_URL}/api/venues`;
     const method = editingId ? "PUT" : "POST";
 
-    // 4. EXECUTE REQUEST
     try {
       const res = await fetch(url, {
         method: method,
-        headers: { 
-          "Authorization": `Bearer ${token}` 
-        },
+        headers: { "Authorization": `Bearer ${token}` },
         body: submitData
       });
 
@@ -149,11 +139,9 @@ const AdminVenues = () => {
       } else {
         const errorData = await res.json();
         toast.error(`Upload failed: ${errorData.error || "Check terminal logs"}`);
-        console.error("Backend response error:", errorData);
       }
     } catch (err) { 
       toast.error("Network connection failed. Is the server running?");
-      console.error("Fetch Error:", err);
     } finally { 
       setIsUploading(false); 
     }
@@ -190,7 +178,7 @@ const AdminVenues = () => {
           <div className="av-glass-card">
             <div className="av-card-top">
               <h3>{editingId ? "Manage Asset Gallery" : "Create Cloud Listing"}</h3>
-              <button className="av-close-circle" onClick={resetForm}><HiOutlineX /></button>
+              <button className="av-close-circle" type="button" onClick={resetForm}><HiOutlineX /></button>
             </div>
 
             <form onSubmit={handleSubmit} className="av-pro-form">

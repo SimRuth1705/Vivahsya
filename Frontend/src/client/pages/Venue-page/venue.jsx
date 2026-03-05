@@ -8,6 +8,7 @@ import {
     HiStar,
     HiSearch
 } from 'react-icons/hi';
+import API_BASE_URL from "../../../../config"; // 👈 1. Import your live config URL
 import './venue.css';
 
 const VenuesPage = () => {
@@ -21,7 +22,8 @@ const VenuesPage = () => {
     useEffect(() => {
         const fetchVenues = async () => {
             try {
-                const res = await fetch("http://localhost:5000/api/venues");
+                // 👈 2. Updated to API_BASE_URL
+                const res = await fetch(`${API_BASE_URL}/api/venues`);
                 const data = await res.json();
                 setVenuesData(data);
             } catch (err) {

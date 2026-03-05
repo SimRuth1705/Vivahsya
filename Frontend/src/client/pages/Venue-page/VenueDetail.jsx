@@ -6,6 +6,7 @@ import {
   HiOutlineUserGroup, 
   HiOutlineHome 
 } from "react-icons/hi";
+import API_BASE_URL from "../../../../config"; // 👈 1. Import your live config
 import "./VenueDetail.css";
 
 const VenueDetails = () => {
@@ -17,13 +18,18 @@ const VenueDetails = () => {
   const [showAllPhotos, setShowAllPhotos] = useState(false);
 
   useEffect(() => {
+    // Only fetch if we didn't receive the venue via state (e.g., on page refresh)
     if (!venue) {
       const fetchVenueDetails = async () => {
         try {
-          const response = await fetch(`http://localhost:5000/api/venues`);
+          // 👈 2. Replaced localhost with API_BASE_URL
+          const response = await fetch(`${API_BASE_URL}/api/venues`);
           const allVenues = await response.json();
+          
+          // Decode URL name (e.g., "Grand-Taj-Hotel" -> "Grand Taj Hotel")
           const decodedName = decodeURIComponent(name).replace(/-/g, " ");
           const found = allVenues.find(v => v.name.toLowerCase() === decodedName.toLowerCase());
+          
           setVenue(found);
         } catch (err) {
           console.error("Error fetching venue:", err);
@@ -38,7 +44,6 @@ const VenueDetails = () => {
   if (loading) return <div className="vd-loading-screen">Loading Premium Venue...</div>;
   if (!venue) return <div className="vd-error-screen">Venue not found in our collection.</div>;
 
-  // Safely merge cover photo and gallery
   const dynamicGallery = [
     venue.image, 
     ...(Array.isArray(venue.gallery) ? venue.gallery : [])
@@ -46,14 +51,14 @@ const VenueDetails = () => {
 
   return (
     <div className="venue-detail-page-modern">
-      {/* 1. CINEMATIC HERO SECTION */}
+      {/* HERO SECTION */}
       <div className="vd-hero-container">
         <img src={venue.image} alt={venue.name} className="vd-hero-img" />
         <div className="vd-hero-overlay"></div>
         <div className="vd-hero-watermark">VIVAHASYA COLLECTION</div>
       </div>
 
-      {/* 2. OVERLAPPING INFO CARD */}
+      {/* OVERLAPPING INFO CARD */}
       <div className="vd-main-card">
         <div className="vd-card-header">
           <div className="vd-card-title-col">
@@ -99,7 +104,7 @@ const VenueDetails = () => {
         </div>
       </div>
 
-      {/* 3. PREMIUM MASONRY PORTFOLIO */}
+      {/* PREMIUM MASONRY PORTFOLIO */}
       {dynamicGallery.length > 1 && (
         <div className="vd-portfolio-container">
           <div className="vd-portfolio-header">
@@ -108,7 +113,6 @@ const VenueDetails = () => {
           </div>
 
           <div className="vd-gallery-content">
-            {/* Pure CSS Masonry handles the layout beautifully */}
             <div className={showAllPhotos ? "vd-photo-masonry" : "vd-photo-grid"}>
               {dynamicGallery
                 .slice(0, showAllPhotos ? dynamicGallery.length : 8)
