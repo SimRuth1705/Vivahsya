@@ -6,10 +6,10 @@ const User = require("../models/User");
 const Lead = require("../models/Lead");
 
 const bcrypt = require("bcryptjs");
-const { Resend } = require("resend");
+const sgMail = require("@sendgrid/mail");
 const { protect, adminOnly } = require("../middleware/authMiddleware");
 
-const resend = new Resend(process.env.RESEND_API_KEY);
+sgMail.setApiKey(process.env.SENDGRID_API_KEY);
 
 // =====================================================
 // 0️⃣ ADMIN: GET ALL BOOKINGS (Dashboard List)
@@ -56,8 +56,8 @@ router.post("/confirm/:id", protect, adminOnly, async (req, res) => {
     lead.status = "Confirm";
     await lead.save();
 
-    await resend.emails.send({
-      from: "Vivahasya <onboarding@resend.dev>",
+    await sgMail.send({
+      from: process.env.ADMIN_EMAIL,
       to: lead.email,
       subject: "Vivahasya Portal Active",
       html: `<h3>Welcome to Vivahasya!</h3>

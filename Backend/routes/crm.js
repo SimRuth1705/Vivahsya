@@ -4,10 +4,10 @@ const User = require("../models/User");
 const Lead = require("../models/Lead");
 const Booking = require("../models/Booking");
 const bcrypt = require("bcryptjs");
-const { Resend } = require("resend");
+const sgMail = require("@sendgrid/mail");
 const { protect, adminOnly } = require("../middleware/authMiddleware");
 
-const resend = new Resend(process.env.RESEND_API_KEY);
+sgMail.setApiKey(process.env.SENDGRID_API_KEY);
 
 // 2. The Confirmation Route
 // ... (imports and transporter config same as before)
@@ -58,8 +58,8 @@ router.post("/confirm/:id", protect, adminOnly, async (req, res) => {
     });
 
     // D. Email Delivery
-    await resend.emails.send({
-      from: "Vivahasya <onboarding@resend.dev>",
+    await sgMail.send({
+      from: process.env.ADMIN_EMAIL,
       to: lead.email,
       subject: "Welcome to Vivahasya - Portal Access",
       html: `<h3>Wedding Portal Activated</h3>

@@ -3,10 +3,10 @@ const router = express.Router();
 const User = require('../models/User');
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
-const { Resend } = require('resend');
+const sgMail = require('@sendgrid/mail');
 const { protect, adminOnly } = require('../middleware/authMiddleware');
 
-const resend = new Resend(process.env.RESEND_API_KEY);
+sgMail.setApiKey(process.env.SENDGRID_API_KEY);
 
 // --- 1. LOGIN (Username Based) ---
 router.post('/login', async (req, res) => {
@@ -46,8 +46,8 @@ router.post("/register-initiate", async (req, res) => {
     console.log(`🛠️ Attempting to send OTP to ${email} via Render...`);
 
     // 2. Send the mail
-    await resend.emails.send({
-      from: "Vivahasya <onboarding@resend.dev>",
+    await sgMail.send({
+      from: process.env.ADMIN_EMAIL,
       to: email,
       subject: "Your Access Key - Vivahasya",
       html: `
