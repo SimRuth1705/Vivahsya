@@ -16,13 +16,6 @@ function ContactFooter() {
               <p className="footer-tagline">Crafting eternal memories with artistic precision.</p>
             </div>
 
-            <div className="footer-cta">
-              <p className="cta-text">Have a celebration in mind?</p>
-              <button className="cta-button" onClick={() => setIsInquiryOpen(true)}>
-                Get In Touch
-                
-              </button>
-            </div>
           </div>
 
           {/* Middle Section: Links & Info */}

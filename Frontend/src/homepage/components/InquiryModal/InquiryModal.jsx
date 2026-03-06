@@ -1,95 +1,97 @@
 import { useEffect, useState } from "react";
+import { toast, Toaster } from "sonner";
+import API_BASE_URL from "../../../../config";
 import "./InquiryModal.css";
 
 function InquiryModal({ isOpen, onClose }) {
   const [shouldRender, setShouldRender] = useState(isOpen);
   const [isVisible, setIsVisible] = useState(isOpen);
+  
   const [formData, setFormData] = useState({
-    fullName: "",
+    name: "",
     email: "",
-    phone: "",
-    eventDate: "",
-    city: "",
+    contact: "",
+    location: "",
+    date: "",
+    eventType: "Wedding",
+    budget: "",
+    duration: "1 Day",
   });
 
   useEffect(() => {
     if (isOpen) {
       setShouldRender(true);
       requestAnimationFrame(() => setIsVisible(true));
-      const previousOverflow = document.body.style.overflow;
       document.body.style.overflow = "hidden";
-      return () => {
-        document.body.style.overflow = previousOverflow;
-      };
+    } else {
+      setIsVisible(false);
+      const timer = setTimeout(() => setShouldRender(false), 220);
+      document.body.style.overflow = "";
+      return () => clearTimeout(timer);
     }
-
-    setIsVisible(false);
-    const closeTimer = setTimeout(() => {
-      setShouldRender(false);
-    }, 220);
-    document.body.style.overflow = "";
-
-    return () => clearTimeout(closeTimer);
   }, [isOpen]);
 
-  useEffect(() => {
-    const onEsc = (event) => {
-      if (event.key === "Escape" && isOpen) {
-        onClose();
-      }
+  const handleChange = (e) => {
+    setFormData({ ...formData, [e.target.name]: e.target.value });
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+
+    if (!formData.name || !formData.email || !formData.contact || !formData.location || !formData.date) {
+      toast.error("Please fill all fields before submitting.");
+      return;
+    }
+
+    const leadData = {
+      ...formData,
+      status: "New",
     };
 
-    window.addEventListener("keydown", onEsc);
-    return () => window.removeEventListener("keydown", onEsc);
-  }, [isOpen, onClose]);
+    try {
+      const response = await fetch(`${API_BASE_URL}/api/leads`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(leadData),
+      });
 
-  const handleChange = (event) => {
-    const { name, value } = event.target;
-    setFormData((prev) => ({ ...prev, [name]: value }));
+      if (response.ok) {
+        toast.success("Inquiry submitted! Our team will contact you soon.");
+        setFormData({
+          name: "", email: "", contact: "", location: "",
+          date: "", eventType: "Wedding", budget: "", duration: "1 Day",
+        });
+        setTimeout(() => onClose(), 1500);
+      } else {
+        toast.error("Could not submit inquiry. Please try again.");
+      }
+    } catch (err) {
+      toast.error("Connection failed. Is the backend running?");
+    }
   };
 
-  const handleSubmit = (event) => {
-    event.preventDefault();
-    onClose();
-  };
-
-  if (!shouldRender) {
-    return null;
-  }
+  if (!shouldRender) return null;
 
   return (
-    <div
-      className={`inquiry-modal-overlay ${isVisible ? "open" : ""}`}
-      onClick={onClose}
-      role="presentation"
-    >
-      <div
-        className={`inquiry-modal-card ${isVisible ? "open" : ""}`}
-        onClick={(event) => event.stopPropagation()}
-        role="dialog"
-        aria-modal="true"
-        aria-label="Inquiry form"
-      >
-        <button
-          type="button"
-          className="inquiry-modal-close"
-          aria-label="Close inquiry form"
-          onClick={onClose}
-        >
-          X
-        </button>
+    <div className={`inquiry-modal-overlay ${isVisible ? "open" : ""}`} onClick={onClose}>
+      <Toaster position="top-right" richColors />
+      
+      <div className={`inquiry-modal-card ${isVisible ? "open" : ""}`} onClick={(e) => e.stopPropagation()}>
+        <button type="button" className="inquiry-modal-close" onClick={onClose}>&times;</button>
 
         <div className="inquiry-modal-header">
           <h2>Plan your wedding</h2>
-          <p>Fill in your details and we&apos;ll be in touch.</p>
+          <p>Fill in your details and we'll be in touch.</p>
         </div>
 
-        <form className="inquiry-modal-form" onSubmit={handleSubmit}>
+        <form className="inquiry-modal-form" onSubmit={handleSubmit} noValidate>
           <input
             type="text"
-            name="fullName"
+            name="name"
             placeholder="Full Name"
-            value={formData.fullName}
+            value={formData.name}
             onChange={handleChange}
             required
           />
@@ -103,9 +105,9 @@ function InquiryModal({ isOpen, onClose }) {
           />
           <input
             type="tel"
-            name="phone"
+            name="contact"
             placeholder="Phone Number"
-            value={formData.phone}
+            value={formData.contact}
             onChange={handleChange}
             required
           />
@@ -113,21 +115,17 @@ function InquiryModal({ isOpen, onClose }) {
           <div className="inquiry-date-wrap">
             <input
               type="date"
-              name="eventDate"
-              value={formData.eventDate}
+              name="date"
+              value={formData.date}
               onChange={handleChange}
-              required
             />
-            <span className="inquiry-date-icon" aria-hidden="true">
-              📅
-            </span>
           </div>
 
           <input
             type="text"
-            name="city"
+            name="location"
             placeholder="Event Location (City)"
-            value={formData.city}
+            value={formData.location}
             onChange={handleChange}
             required
           />
