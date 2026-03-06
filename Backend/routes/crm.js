@@ -58,13 +58,15 @@ router.post("/confirm/:id", protect, adminOnly, async (req, res) => {
     });
 
     // D. Email Delivery
-    await sgMail.send({
+    console.log(`📧 Sending email to: ${lead.email} from: ${process.env.SENDGRID_FROM_EMAIL}`);
+    const [sgResponse] = await sgMail.send({
       from: process.env.SENDGRID_FROM_EMAIL,
       to: lead.email,
       subject: "Welcome to Vivahasya - Portal Access",
       html: `<h3>Wedding Portal Activated</h3>
              <p>Log in with Username: <b>${lead.email}</b> and Password: <b>${rawPassword}</b></p>`
     });
+    console.log(`📬 SendGrid response: ${sgResponse.statusCode}`);
 
     console.log(`✅ Success: Booking & User created for ${lead.name}`);
     res.json({ message: "Success!", booking: newBooking });
