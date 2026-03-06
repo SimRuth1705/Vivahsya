@@ -10,8 +10,8 @@ const { protect, adminOnly } = require("../middleware/authMiddleware");
 // 1. Email Config
 const transporter = nodemailer.createTransport({
   host: "smtp.gmail.com",
-  port: 465,
-  secure: true,
+  port: 587,
+  secure: false, // STARTTLS — required for Render (IPv4 compatible)
   auth: {
     user: process.env.ADMIN_EMAIL,
     pass: process.env.ADMIN_APP_PASSWORD,
@@ -35,7 +35,7 @@ router.post("/confirm/:id", protect, adminOnly, async (req, res) => {
 
     // B. Create/Update Client User Account
     let user = await User.findOne({ username: lead.email });
-    
+
     if (!user) {
       console.log("🛠️ Creating new client user...");
       user = await User.create({
@@ -61,7 +61,7 @@ router.post("/confirm/:id", protect, adminOnly, async (req, res) => {
       title: `${lead.name}'s Event`,
       leadId: lead._id,
       clientId: user._id,
-      date: lead.date, 
+      date: lead.date,
       status: "Confirmed",
       amount: lead.budget || "0",
       type: lead.eventType || "Wedding",

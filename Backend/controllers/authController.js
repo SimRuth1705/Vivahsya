@@ -8,13 +8,15 @@ const { protect, adminOnly } = require('../middleware/authMiddleware');
 
 // --- 🌟 NODEMAILER CONFIGURATION 🌟 ---
 const transporter = nodemailer.createTransport({
-  service: 'gmail',
+  host: 'smtp.gmail.com',
+  port: 587,
+  secure: false, // STARTTLS — required for Render (IPv4 compatible)
   auth: {
     user: process.env.GMAIL_USER,
-    pass: process.env.GMAIL_PASS, // 16-digit App Password from Render Env
+    pass: process.env.GMAIL_PASS,
   },
   tls: {
-    rejectUnauthorized: false // Prevents Render network blocks
+    rejectUnauthorized: false
   }
 });
 
@@ -22,16 +24,16 @@ const transporter = nodemailer.createTransport({
 router.post('/login', async (req, res) => {
   try {
     const { username, password } = req.body;
-    
-    const user = await User.findOne({ username }); 
+
+    const user = await User.findOne({ username });
     if (!user) return res.status(404).json({ message: "User not found" });
 
     const isMatch = await bcrypt.compare(password, user.password);
     if (!isMatch) return res.status(401).json({ message: "Invalid credentials" });
 
     const token = jwt.sign(
-      { id: user._id, role: user.role }, 
-      process.env.JWT_SECRET, 
+      { id: user._id, role: user.role },
+      process.env.JWT_SECRET,
       { expiresIn: '30d' }
     );
 
@@ -99,7 +101,7 @@ router.post("/register", protect, adminOnly, async (req, res) => {
     if (userExists) return res.status(400).json({ message: "Username already taken" });
 
     const hashedPassword = await bcrypt.hash(password, 10);
-    
+
     const newUser = new User({
       name,
       username,

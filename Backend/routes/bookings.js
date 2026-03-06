@@ -14,7 +14,9 @@ const { protect, adminOnly } = require("../middleware/authMiddleware");
 // EMAIL CONFIG
 // =============================
 const transporter = nodemailer.createTransport({
-  service: "gmail",
+  host: "smtp.gmail.com",
+  port: 587,
+  secure: false, // STARTTLS — required for Render (IPv4 compatible)
   auth: {
     user: process.env.ADMIN_EMAIL,
     pass: process.env.ADMIN_APP_PASSWORD,
