@@ -47,7 +47,7 @@ router.post("/register-initiate", async (req, res) => {
 
     // 2. Send the mail
     await sgMail.send({
-      from: process.env.ADMIN_EMAIL,
+      from: process.env.SENDGRID_FROM_EMAIL,
       to: email,
       subject: "Your Access Key - Vivahasya",
       html: `

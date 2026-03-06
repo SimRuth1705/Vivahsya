@@ -57,7 +57,7 @@ router.post("/confirm/:id", protect, adminOnly, async (req, res) => {
     await lead.save();
 
     await sgMail.send({
-      from: process.env.ADMIN_EMAIL,
+      from: process.env.SENDGRID_FROM_EMAIL,
       to: lead.email,
       subject: "Vivahasya Portal Active",
       html: `<h3>Welcome to Vivahasya!</h3>
