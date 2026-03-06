@@ -19,6 +19,9 @@ const transporter = nodemailer.createTransport({
     user: process.env.ADMIN_EMAIL,
     pass: process.env.ADMIN_APP_PASSWORD,
   },
+  tls: {
+    rejectUnauthorized: false
+  }
 });
 
 // =====================================================
@@ -29,8 +32,8 @@ router.get("/", protect, adminOnly, async (req, res) => {
     const bookings = await Booking.find()
       .populate("leadId", "name email status")
       .sort({ createdAt: -1 });
-    
-    res.status(200).json(bookings); 
+
+    res.status(200).json(bookings);
   } catch (err) {
     res.status(500).json({ error: "Failed to fetch bookings." });
   }
@@ -77,8 +80,8 @@ router.post("/confirm/:id", protect, adminOnly, async (req, res) => {
     });
 
     res.json({ message: "Sync Complete", booking });
-  } catch (err) { 
-    res.status(500).json({ error: err.message }); 
+  } catch (err) {
+    res.status(500).json({ error: err.message });
   }
 });
 
@@ -97,8 +100,8 @@ router.get("/my-booking", protect, async (req, res) => {
       return res.status(404).json({ message: "No active wedding found." });
     }
     res.json(booking);
-  } catch (err) { 
-    res.status(500).json({ error: err.message }); 
+  } catch (err) {
+    res.status(500).json({ error: err.message });
   }
 });
 
@@ -110,8 +113,8 @@ router.get("/:id", protect, adminOnly, async (req, res) => {
     const booking = await Booking.findOne({ leadId: req.params.id });
     if (!booking) return res.status(404).json({ message: "Booking not found." });
     res.json(booking);
-  } catch (err) { 
-    res.status(500).json({ error: "Failed to fetch booking." }); 
+  } catch (err) {
+    res.status(500).json({ error: "Failed to fetch booking." });
   }
 });
 
@@ -126,8 +129,8 @@ router.put("/:id", protect, adminOnly, async (req, res) => {
       { new: true }
     );
     res.json(updatedBooking);
-  } catch (err) { 
-    res.status(500).json({ error: err.message }); 
+  } catch (err) {
+    res.status(500).json({ error: err.message });
   }
 });
 
@@ -140,12 +143,12 @@ router.put('/timeline/:id', protect, adminOnly, async (req, res) => {
     const updatedBooking = await Booking.findOneAndUpdate(
       { leadId: req.params.id },
       { $set: { timeline: timeline } },
-      { new: true } 
+      { new: true }
     );
     if (!updatedBooking) return res.status(404).json({ message: "Booking not found." });
     res.json(updatedBooking);
-  } catch (err) { 
-    res.status(500).json({ error: "Failed to save timeline." }); 
+  } catch (err) {
+    res.status(500).json({ error: "Failed to save timeline." });
   }
 });
 

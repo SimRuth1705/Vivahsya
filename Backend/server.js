@@ -10,7 +10,7 @@ dotenv.config();
 // --- MODEL & ROUTE IMPORTS ---
 const User = require("./models/User");
 const authRoutes = require("./routes/auth");
-const bookingRoutes = require("./routes/bookings"); 
+const bookingRoutes = require("./routes/bookings");
 const leadRoutes = require("./routes/leads");
 const vendorRoutes = require("./routes/vendors");
 const crmRoutes = require("./routes/crm");
@@ -31,7 +31,7 @@ app.use(cors({
   origin: function (origin, callback) {
     // Allow requests with no origin (like mobile apps or curl)
     if (!origin) return callback(null, true);
-    
+
     if (allowedOrigins.indexOf(origin) === -1) {
       return callback(new Error('CORS Policy: This origin is not allowed'), false);
     }
@@ -43,10 +43,10 @@ app.use(cors({
 }));
 
 // 🌟 IMPORTANT: Handle OPTIONS requests explicitly for Render/Vercel
-app.options("*", cors());
+app.options(/.*/, cors());
 
 // --- MIDDLEWARE ---
-app.use(express.json({ limit: '100mb' })); 
+app.use(express.json({ limit: '100mb' }));
 app.use(express.urlencoded({ limit: '100mb', extended: true }));
 app.use("/uploads", express.static(path.join(__dirname, "uploads")));
 
@@ -59,12 +59,12 @@ app.use((req, res, next) => {
 // --- DATABASE & SEEDING ---
 const seedAdmin = async () => {
   try {
-    const adminExists = await User.findOne({ username: "admin" }); 
+    const adminExists = await User.findOne({ username: "admin" });
     if (!adminExists) {
       const hashedPassword = await bcrypt.hash("admin123", 10);
       await User.create({
         name: "Vivahasya Admin",
-        username: "admin", 
+        username: "admin",
         password: hashedPassword,
         role: "owner",
         status: "Active"
@@ -82,8 +82,8 @@ mongoose.connect(process.env.MONGO_URI)
   .catch(err => console.error("❌ DB Connection Error:", err));
 
 // --- ROUTE MOUNTING ---
-app.use("/api/auth", authRoutes); 
-app.use("/api/bookings", bookingRoutes); 
+app.use("/api/auth", authRoutes);
+app.use("/api/bookings", bookingRoutes);
 app.use("/api/leads", leadRoutes);
 app.use("/api/vendors", vendorRoutes);
 app.use("/api/venues", venueRoutes);
