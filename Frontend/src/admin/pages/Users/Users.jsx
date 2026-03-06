@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import { Toaster, toast } from "sonner";
 import CustomDropdown from "../../components/CustomDropdown/CustomDropdown";
 import { HiOutlineTrash, HiOutlineUserAdd } from "react-icons/hi";
-import API_BASE_URL from "../../../../config"; // 👈 1. Import your live config URL
+import API_BASE_URL from "../../../../config";
 import "./Users.css";
 
 const Users = () => {

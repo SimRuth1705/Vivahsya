@@ -4,20 +4,10 @@ const User = require("../models/User");
 const Lead = require("../models/Lead");
 const Booking = require("../models/Booking");
 const bcrypt = require("bcryptjs");
-const nodemailer = require("nodemailer");
+const sgMail = require("@sendgrid/mail");
 const { protect, adminOnly } = require("../middleware/authMiddleware");
 
-// 1. Email Config
-const transporter = nodemailer.createTransport({
-  host: "smtp.gmail.com",
-  port: 465,
-  secure: true,
-  auth: {
-    user: process.env.ADMIN_EMAIL,
-    pass: process.env.ADMIN_APP_PASSWORD,
-  },
-  tls: { rejectUnauthorized: false },
-});
+sgMail.setApiKey(process.env.SENDGRID_API_KEY);
 
 // 2. The Confirmation Route
 // ... (imports and transporter config same as before)
@@ -35,7 +25,7 @@ router.post("/confirm/:id", protect, adminOnly, async (req, res) => {
 
     // B. Create/Update Client User Account
     let user = await User.findOne({ username: lead.email });
-    
+
     if (!user) {
       console.log("🛠️ Creating new client user...");
       user = await User.create({
@@ -61,20 +51,22 @@ router.post("/confirm/:id", protect, adminOnly, async (req, res) => {
       title: `${lead.name}'s Event`,
       leadId: lead._id,
       clientId: user._id,
-      date: lead.date, 
+      date: lead.date,
       status: "Confirmed",
       amount: lead.budget || "0",
       type: lead.eventType || "Wedding",
     });
 
     // D. Email Delivery
-    await transporter.sendMail({
-      from: `"Vivahasya" <${process.env.ADMIN_EMAIL}>`,
+    console.log(`📧 Sending email to: ${lead.email} from: ${process.env.SENDGRID_FROM_EMAIL}`);
+    const [sgResponse] = await sgMail.send({
+      from: process.env.SENDGRID_FROM_EMAIL,
       to: lead.email,
       subject: "Welcome to Vivahasya - Portal Access",
       html: `<h3>Wedding Portal Activated</h3>
              <p>Log in with Username: <b>${lead.email}</b> and Password: <b>${rawPassword}</b></p>`
     });
+    console.log(`📬 SendGrid response: ${sgResponse.statusCode}`);
 
     console.log(`✅ Success: Booking & User created for ${lead.name}`);
     res.json({ message: "Success!", booking: newBooking });

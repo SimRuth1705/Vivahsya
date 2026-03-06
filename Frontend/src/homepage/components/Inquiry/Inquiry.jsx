@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { toast, Toaster } from "sonner";
 import CustomDatePicker from "../../../admin/components/CustomDatePicker/CustomDatePicker";
 import CustomDropdown from "../../../admin/components/CustomDropdown/CustomDropdown";
+import API_BASE_URL from "../../../../config";
 import "./Inquiry.css";
 import video from "../../assets/baos.mp4";
 
@@ -41,7 +42,7 @@ function Inquiry() {
 
     try {
       // Notice: No token/Authorization header needed here!
-      const response = await fetch("http://localhost:5000/api/leads", {
+      const response = await fetch(`${API_BASE_URL}/api/leads`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -110,7 +111,7 @@ function Inquiry() {
               onChange={handleChange}
               required
             />
-            
+
             <CustomDatePicker
               value={formData.date}
               onChange={(val) => setFormData({ ...formData, date: val })}

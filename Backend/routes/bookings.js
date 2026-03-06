@@ -6,20 +6,10 @@ const User = require("../models/User");
 const Lead = require("../models/Lead");
 
 const bcrypt = require("bcryptjs");
-const nodemailer = require("nodemailer");
-
+const sgMail = require("@sendgrid/mail");
 const { protect, adminOnly } = require("../middleware/authMiddleware");
 
-// =============================
-// EMAIL CONFIG
-// =============================
-const transporter = nodemailer.createTransport({
-  service: "gmail",
-  auth: {
-    user: process.env.ADMIN_EMAIL,
-    pass: process.env.ADMIN_APP_PASSWORD,
-  },
-});
+sgMail.setApiKey(process.env.SENDGRID_API_KEY);
 
 // =====================================================
 // 0️⃣ ADMIN: GET ALL BOOKINGS (Dashboard List)
@@ -29,8 +19,8 @@ router.get("/", protect, adminOnly, async (req, res) => {
     const bookings = await Booking.find()
       .populate("leadId", "name email status")
       .sort({ createdAt: -1 });
-    
-    res.status(200).json(bookings); 
+
+    res.status(200).json(bookings);
   } catch (err) {
     res.status(500).json({ error: "Failed to fetch bookings." });
   }
@@ -66,8 +56,8 @@ router.post("/confirm/:id", protect, adminOnly, async (req, res) => {
     lead.status = "Confirm";
     await lead.save();
 
-    await transporter.sendMail({
-      from: process.env.ADMIN_EMAIL,
+    await sgMail.send({
+      from: process.env.SENDGRID_FROM_EMAIL,
       to: lead.email,
       subject: "Vivahasya Portal Active",
       html: `<h3>Welcome to Vivahasya!</h3>
@@ -77,8 +67,8 @@ router.post("/confirm/:id", protect, adminOnly, async (req, res) => {
     });
 
     res.json({ message: "Sync Complete", booking });
-  } catch (err) { 
-    res.status(500).json({ error: err.message }); 
+  } catch (err) {
+    res.status(500).json({ error: err.message });
   }
 });
 
@@ -97,8 +87,8 @@ router.get("/my-booking", protect, async (req, res) => {
       return res.status(404).json({ message: "No active wedding found." });
     }
     res.json(booking);
-  } catch (err) { 
-    res.status(500).json({ error: err.message }); 
+  } catch (err) {
+    res.status(500).json({ error: err.message });
   }
 });
 
@@ -110,8 +100,8 @@ router.get("/:id", protect, adminOnly, async (req, res) => {
     const booking = await Booking.findOne({ leadId: req.params.id });
     if (!booking) return res.status(404).json({ message: "Booking not found." });
     res.json(booking);
-  } catch (err) { 
-    res.status(500).json({ error: "Failed to fetch booking." }); 
+  } catch (err) {
+    res.status(500).json({ error: "Failed to fetch booking." });
   }
 });
 
@@ -126,8 +116,8 @@ router.put("/:id", protect, adminOnly, async (req, res) => {
       { new: true }
     );
     res.json(updatedBooking);
-  } catch (err) { 
-    res.status(500).json({ error: err.message }); 
+  } catch (err) {
+    res.status(500).json({ error: err.message });
   }
 });
 
@@ -140,12 +130,12 @@ router.put('/timeline/:id', protect, adminOnly, async (req, res) => {
     const updatedBooking = await Booking.findOneAndUpdate(
       { leadId: req.params.id },
       { $set: { timeline: timeline } },
-      { new: true } 
+      { new: true }
     );
     if (!updatedBooking) return res.status(404).json({ message: "Booking not found." });
     res.json(updatedBooking);
-  } catch (err) { 
-    res.status(500).json({ error: "Failed to save timeline." }); 
+  } catch (err) {
+    res.status(500).json({ error: "Failed to save timeline." });
   }
 });
 
