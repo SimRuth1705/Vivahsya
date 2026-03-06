@@ -4,20 +4,10 @@ const User = require("../models/User");
 const Lead = require("../models/Lead");
 const Booking = require("../models/Booking");
 const bcrypt = require("bcryptjs");
-const nodemailer = require("nodemailer");
+const { Resend } = require("resend");
 const { protect, adminOnly } = require("../middleware/authMiddleware");
 
-// 1. Email Config
-const transporter = nodemailer.createTransport({
-  host: "smtp.gmail.com",
-  port: 587,
-  secure: false, // STARTTLS — required for Render (IPv4 compatible)
-  auth: {
-    user: process.env.ADMIN_EMAIL,
-    pass: process.env.ADMIN_APP_PASSWORD,
-  },
-  tls: { rejectUnauthorized: false },
-});
+const resend = new Resend(process.env.RESEND_API_KEY);
 
 // 2. The Confirmation Route
 // ... (imports and transporter config same as before)
@@ -68,8 +58,8 @@ router.post("/confirm/:id", protect, adminOnly, async (req, res) => {
     });
 
     // D. Email Delivery
-    await transporter.sendMail({
-      from: `"Vivahasya" <${process.env.ADMIN_EMAIL}>`,
+    await resend.emails.send({
+      from: "Vivahasya <onboarding@resend.dev>",
       to: lead.email,
       subject: "Welcome to Vivahasya - Portal Access",
       html: `<h3>Wedding Portal Activated</h3>

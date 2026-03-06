@@ -6,25 +6,10 @@ const User = require("../models/User");
 const Lead = require("../models/Lead");
 
 const bcrypt = require("bcryptjs");
-const nodemailer = require("nodemailer");
-
+const { Resend } = require("resend");
 const { protect, adminOnly } = require("../middleware/authMiddleware");
 
-// =============================
-// EMAIL CONFIG
-// =============================
-const transporter = nodemailer.createTransport({
-  host: "smtp.gmail.com",
-  port: 587,
-  secure: false, // STARTTLS — required for Render (IPv4 compatible)
-  auth: {
-    user: process.env.ADMIN_EMAIL,
-    pass: process.env.ADMIN_APP_PASSWORD,
-  },
-  tls: {
-    rejectUnauthorized: false
-  }
-});
+const resend = new Resend(process.env.RESEND_API_KEY);
 
 // =====================================================
 // 0️⃣ ADMIN: GET ALL BOOKINGS (Dashboard List)
@@ -71,8 +56,8 @@ router.post("/confirm/:id", protect, adminOnly, async (req, res) => {
     lead.status = "Confirm";
     await lead.save();
 
-    await transporter.sendMail({
-      from: process.env.ADMIN_EMAIL,
+    await resend.emails.send({
+      from: "Vivahasya <onboarding@resend.dev>",
       to: lead.email,
       subject: "Vivahasya Portal Active",
       html: `<h3>Welcome to Vivahasya!</h3>
