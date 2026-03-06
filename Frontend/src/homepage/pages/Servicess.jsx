@@ -1,171 +1,120 @@
-    import "./Servicess.css";
-import { useEffect, useRef } from "react";
+import "./Servicess.css";
 
-const services = [
+const SERVICES_DATA = [
   {
     title: "End-to-End Wedding Planning",
     tag: "01",
-    icon: "✦",
-    image: "/images/c1.png",
+    category: "Planning",
     supporting:
-      "From the first spark of an idea to the final farewell, we orchestrate every detail with grace and precision.",
+      "Complete planning support from first idea to final farewell.",
   },
   {
     title: "Wedding Decor",
     tag: "02",
-    icon: "❋",
-    image: "/images/c2.png",
-    supporting:
-      "Your vision, elevated into a living, breathing space with immersive and layered design.",
+    category: "Design",
+    supporting: "Theme-led decor concepts executed with elegant detailing.",
   },
   {
     title: "Destination Weddings",
     tag: "03",
-    icon: "◈",
-    image: "/images/c1.png",
-    supporting:
-      "We handle permits, travel coordination, local vendors, and on-site management.",
+    category: "Travel",
+    supporting: "Travel, local vendors, permits, and onsite flow managed end to end.",
   },
   {
     title: "Photography & Cinematography",
     tag: "04",
-    icon: "◉",
-    image: "/images/c3.png",
-    supporting:
-      "Editorial photography and cinematic film capturing timeless emotions.",
+    category: "Memories",
+    supporting: "Editorial photos and cinematic films that preserve every emotion.",
   },
   {
     title: "Budget & Financial Planning",
     tag: "05",
-    image: "/images/c4.png",
-    supporting:
-      "Smart budgeting strategies tailored to your priorities.",
+    category: "Strategy",
+    supporting: "Practical budget plans focused on your real priorities.",
   },
   {
     title: "Venue Consultation",
     tag: "06",
-    image: "/images/c6.png",
-    supporting:
-      "We scout, negotiate, and secure the perfect venue for your celebration.",
+    category: "Venues",
+    supporting: "Venue shortlisting, negotiations, and final booking assistance.",
   },
   {
     title: "Bridal Makeup & Wardrobing",
     tag: "07",
-    image: "/images/c5.png",
-    supporting:
-      "Internationally trained artists curate your bridal look.",
+    category: "Styling",
+    supporting: "Bridal styling, makeup, and wardrobe curation tailored to you.",
   },
   {
     title: "Wedding Invitations",
     tag: "08",
-    image: "/images/c8.png",
-    supporting:
-      "Bespoke invitation suites that set the tone for your wedding.",
+    category: "Stationery",
+    supporting: "Custom invite designs that reflect your wedding personality.",
   },
   {
     title: "Food & Beverages",
     tag: "09",
-    image: "/images/c3.png",
-    supporting:
-      "Curated culinary experiences reflecting your heritage and taste.",
+    category: "Culinary",
+    supporting: "Curated menus and beverage plans for every guest profile.",
   },
   {
     title: "Return Gifts",
     tag: "10",
-    image: "/images/c3.png",
-    supporting:
-      "Personalized gifts that carry the warmth of your celebration.",
+    category: "Gifting",
+    supporting: "Personalized gifting options your guests will remember.",
   },
   {
     title: "Entertainment",
     tag: "11",
-    image: "/images/c3.png",
-    supporting:
-      "From live performances to DJs, we build unforgettable energy.",
+    category: "Experience",
+    supporting: "Artist curation and event programming to keep energy high.",
   },
   {
     title: "On-the-Day Coordination",
     tag: "12",
-    image: "/images/c3.png",
-    supporting:
-      "We manage vendors and timelines so you never worry.",
+    category: "Operations",
+    supporting: "Live execution support for timelines, teams, and transitions.",
   },
   {
     title: "Hospitality",
     tag: "13",
-    image: "/images/c3.png",
-    supporting:
-      "Airport pickups, accommodation, and guest experiences handled seamlessly.",
+    category: "Guest Care",
+    supporting: "Guest transport, stay coordination, and helpdesk management.",
   },
 ];
 
-function ServiceRow({ service, index }) {
-  const rowRef = useRef(null);
-  const isReversed = index % 2 !== 0;
-
-  useEffect(() => {
-    const el = rowRef.current;
-    if (!el) return;
-
-    el.style.setProperty("--row-delay", `${index * 0.08}s`);
-
-    const obs = new IntersectionObserver(
-      ([entry]) => {
-        if (entry.isIntersecting) {
-          el.classList.add("in");
-          obs.disconnect();
-        }
-      },
-      { threshold: 0.15 }
-    );
-
-    obs.observe(el);
-    return () => obs.disconnect();
-  }, [index]);
-
+export default function Servicess() {
   return (
-    <div
-  className={`service-row animate-row${isReversed ? " row-reverse" : ""}`}
-  ref={rowRef}
->
-      <div className="row-image-box">
-        <img
-          src={service.image}
-          alt={service.title}
-          className="row-image"
-        />
-        <div className="row-image-overlay">
-          <span className="row-tag">{service.tag}</span>
-          <h3 className="row-image-title">{service.title}</h3>
-          {service.icon && <span className="row-icon">{service.icon}</span>}
-        </div>
-      </div>
+    <main className="services-page">
+      <section className="services-shell">
+        <header className="services-header">
+          <p className="services-kicker">Our Expertise</p>
+          <h1>Wedding Services Crafted Around Your Story</h1>
+          <p className="services-subtitle">
+            Thoughtful planning, strong execution, and design that feels personal.
+            Explore the services we tailor for every celebration.
+          </p>
+          <div className="services-meta" aria-label="Service Highlights">
+            <span>13 Curated Services</span>
+            <span>Single Team Ownership</span>
+            <span>Pan-India + Destination</span>
+          </div>
+        </header>
 
-      <div className="row-content">
-        <h3 className="row-heading">{service.title}</h3>
-        <div className="row-divider" />
-        <p className="row-supporting">{service.supporting}</p>
-      </div>
-    </div>
-  );
-}
-
-export default function Services() {
-  return (
-    <section className="services-section">
-      <div className="block-wrap">
-        <div className="block-header">
-          <p className="section-label">What We Offer</p>
-          <h1 className="section-title">Our Services</h1>
-          <div className="section-divider" />
-        </div>
-
-        <div className="rows-list">
-          {services.map((service, i) => (
-            <ServiceRow service={service} index={i} key={i} />
+        <section className="services-journey" aria-label="Wedding Services">
+          {SERVICES_DATA.map((service) => (
+            <article className="service-strip" key={service.title}>
+              <div className="strip-content">
+                <p className="strip-tagline">
+                  <span className="card-tag">{service.tag}</span>
+                  <span>{service.category}</span>
+                </p>
+                <h2>{service.title}</h2>
+                <p>{service.supporting}</p>
+              </div>
+            </article>
           ))}
-        </div>
-      </div>
-    </section>
+        </section>
+      </section>
+    </main>
   );
 }

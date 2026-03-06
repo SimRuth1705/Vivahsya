@@ -1,11 +1,11 @@
-import "./Navbar.css";
+import "./Navbarrr.css";
 import { Link, useNavigate } from "react-router-dom";
 import { useContext } from "react";
 import { AuthContext } from "../AuthContext/AuthContext";
-import logo from "../../assets/vlogo.png";
 import vivahasya_logo from "../../assets/Vivahasya-logo.png";
 
-function NavBar() {
+// Renamed from NavBar to NavbarHome
+function NavbarHome() {
   const { user, logout } = useContext(AuthContext);
   const navigate = useNavigate();
 
@@ -15,38 +15,23 @@ function NavBar() {
   };
 
   return (
-    <nav className="Navbar">
+    <nav className="NavBar">
       <div className="logo-container">
         <img src={vivahasya_logo} alt="Vivahasya logo" className="nav-logo" />
       </div>
 
       <ul className="nav-links">
-        <li>
-          <Link to="/">Home</Link>
-        </li>
-        <li>
-          <Link to="/about">About</Link>
-        </li>
-        <li>
-          <Link to="/services">Services</Link>
-        </li>
-        <li>
-          <Link to="/PortfolioGallery">Our Portfolio</Link>
-        </li>
-        <li>
-          <Link to="/contact">Contact</Link>
-        </li>
+        <li><Link to="/">Home</Link></li>
+        <li><Link to="/about">About</Link></li>
+        <li><Link to="/services">Services</Link></li>
+        <li><Link to="/contact">Contact</Link></li>
 
         {user?.role === "admin" && (
-          <li>
-            <Link to="/admin">Admin Panel</Link>
-          </li>
+          <li><Link to="/admin">Admin Panel</Link></li>
         )}
 
         {user?.role === "client" && (
-          <li>
-            <Link to="/client-home">Dashboard</Link>
-          </li>
+          <li><Link to="/client-home">Dashboard</Link></li>
         )}
       </ul>
 
@@ -65,4 +50,4 @@ function NavBar() {
   );
 }
 
-export default NavBar;
+export default NavbarHome;

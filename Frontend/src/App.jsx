@@ -10,8 +10,8 @@ import Lenis from "@studio-freight/lenis";
 import { gsap } from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 
-// Layout / Global
-import NavBar from "./homepage/components/Navbar/Navbar";
+// ✅ UPDATED IMPORT: Pointing to Navbar-Home and matching your new export name
+import NavbarHome from "./homepage/components/NavBar/Navbar-Home"; 
 import Loader from "./homepage/components/Loader/Loader";
 import { AuthProvider } from "./homepage/components/AuthContext/AuthContext";
 
@@ -23,6 +23,8 @@ import ClientApp from "./client/ClientRoutes";
 import Home from "./homepage/pages/Home";
 import Portfolio from "./homepage/pages/Portfolio";
 import Servicess from "./homepage/pages/Servicess";
+import Contact from "./homepage/pages/Contact";
+import About from "./homepage/pages/About";
 import LoginPage from "./admin/pages/Login/Login";
 
 // Venue Pages
@@ -32,7 +34,6 @@ import VenueDetails from "./client/pages/Venue-page/VenueDetail";
 gsap.registerPlugin(ScrollTrigger);
 
 // ---------------- PROTECTED ROUTE GUARD ----------------
-// Updated to handle both allowedRole and hierarchical requiredRole
 const ProtectedRoute = ({ children, allowedRole, requiredRole }) => {
   const token = localStorage.getItem("token");
   const user = JSON.parse(localStorage.getItem("user"));
@@ -43,13 +44,11 @@ const ProtectedRoute = ({ children, allowedRole, requiredRole }) => {
 
   const isOwner = user.role === 'owner';
 
-  // If a specific role like 'employee' or 'owner' is required
   if (requiredRole) {
     const hasPermission = isOwner || user.role === requiredRole;
     if (!hasPermission) return <Navigate to="/" replace />;
   }
 
-  // Legacy role check for basic portal separation
   if (allowedRole && user.role !== allowedRole && !isOwner) {
     return <Navigate to="/" replace />;
   }
@@ -61,7 +60,7 @@ const ProtectedRoute = ({ children, allowedRole, requiredRole }) => {
 const AppContent = ({ loading }) => {
   const location = useLocation();
 
-  // ✅ UPDATED: Hides NavBar on /venues and /venue/... paths
+  // Controls which pages do NOT show the home-style Navbar
   const hideNavbar =
     location.pathname.startsWith("/admin") ||
     location.pathname.startsWith("/client") ||
@@ -70,19 +69,22 @@ const AppContent = ({ loading }) => {
 
   return (
     <>
-      {!hideNavbar && <NavBar introReady={!loading} />}
+      {/* ✅ UPDATED COMPONENT: Using NavbarHome to match the export */}
+      {!hideNavbar && <NavbarHome introReady={!loading} />}
 
       <Routes>
         <Route path="/" element={<Home introReady={!loading} />} />
         <Route path="/portfolio" element={<Portfolio />} />
         <Route path="/services" element={<Servicess />} />
+        <Route path="/about" element={<About />} />
+        <Route path="/contact" element={<Contact />} />
         <Route path="/login" element={<LoginPage />} />
         
         {/* Public Venue Routes */}
         <Route path="/venues" element={<Venues />} />
         <Route path="/venue/:city/:name" element={<VenueDetails />} />
 
-        {/* Admin Portal - Managed via AdminRoutes.jsx internals or wrapped here */}
+        {/* Admin Portal */}
         <Route
           path="/admin/*"
           element={

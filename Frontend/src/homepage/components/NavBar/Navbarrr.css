@@ -7,15 +7,16 @@
   box-sizing: border-box;
 }
 
-.Navbar {
+.NavBar {
   width: 100%;
   height: 80px;
   display: flex;
   align-items: center;
-  justify-content: space-between; /* Pushes logo left, actions right */
+  justify-content: space-between;
   padding: 1rem 4rem;
   background-color: #ffffff !important;
   border-bottom: 1px solid rgba(0,0,0,0.05);  
+  
 }
 
 /* Logo Section */
@@ -35,18 +36,6 @@
   width: auto;
   object-fit: contain;
 }
-/* @font-face {
-  font-family: "Agraham";
-  src: url("../../assets/Fonts/Agraham.otf") format("truetype");
-} */
-
-/* .brand-name {
-  font-family: "Agraham", sans-serif;
-  font-size: 1.3rem;
-  font-weight: 600;
-  letter-spacing: 0.06em;
-  color: #d4702d;
-} */
 
 /* Nav links - Centered Flow */
 .nav-links {
