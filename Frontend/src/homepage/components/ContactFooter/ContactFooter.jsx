@@ -20,7 +20,7 @@ function ContactFooter() {
               <p className="cta-text">Have a celebration in mind?</p>
               <button className="cta-button" onClick={() => setIsInquiryOpen(true)}>
                 Get In Touch
-                <span className="arrow">?</span>
+                
               </button>
             </div>
           </div>
@@ -48,7 +48,7 @@ function ContactFooter() {
 
           {/* Bottom Section: Legal */}
           <div className="footer-bottom">
-            <p>© 2026 Vivahasya. All rights reserved.</p>
+            <p>ï¿½ 2026 Vivahasya. All rights reserved.</p>
             <div className="legal-links">
               <a href="#privacy">Privacy Policy</a>
               <a href="#terms">Terms of Service</a>

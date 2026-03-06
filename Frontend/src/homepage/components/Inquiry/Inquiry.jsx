@@ -72,7 +72,7 @@ function Inquiry() {
   };
 
   return (
-    <section className="inquiry-wrapper">
+    <section className="inquiry-wrapper" id="inquiry-section">
       <Toaster position="top-right" richColors />
 
       <div className="video-wrapper">

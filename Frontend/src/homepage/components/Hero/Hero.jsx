@@ -1,6 +1,13 @@
 import "./Hero.css";
 
 function Hero() {
+  const handlePlanClick = () => {
+    const inquirySection = document.getElementById("inquiry-section");
+    if (inquirySection) {
+      inquirySection.scrollIntoView({ behavior: "smooth", block: "start" });
+    }
+  };
+
   return (
     <section className="hero">
       <div className="hero-content">
@@ -9,7 +16,7 @@ function Hero() {
         </div>
         <div className="support-para">
           <p>We handle every element with precision so your wedding feels effortless and unforgettable.</p>
-          <button className="inquiry-btn">Plan With Experts</button>
+          <button className="inquiry-btn" onClick={handlePlanClick}>Plan With Experts</button>
         </div>
       </div>
     </section>
