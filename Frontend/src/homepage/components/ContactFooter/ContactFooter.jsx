@@ -28,14 +28,14 @@ function ContactFooter() {
 
             <div className="detail-col">
               <h5>Contact</h5>
-              <p>daretolapafwrd@gmail.com</p>
-              <p>+91 1203495093</p>
+              <p>deepakpapudesi@gmail.com</p>
+              <p>+91 97433 41185</p>
             </div>
 
             <div className="detail-col">
               <h5>Socials</h5>
-              <a href="#instagram">Instagram</a>
-              <a href="#facebook">Facebook</a>
+              <a href="https://www.instagram.com/vivahasya.celebrations/?hl=en" target="_blank">Instagram</a>
+              <a href="https://www.facebook.com/people/Vivahasya-Celebrations/61578573216950/" target="_blank">Facebook</a>
             </div>
           </div>
 
