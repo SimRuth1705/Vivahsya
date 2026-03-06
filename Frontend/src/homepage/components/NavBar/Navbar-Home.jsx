@@ -20,10 +20,6 @@ function NavbarHome() {
 
   return (
     <nav className={`NavBar ${menuOpen ? "menu-open" : ""}`}>
-      <div className="logo-container">
-        <img src={vivahasya_logo} alt="Vivahasya logo" className="nav-logo" />
-      </div>
-
       <button
         type="button"
         className="menu-toggle"
@@ -62,6 +58,10 @@ function NavbarHome() {
             LOG IN
           </Link>
         )}
+      </div>
+
+      <div className="logo-container">
+        <img src={vivahasya_logo} alt="Vivahasya logo" className="nav-logo" />
       </div>
 
       <div className={`mobile-menu ${menuOpen ? "open" : ""}`} id="homepage-nav-menu">

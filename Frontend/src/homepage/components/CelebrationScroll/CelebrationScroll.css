@@ -89,7 +89,7 @@
 }
 .landscape-1{
   height: 10rem;
-  width: 10rem;
+  width: 18rem;
   margin-top: 15rem;
   margin-left: -5rem;
   background-image: url("../../assets/c5.jpeg");
@@ -160,4 +160,123 @@
   margin-left: 3rem;
   margin-top: 3rem;
   background-image: url("../../assets/e3.jpeg");
+}
+
+/* Tablet: keep desktop composition, scale proportionally, no horizontal scroll */
+@media (max-width: 1023px) {
+  .celebration-section {
+    --group-scale: 0.68;
+    padding: 2.5rem 0 3.5rem;
+    overflow-x: hidden;
+    background:
+      radial-gradient(circle at 20% 10%, #ffd7bd 0%, transparent 40%),
+      radial-gradient(circle at 85% 20%, #f4b086 0%, transparent 38%),
+      linear-gradient(160deg, #fff7f0 0%, #ffe8d7 58%, #ffd8bd 100%);
+  }
+
+  .horizontal-sticky {
+    position: static;
+    height: auto;
+    overflow: visible;
+    align-items: stretch;
+  }
+
+  .celebration-track {
+    display: block;
+    padding: 0;
+    transform: none !important;
+  }
+
+  .horizontal-buffer {
+    display: none;
+  }
+
+  .image-container {
+    display: flex;
+    flex-direction: column;
+    gap: 1.75rem;
+    padding: 0 1.25rem 0.5rem;
+    overflow: visible;
+    align-items: center;
+  }
+
+  .group1,
+  .group2,
+  .group3 {
+    width: fit-content;
+    max-width: none;
+    margin: 0 auto;
+    background: rgba(255, 251, 246, 0.9);
+    border: 1px solid rgba(120, 73, 43, 0.15);
+    border-radius: 1.4rem;
+    padding: 1.05rem;
+    box-shadow: 0 1rem 2.4rem rgba(77, 36, 8, 0.12);
+    position: relative;
+    zoom: var(--group-scale);
+  }
+
+  .group1::before,
+  .group2::before,
+  .group3::before {
+    content: "";
+    position: absolute;
+    top: 0.7rem;
+    left: 1rem;
+    width: 3rem;
+    height: 0.22rem;
+    border-radius: 99rem;
+    background: linear-gradient(90deg, #a33a00 0%, #f37832 100%);
+  }
+
+  .group1 .portrait-1 {
+    transform: rotate(-2deg);
+  }
+
+  .group1 .landscape-2 {
+    transform: rotate(1.8deg);
+  }
+
+  .group2 .square-1 {
+    transform: rotate(-1.5deg);
+  }
+
+  .group2 .square-2 {
+    transform: rotate(2deg);
+  }
+
+  .group3 .big-portrait {
+    transform: rotate(-1deg);
+  }
+
+  .group3 .small-square {
+    transform: rotate(1.6deg);
+  }
+
+  @supports not (zoom: 1) {
+    .group1,
+    .group2,
+    .group3 {
+      transform: scale(var(--group-scale));
+      transform-origin: top center;
+    }
+  }
+}
+
+/* Mobile: same desktop composition at a smaller proportional scale */
+@media (max-width: 640px) {
+  .celebration-section {
+    --group-scale: 0.5;
+  }
+
+  .image-container {
+    gap: 1rem;
+    padding: 0 0.8rem 0.3rem;
+  }
+
+  .group1,
+  .group2,
+  .group3 {
+    border-radius: 1.15rem;
+    padding: 0.9rem;
+  }
 }

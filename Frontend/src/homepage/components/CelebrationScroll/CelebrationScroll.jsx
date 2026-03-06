@@ -6,48 +6,51 @@ const CelebrationScroll = () => {
   const trackRef = useRef(null);
 
   useEffect(() => {
-    const handleScroll = () => {
-      if (window.innerWidth < 1023) return;
+    const isDesktop = () => window.innerWidth >= 1024;
 
+    const handleScroll = () => {
       const container = containerRef.current;
       const track = trackRef.current;
       if (!container || !track) return;
+      if (!isDesktop()) return;
 
       const rect = container.getBoundingClientRect();
       const totalScroll = container.offsetHeight - window.innerHeight;
       const triggerPoint = window.innerHeight * 0.5;
+      if (totalScroll <= 0) return;
 
       if (rect.top <= triggerPoint && rect.bottom >= triggerPoint) {
-        const progress =
-          (triggerPoint - rect.top) / totalScroll;
+        const rawProgress = (triggerPoint - rect.top) / totalScroll;
+        const progress = Math.min(Math.max(rawProgress, 0), 1);
 
-        const maxTranslate =
-          track.scrollWidth - window.innerWidth;
+        const maxTranslate = Math.max(track.scrollWidth - window.innerWidth, 0);
 
-        track.style.transform =
-          `translateX(-${progress * maxTranslate}px)`;
+        track.style.transform = `translateX(-${progress * maxTranslate}px)`;
       }
     };
 
-    window.addEventListener("scroll", handleScroll);
-    return () => window.removeEventListener("scroll", handleScroll);
-  }, []);
+    const handleLayout = () => {
+      const container = containerRef.current;
+      const track = trackRef.current;
+      if (!container || !track) return;
 
-  useEffect(() => {
-    if (window.innerWidth < 1023) return;
-
-    const container = containerRef.current;
-    const track = trackRef.current;
-    if (!container || !track) return;
-
-    container.style.height = `${track.scrollWidth}px`;
-
-    const resize = () => {
-      container.style.height = `${track.scrollWidth}px`;
+      if (isDesktop()) {
+        container.style.height = `${track.scrollWidth}px`;
+        handleScroll();
+      } else {
+        container.style.height = "auto";
+        track.style.transform = "translateX(0)";
+      }
     };
 
-    window.addEventListener("resize", resize);
-    return () => window.removeEventListener("resize", resize);
+    handleLayout();
+    window.addEventListener("scroll", handleScroll);
+    window.addEventListener("resize", handleLayout);
+
+    return () => {
+      window.removeEventListener("scroll", handleScroll);
+      window.removeEventListener("resize", handleLayout);
+    };
   }, []);
 
   return (
