@@ -1,0 +1,198 @@
+[
+  {
+    "bookingId": "69a7f1ae94f7c82a554bdc5a",
+    "title": "Sarah Joseph's Event",
+    "leadId": "69a7efba94f7c82a554bdc0f",
+    "timelineLength": 2,
+    "timeline": [
+      {
+        "title": "Wedding Ceremony",
+        "venue": "kjnjn",
+        "date": "874",
+        "time": "857",
+        "schedule": [
+          "k;mnnk;",
+          "j nbkhihnj",
+          "jkbkkl",
+          "jnuhgyuh",
+          ""
+        ],
+        "_id": "69a7f20f94f7c82a554bdc77"
+      },
+      {
+        "title": "Haldi Function",
+        "venue": "m jnbhghbjk",
+        "date": " kljnkjopkm",
+        "time": "jmokjkbn bknjpklnm",
+        "schedule": [
+          "iojnjkn ",
+          "ib bjijmk",
+          "' ihbjjkl",
+          "uhjhgij",
+          "",
+          "bhbjkhjn"
+        ],
+        "_id": "69a7f24994f7c82a554bdca7"
+      }
+    ],
+    "hasUser": true,
+    "userId": "69a7f1ae94f7c82a554bdc57",
+    "userRole": "client",
+    "userLeadId": "69a7efba94f7c82a554bdc0f"
+  },
+  {
+    "bookingId": "69a86b6f94f7c82a554bdd28",
+    "title": "bharath's Event",
+    "leadId": "69a86b4d94f7c82a554bdd0a",
+    "timelineLength": 1,
+    "timeline": [
+      {
+        "title": "Wedding Ceremony",
+        "venue": "taj mahal",
+        "date": "16/03/26",
+        "time": "10.00am",
+        "schedule": [
+          "guest arrival -10:00am",
+          "wedding time-12:00pm",
+          "lunch time -2:00pm"
+        ],
+        "_id": "69a86ce094f7c82a554bdd74"
+      }
+    ],
+    "hasUser": true,
+    "userId": "69a86b6f94f7c82a554bdd25",
+    "userRole": "client",
+    "userLeadId": "69a86b4d94f7c82a554bdd0a"
+  },
+  {
+    "bookingId": "69a98242c034d987c0af850d",
+    "title": "mani's Event",
+    "leadId": "69a98221f8fadd23b59b9ba9",
+    "timelineLength": 1,
+    "timeline": [
+      {
+        "title": "Wedding Ceremony",
+        "venue": "fff",
+        "date": "12/03/26",
+        "time": "10:00 am",
+        "schedule": [
+          "guest arrival",
+          "lunch ",
+          "wedding cermonuy"
+        ]
+      }
+    ],
+    "hasUser": true,
+    "userId": "69a98242c034d987c0af850a",
+    "userRole": "client",
+    "userLeadId": "69a98221f8fadd23b59b9ba9"
+  },
+  {
+    "bookingId": "69aa8b90b8a47f57303afda1",
+    "title": "blue's Event",
+    "leadId": "69aa8b70b8a47f57303afd8d",
+    "timelineLength": 0,
+    "timeline": [],
+    "hasUser": false,
+    "userId": null,
+    "userRole": null,
+    "userLeadId": null
+  },
+  {
+    "bookingId": "69aa8ff01a2deb9f813078e4",
+    "title": "blue's Event",
+    "leadId": "69aa8fc61a2deb9f813078d4",
+    "timelineLength": 0,
+    "timeline": [],
+    "hasUser": false,
+    "userId": null,
+    "userRole": null,
+    "userLeadId": null
+  },
+  {
+    "bookingId": "69aab237a2fdc7dc4ed0b2cd",
+    "title": "punith's Event",
+    "leadId": "69aab1d8a2fdc7dc4ed0b2bc",
+    "timelineLength": 0,
+    "timeline": [],
+    "hasUser": true,
+    "userId": "69aab237a2fdc7dc4ed0b2ca",
+    "userRole": "client",
+    "userLeadId": "69aab1d8a2fdc7dc4ed0b2bc"
+  },
+  {
+    "bookingId": "69aab318a2fdc7dc4ed0b2e1",
+    "title": "punith's Event",
+    "leadId": "69aab2f1a2fdc7dc4ed0b2d1",
+    "timelineLength": 0,
+    "timeline": [],
+    "hasUser": true,
+    "userId": "69aab318a2fdc7dc4ed0b2de",
+    "userRole": "client",
+    "userLeadId": "69aab2f1a2fdc7dc4ed0b2d1"
+  },
+  {
+    "bookingId": "69aab8423f4f9ab7692cfcc7",
+    "title": "athil's Event",
+    "leadId": "69aab8103f4f9ab7692cfcbc",
+    "timelineLength": 0,
+    "timeline": [],
+    "hasUser": true,
+    "userId": "69aab8423f4f9ab7692cfcc4",
+    "userRole": "client",
+    "userLeadId": "69aab8103f4f9ab7692cfcbc"
+  },
+  {
+    "bookingId": "69ab32552718a3dce933653d",
+    "title": "Krish's Event",
+    "leadId": "69ab315f2718a3dce933651c",
+    "timelineLength": 0,
+    "timeline": [],
+    "hasUser": false,
+    "userId": null,
+    "userRole": null,
+    "userLeadId": null
+  },
+  {
+    "bookingId": "69ab32e42718a3dce9336552",
+    "title": "Deena's Event",
+    "leadId": "69ab32ac2718a3dce9336541",
+    "timelineLength": 0,
+    "timeline": [],
+    "hasUser": false,
+    "userId": null,
+    "userRole": null,
+    "userLeadId": null
+  },
+  {
+    "bookingId": "69ac062164ac451cba944446",
+    "title": "Tuasiia's Event",
+    "leadId": "69ac05f964ac451cba94442e",
+    "timelineLength": 2,
+    "timeline": [
+      {
+        "title": "Wedding Ceremony",
+        "venue": "klmm",
+        "date": "15/03/23",
+        "time": "10:00 pm",
+        "schedule": [
+          "nkn",
+          "nmb"
+        ]
+      },
+      {
+        "title": "Haldi Function",
+        "venue": "ffffg",
+        "date": "15/2/26",
+        "time": "12:00pm",
+        "schedule": [
+          "a"
+        ]
+      }
+    ],
+    "hasUser": true,
+    "userId": "69ac062164ac451cba944443",
+    "userRole": "client",
+    "userLeadId": "69ac05f964ac451cba94442e"
+  }
+]

@@ -27,6 +27,18 @@ router.get("/", protect, adminOnly, async (req, res) => {
 });
 
 // =====================================================
+// 🌟 ADMIN: CREATE BOOKING MANUAL (Events Calendar)
+// =====================================================
+router.post("/", protect, adminOnly, async (req, res) => {
+  try {
+    const booking = await Booking.create(req.body);
+    res.status(201).json(booking);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// =====================================================
 // 1️⃣ ADMIN: CONFIRM LEAD & CREATE ACCOUNT
 // =====================================================
 router.post("/confirm/:id", protect, adminOnly, async (req, res) => {
@@ -78,6 +90,13 @@ router.post("/confirm/:id", protect, adminOnly, async (req, res) => {
 // Note: This must stay ABOVE the "/:id" route!
 router.get("/my-booking", protect, async (req, res) => {
   try {
+    // 🚨 Prevent Admin users from attempting to view a blank personal booking
+    if (req.user.role !== "client") {
+      return res.status(403).json({
+        message: "You are viewing this as an Admin. To see a Client's timeline, please click 'Log Out' and log back in using the Client's email address."
+      });
+    }
+
     const booking = await Booking.findOne({ leadId: req.user.leadId })
       .populate("venueId")
       .populate("leadId")

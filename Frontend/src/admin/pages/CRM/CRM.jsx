@@ -168,8 +168,8 @@ const CRM = () => {
         <button className={activeTab === "leads" ? "active" : ""} onClick={() => setActiveTab("leads")}>
           Lead Engine
         </button>
-        <button 
-          className={activeTab === "timeline" ? "active" : ""} 
+        <button
+          className={activeTab === "timeline" ? "active" : ""}
           onClick={() => setActiveTab("timeline")}
           disabled={!selectedBookingId}
         >
@@ -191,7 +191,17 @@ const CRM = () => {
                 <div className="info-row"><HiOutlineUsers /> <span>{lead.guestCount || "TBD"} Guests</span></div>
               </div>
               <div className="lead-footer">
-                <button className="btn-primary" onClick={() => manageTimeline(lead._id)}>
+                <button
+                  className="btn-primary"
+                  onClick={() => {
+                    if (lead.status === "Confirm" || lead.status === "Confirmed") {
+                      manageTimeline(lead._id);
+                    } else {
+                      toast.warning("Please confirm this lead first (e.g. via Leads page) to create their booking and unlock timeline management.");
+                    }
+                  }}
+                  style={{ opacity: (lead.status === "Confirm" || lead.status === "Confirmed") ? 1 : 0.6 }}
+                >
                   Manage Timeline
                 </button>
               </div>
@@ -203,7 +213,7 @@ const CRM = () => {
       {/* TIMELINE EDITOR VIEW */}
       {activeTab === "timeline" && (
         <div className="timeline-editor-container">
-          
+
           {/* ADD NEW EVENT BUTTON / FORM */}
           <div className="add-event-section" style={{ marginBottom: "2rem", padding: "1rem", background: "#f8fafc", borderRadius: "8px", border: "1px dashed #cbd5e1" }}>
             {!isAdding ? (
@@ -213,27 +223,27 @@ const CRM = () => {
             ) : (
               <div className="edit-form new-event-form">
                 <h3 style={{ marginBottom: "1rem" }}>Create New Event</h3>
-                
+
                 <label>Event Type (Maps to Client Image)</label>
-                <select 
-                  value={newEvent.title} 
-                  onChange={(e) => setNewEvent({...newEvent, title: e.target.value})}
+                <select
+                  value={newEvent.title}
+                  onChange={(e) => setNewEvent({ ...newEvent, title: e.target.value })}
                   style={{ width: "100%", padding: "8px", marginBottom: "10px", borderRadius: "4px", border: "1px solid #ccc" }}
                 >
                   {eventOptions.map(opt => <option key={opt} value={opt}>{opt}</option>)}
                 </select>
 
                 <label>Venue</label>
-                <input type="text" placeholder="e.g. Grand Taj Hall" value={newEvent.venue} onChange={(e) => setNewEvent({...newEvent, venue: e.target.value})} />
-                
+                <input type="text" placeholder="e.g. Grand Taj Hall" value={newEvent.venue} onChange={(e) => setNewEvent({ ...newEvent, venue: e.target.value })} />
+
                 <div className="form-row" style={{ display: "flex", gap: "10px" }}>
                   <div style={{ flex: 1 }}>
                     <label>Date</label>
-                    <input type="text" placeholder="e.g. 15th October 2026" value={newEvent.date} onChange={(e) => setNewEvent({...newEvent, date: e.target.value})} />
+                    <input type="text" placeholder="e.g. 15th October 2026" value={newEvent.date} onChange={(e) => setNewEvent({ ...newEvent, date: e.target.value })} />
                   </div>
                   <div style={{ flex: 1 }}>
                     <label>Time</label>
-                    <input type="text" placeholder="e.g. 10:00 AM" value={newEvent.time} onChange={(e) => setNewEvent({...newEvent, time: e.target.value})} />
+                    <input type="text" placeholder="e.g. 10:00 AM" value={newEvent.time} onChange={(e) => setNewEvent({ ...newEvent, time: e.target.value })} />
                   </div>
                 </div>
 
@@ -242,9 +252,9 @@ const CRM = () => {
                   rows="4"
                   placeholder="Guest Arrival&#10;Ring Exchange&#10;Dinner"
                   value={newEvent.schedule.join("\n")}
-                  onChange={(e) => setNewEvent({...newEvent, schedule: e.target.value.split("\n")})}
+                  onChange={(e) => setNewEvent({ ...newEvent, schedule: e.target.value.split("\n") })}
                 />
-                
+
                 <div style={{ display: "flex", gap: "10px", marginTop: "10px" }}>
                   <button className="save-btn" onClick={handleAddNewEvent}>
                     <HiOutlineSave /> Save to Client Portal
@@ -274,8 +284,8 @@ const CRM = () => {
                   {editingIndex === index ? (
                     <div className="edit-form">
                       <label>Event Type</label>
-                      <select 
-                        value={event.title} 
+                      <select
+                        value={event.title}
                         onChange={(e) => handleInputChange(index, "title", e.target.value)}
                         style={{ width: "100%", padding: "8px", marginBottom: "10px", borderRadius: "4px", border: "1px solid #ccc" }}
                       >
