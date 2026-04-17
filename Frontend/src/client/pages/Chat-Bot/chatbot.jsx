@@ -19,7 +19,6 @@ const ChatBot = () => {
   }, []);
 
   const replies = {
-    price: "Our wedding packages start from ₹1,00,000.",
     venue: "We provide venues in Bangalore, Goa, Mangalore and Shivamogga.",
     booking: "Go to venues page and click 'Check availability'.",
     contact: "Call us at +91 9876543210.",
@@ -76,6 +75,7 @@ const ChatBot = () => {
             <button onClick={sendMessage}>➤</button>
           </div>
         </div>
+        
       )}
     </>
   );

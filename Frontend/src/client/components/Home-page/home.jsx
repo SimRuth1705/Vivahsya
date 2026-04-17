@@ -1,15 +1,15 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import './home.css';
-import hero1 from '../../assets/wedding-hero-1.jpg';
-import hero2 from '../../assets/wedding-hero-2.jpg';
-import hero3 from '../../assets/wedding-hero-3.jpg';
-import hero4 from '../../assets/wedding-hero-4.jpg';
+import v1 from '../../assets/V1.png';
+import v2 from '../../assets/V2.png';
+import v3 from '../../assets/V3.png';
+import v4 from '../../assets/V4.png';
 import logo from '../../assets/logo.png';
 
 const Home = () => {
     const [currentSlide, setCurrentSlide] = useState(0);
-    const images = [hero1, hero2, hero3, hero4];
+    const images = [v1, v2, v3, v4];
 
     useEffect(() => {
         const interval = setInterval(() => {

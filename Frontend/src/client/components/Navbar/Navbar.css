@@ -16,6 +16,7 @@
     transition: var(--transition);
     display: flex;
     align-items: center;
+    
 }
 
 /* --- The Layout Core --- */
